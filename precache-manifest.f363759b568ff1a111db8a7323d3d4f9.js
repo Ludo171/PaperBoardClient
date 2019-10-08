@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "c336a8bb5295cabe42edb355b49f43ff",
+    "revision": "2498e4d6d3ed136df46af2f9306a3c05",
     "url": "/PaperBoardClient/index.html"
   },
   {
-    "revision": "dbc8137b0ffbd70b8efa",
+    "revision": "cec77d11434fa6424ab3",
     "url": "/PaperBoardClient/static/css/main.1ed7faa3.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/PaperBoardClient/static/js/2.473680fa.chunk.js"
   },
   {
-    "revision": "dbc8137b0ffbd70b8efa",
-    "url": "/PaperBoardClient/static/js/main.c6db4cbe.chunk.js"
+    "revision": "cec77d11434fa6424ab3",
+    "url": "/PaperBoardClient/static/js/main.6ef901c5.chunk.js"
   },
   {
     "revision": "1516e8f19c508a14fc95",

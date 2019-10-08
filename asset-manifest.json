@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/PaperBoardClient/static/css/main.1ed7faa3.chunk.css",
-    "main.js": "/PaperBoardClient/static/js/main.c6db4cbe.chunk.js",
-    "main.js.map": "/PaperBoardClient/static/js/main.c6db4cbe.chunk.js.map",
+    "main.js": "/PaperBoardClient/static/js/main.6ef901c5.chunk.js",
+    "main.js.map": "/PaperBoardClient/static/js/main.6ef901c5.chunk.js.map",
     "runtime-main.js": "/PaperBoardClient/static/js/runtime-main.557acf9c.js",
     "runtime-main.js.map": "/PaperBoardClient/static/js/runtime-main.557acf9c.js.map",
     "static/js/2.473680fa.chunk.js": "/PaperBoardClient/static/js/2.473680fa.chunk.js",
     "static/js/2.473680fa.chunk.js.map": "/PaperBoardClient/static/js/2.473680fa.chunk.js.map",
     "index.html": "/PaperBoardClient/index.html",
-    "precache-manifest.0788cad4bb425c1ee4d0686be43c6d03.js": "/PaperBoardClient/precache-manifest.0788cad4bb425c1ee4d0686be43c6d03.js",
+    "precache-manifest.f363759b568ff1a111db8a7323d3d4f9.js": "/PaperBoardClient/precache-manifest.f363759b568ff1a111db8a7323d3d4f9.js",
     "service-worker.js": "/PaperBoardClient/service-worker.js",
     "static/css/main.1ed7faa3.chunk.css.map": "/PaperBoardClient/static/css/main.1ed7faa3.chunk.css.map",
     "static/media/background-image.jpg": "/PaperBoardClient/static/media/background-image.1419a925.jpg"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.557acf9c.js",
     "static/js/2.473680fa.chunk.js",
     "static/css/main.1ed7faa3.chunk.css",
-    "static/js/main.c6db4cbe.chunk.js"
+    "static/js/main.6ef901c5.chunk.js"
   ]
 }
