@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/PaperBoardClient/static/css/main.b100e6da.chunk.css",
-    "main.js": "/PaperBoardClient/static/js/main.f374fe4d.chunk.js",
-    "main.js.map": "/PaperBoardClient/static/js/main.f374fe4d.chunk.js.map",
+    "main.css": "/PaperBoardClient/static/css/main.5e4e9510.chunk.css",
+    "main.js": "/PaperBoardClient/static/js/main.8f7a6f11.chunk.js",
+    "main.js.map": "/PaperBoardClient/static/js/main.8f7a6f11.chunk.js.map",
     "runtime-main.js": "/PaperBoardClient/static/js/runtime-main.557acf9c.js",
     "runtime-main.js.map": "/PaperBoardClient/static/js/runtime-main.557acf9c.js.map",
-    "static/js/2.4cad404d.chunk.js": "/PaperBoardClient/static/js/2.4cad404d.chunk.js",
-    "static/js/2.4cad404d.chunk.js.map": "/PaperBoardClient/static/js/2.4cad404d.chunk.js.map",
+    "static/js/2.6f53dd80.chunk.js": "/PaperBoardClient/static/js/2.6f53dd80.chunk.js",
+    "static/js/2.6f53dd80.chunk.js.map": "/PaperBoardClient/static/js/2.6f53dd80.chunk.js.map",
     "index.html": "/PaperBoardClient/index.html",
-    "precache-manifest.a3c963df6970c8699b1512729dcfc9f4.js": "/PaperBoardClient/precache-manifest.a3c963df6970c8699b1512729dcfc9f4.js",
+    "precache-manifest.5a140cd19e2f62c54c66834c78a7f88b.js": "/PaperBoardClient/precache-manifest.5a140cd19e2f62c54c66834c78a7f88b.js",
     "service-worker.js": "/PaperBoardClient/service-worker.js",
-    "static/css/main.b100e6da.chunk.css.map": "/PaperBoardClient/static/css/main.b100e6da.chunk.css.map",
+    "static/css/main.5e4e9510.chunk.css.map": "/PaperBoardClient/static/css/main.5e4e9510.chunk.css.map",
     "static/media/logo.svg": "/PaperBoardClient/static/media/logo.25bf045c.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.557acf9c.js",
-    "static/js/2.4cad404d.chunk.js",
-    "static/css/main.b100e6da.chunk.css",
-    "static/js/main.f374fe4d.chunk.js"
+    "static/js/2.6f53dd80.chunk.js",
+    "static/css/main.5e4e9510.chunk.css",
+    "static/js/main.8f7a6f11.chunk.js"
   ]
 }
