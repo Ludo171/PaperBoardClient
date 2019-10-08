@@ -1,38 +1,19 @@
 import React from "react";
-import * as backgroundImage from "./background-image.jpg";
-import "./App.css";
+import {Route, Switch} from "react-router-dom";
+import WelcomePage from "./pages/WelcomePage";
+import LoungePage from "./pages/LoungePage";
+import CreateBoardPage from "./pages/CreateBoardPage";
+import PaperBoardPage from "./pages/PaperBoardPage";
+import * as backgroundImage from "./assets/background-image.jpg";
+import "./App.scss";
 
 export default function App() {
     return (
-        <div className="App">
-            <h1 className="title">Bulma</h1>
-            <p className="subtitle">
-                Modern CSS framework based on{" "}
-                <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Basic_Concepts_of_Flexbox">
-                    Flexbox
-                </a>
-            </p>
-
-            <div className="field">
-                <div className="control">
-                    <input className="input" type="text" placeholder="Input" />
-                </div>
-            </div>
-
-            <div className="field">
-                <p className="control">
-                    <span className="select">
-                        <select>
-                            <option>Select dropdown</option>
-                        </select>
-                    </span>
-                </p>
-            </div>
-
-            <div className="buttons">
-                <a className="button is-primary">Primary</a>
-                <a className="button is-link">Link</a>
-            </div>
-        </div>
+        <Switch>
+            <Route exact path="/" component={WelcomePage} />
+            <Route path="/lounge" component={LoungePage} />
+            <Route path="/new-board" component={CreateBoardPage} />
+            <Route path="/paperboard/:title" component={PaperBoardPage} />
+        </Switch>
     );
 }
