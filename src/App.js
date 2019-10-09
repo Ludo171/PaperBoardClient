@@ -4,7 +4,6 @@ import WelcomePage from "./pages/WelcomePage";
 import LoungePage from "./pages/LoungePage";
 import CreateBoardPage from "./pages/CreateBoardPage";
 import PaperBoardPage from "./pages/PaperBoardPage";
-import * as backgroundImage from "./assets/background-image.jpg";
 import "./App.scss";
 
 export default function App() {
