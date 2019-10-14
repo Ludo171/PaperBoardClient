@@ -1,9 +1,12 @@
-import React from "react";
-import {Link} from "react-router-dom";
+import React, {Component} from "react";
+import {Link, withRouter} from "react-router-dom";
 import * as backgroundImage from "../assets/background-image1.jpg";
 import "./WelcomePage.scss";
-
-export default class WelcomePage extends React.Component {
+import axios from "axios";
+class WelcomePage extends Component {
+    propTypes = {
+        history: null,
+    };
     resizeImageToFill(e) {
         let targetWidth;
         let targetHeight;
@@ -23,15 +26,29 @@ export default class WelcomePage extends React.Component {
         img.style.width = `${Math.floor(targetWidth)}px`;
         img.style.height = `${Math.floor(targetHeight)}px`;
     }
-
+    constructor(props) {
+        super(props);
+        this.state = {pseudo: ""};
+    }
     componentDidMount() {
         window.addEventListener("resize", this.resizeImageToFill);
     }
-
     componentWillUnmount() {
         window.removeEventListener("resize", this.resizeImageToFill);
     }
-
+    onLogin = () => {
+        axios
+            .post(process.env.REACT_APP_DEV_HTTP_API + "/user?pseudo=" + this.state.pseudo)
+            .then((response) => {
+                this.props.history.push({pathname: "/lounge", state: {detail: response.data}});
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    };
+    handleChange = (event) => {
+        this.setState({pseudo: event.target.value});
+    };
     render() {
         return (
             <div id="welcome-page">
@@ -47,7 +64,12 @@ export default class WelcomePage extends React.Component {
                 <div className="box">
                     <div className="field">
                         <p className="control has-icons-left">
-                            <input className="input" type="password" placeholder="Password"></input>
+                            <input
+                                type="text"
+                                className="input"
+                                placeholder="Pseudo"
+                                value={this.state.value}
+                                onChange={this.handleChange}></input>
                             <span className="icon is-small is-left">
                                 <i className="fas fa-lock"></i>
                             </span>
@@ -55,7 +77,9 @@ export default class WelcomePage extends React.Component {
                     </div>
                     <div className="field">
                         <p className="control">
-                            <button className="button is-success">Login</button>
+                            <button className="button is-success" onClick={this.onLogin}>
+                                Login
+                            </button>
                         </p>
                     </div>
                     <Link to="/lounge">Go to Lounge page</Link> youpi.
@@ -64,3 +88,5 @@ export default class WelcomePage extends React.Component {
         );
     }
 }
+
+export default withRouter(WelcomePage);
