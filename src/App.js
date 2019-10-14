@@ -5,6 +5,7 @@ import LoungePage from "./pages/LoungePage";
 import CreateBoardPage from "./pages/CreateBoardPage";
 import PaperBoardPage from "./pages/PaperBoardPage";
 import "./App.scss";
+require("dotenv").config();
 
 export default function App() {
     return (

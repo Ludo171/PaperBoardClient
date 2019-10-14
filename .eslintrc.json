@@ -8,6 +8,7 @@
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -19,6 +20,7 @@
     "rules": {
         "no-console": "warn",
         "no-eval": "error",
-        "require-jsdoc": 0
+        "require-jsdoc": 0,
+        "no-invalid-this": 0
     }
 }
