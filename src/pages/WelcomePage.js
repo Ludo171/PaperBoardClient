@@ -3,10 +3,18 @@ import {Link, withRouter} from "react-router-dom";
 import * as backgroundImage from "../assets/background-image1.jpg";
 import "./WelcomePage.scss";
 import axios from "axios";
+import config from "../config/config";
+
 class WelcomePage extends Component {
     propTypes = {
         history: null,
     };
+
+    constructor(props) {
+        super(props);
+        this.state = {pseudo: ""};
+    }
+
     resizeImageToFill(e) {
         let targetWidth;
         let targetHeight;
@@ -26,19 +34,18 @@ class WelcomePage extends Component {
         img.style.width = `${Math.floor(targetWidth)}px`;
         img.style.height = `${Math.floor(targetHeight)}px`;
     }
-    constructor(props) {
-        super(props);
-        this.state = {pseudo: ""};
-    }
+
     componentDidMount() {
         window.addEventListener("resize", this.resizeImageToFill);
     }
+
     componentWillUnmount() {
         window.removeEventListener("resize", this.resizeImageToFill);
     }
+
     onLogin = () => {
         axios
-            .post(process.env.REACT_APP_DEV_HTTP_API + "/user?pseudo=" + this.state.pseudo)
+            .post(`${config.hostname}:${config.http_port}/user?pseudo=${this.state.pseudo}`)
             .then((response) => {
                 this.props.history.push({pathname: "/lounge", state: {detail: response.data}});
             })
@@ -46,9 +53,11 @@ class WelcomePage extends Component {
                 console.log(error);
             });
     };
+
     handleChange = (event) => {
         this.setState({pseudo: event.target.value});
     };
+
     render() {
         return (
             <div id="welcome-page">
