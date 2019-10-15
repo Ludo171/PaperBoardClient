@@ -3,10 +3,9 @@ import {Link, withRouter} from "react-router-dom";
 import * as backgroundImage from "../assets/background-image1.jpg";
 import "./WelcomePage.scss";
 import axios from "axios";
+import PropTypes from "prop-types";
+
 class WelcomePage extends Component {
-    propTypes = {
-        history: null,
-    };
     resizeImageToFill(e) {
         let targetWidth;
         let targetHeight;
@@ -88,5 +87,9 @@ class WelcomePage extends Component {
         );
     }
 }
+
+WelcomePage.propTypes = {
+    history: PropTypes.object,
+};
 
 export default withRouter(WelcomePage);
