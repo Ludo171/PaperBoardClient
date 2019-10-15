@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import {Link, withRouter} from "react-router-dom";
-import * as backgroundImage from "../assets/background-image1.jpg";
+import {withRouter} from "react-router-dom";
+import * as backgroundImage from "../assets/background-image2.jpg";
 import "./WelcomePage.scss";
 import PropTypes from "prop-types";
 import {postUser} from "../services/users";
@@ -35,13 +35,22 @@ class WelcomePage extends Component {
     componentWillUnmount() {
         window.removeEventListener("resize", this.resizeImageToFill);
     }
-    onLogin = () => {
+    onLogin = (event) => {
+        event.preventDefault();
         postUser(this.state.pseudo)
             .then((response) => {
                 this.props.history.push({pathname: "/lounge", state: {detail: response.data}});
             })
-            .catch(function(error) {
-                console.log(error);
+            .catch((error) => {
+                if (error.response.status === 409) {
+                    alert(
+                        "A user with the pseudo " +
+                            this.state.pseudo +
+                            " is already connected. Please use another name"
+                    );
+                } else {
+                    alert(error);
+                }
             });
     };
     handleChange = (event) => {
@@ -55,32 +64,42 @@ class WelcomePage extends Component {
                     src={backgroundImage}
                     onLoad={this.resizeImageToFill}
                     alt="background"></img>
-                <div className="box">
-                    <p className="title is-1">Welcome on PaperBoard !</p>
-                    <p className="subtitle is-4">Don't think to much, draw it !</p>
-                </div>
-                <div className="box">
-                    <div className="field">
-                        <p className="control has-icons-left">
-                            <input
-                                type="text"
-                                className="input"
-                                placeholder="Pseudo"
-                                value={this.state.value}
-                                onChange={this.handleChange}></input>
-                            <span className="icon is-small is-left">
-                                <i className="fas fa-lock"></i>
-                            </span>
-                        </p>
+                <div className="card">
+                    <div className="card-content">
+                        <p className="title is-1">Welcome on PaperBoard !</p>
+                        <p className="subtitle">{"Don't think to much, draw it !"}</p>
+                        <div className="card">
+                            <div className="card-content" id="card-input">
+                                <p className="title is-3">Your pseudo ?</p>
+                                <div className="box">
+                                    <div className="field">
+                                        <p className="control has-icons-left">
+                                            <form onSubmit={this.onLogin}>
+                                                <input
+                                                    type="text"
+                                                    className="input"
+                                                    placeholder="Pseudo"
+                                                    value={this.state.value}
+                                                    onChange={this.handleChange}></input>
+                                            </form>
+                                            {/* <span className="icon is-small is-left">
+                                                <i className="fa material-icons">face</i>
+                                            </span> */}
+                                        </p>
+                                    </div>
+                                    <div className="field">
+                                        <p className="control">
+                                            <button
+                                                className="button is-success"
+                                                onClick={this.onLogin}>
+                                                Go !
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="field">
-                        <p className="control">
-                            <button className="button is-success" onClick={this.onLogin}>
-                                Login
-                            </button>
-                        </p>
-                    </div>
-                    <Link to="/lounge">Go to Lounge page</Link> youpi.
                 </div>
             </div>
         );
