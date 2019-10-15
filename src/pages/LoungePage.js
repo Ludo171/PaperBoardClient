@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import {Link, withRouter} from "react-router-dom";
-import {getAllPaperBoards} from "../services/paperboards";
+import {withRouter} from "react-router-dom";
+import {getAllPaperBoards, getPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
 import "./LoungePage.scss";
 
@@ -40,16 +40,32 @@ class LoungePage extends Component {
         this.props.history.push({pathname: "/new-board"});
     };
 
+    goToPaperBoard = (title) => {
+        getPaperBoard(title)
+            .then((response) => {
+                this.props.history.push({
+                    pathname: "/paperboard",
+                    state: {paperboard: response.data},
+                });
+                console.log(response.data);
+            })
+            .catch(function(error) {
+                alert(error);
+            });
+    };
+
     render() {
         const {pseudo, paperboards} = this.state;
 
         const list = paperboards.map((paperboard, index) => (
-            <div key={index}>
-                <Link className="list-item" to={"/paperboard/" + paperboard.title} key={index}>
+            <div
+                key={index}
+                className="list-item"
+                onClick={() => this.goToPaperBoard(paperboard.title)}>
+                <div>
                     <p>{paperboard.title}</p>
-                    <p>{"Nomber of drawers : " + paperboard.numberOfConnectedUser}</p>
-                </Link>
-                <hr className="dropdown-divider"></hr>
+                    <p>{"Number of drawers : " + paperboard.numberOfConnectedUser}</p>
+                </div>
             </div>
         ));
         return (

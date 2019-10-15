@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
-import {getAllPaperBoards, createPaperBoard} from "../services/paperboards";
+import {createPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
 import {colors} from "../utils/colors";
 import "./LoungePage.scss";
@@ -27,7 +27,6 @@ const getColorList = (handleColor) => {
 
 class CreateBoardPage extends Component {
     state = {
-        pseudo: "must auth",
         title: "",
         color: "",
         hexColorCode: "",
@@ -68,11 +67,11 @@ class CreateBoardPage extends Component {
     };
 
     render() {
-        const {pseudo, color, hexColorCode} = this.state;
+        const {color, hexColorCode} = this.state;
         return (
             <div className="container">
                 <div className="title is-1 has-text-success">
-                    <h1>{"Lounge Page of " + pseudo}</h1>
+                    <h1>Set up your board and create it !</h1>
                 </div>
                 <div className="paperboard-form">
                     <div className="field">
@@ -105,15 +104,13 @@ class CreateBoardPage extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="field">
-                            <p className="control">
-                                <button
-                                    className="button is-success"
-                                    onClick={this.onCreatePaperBoard}>
-                                    Create Paperboard
-                                </button>
-                            </p>
-                        </div>
+                    </div>
+                    <div className="field">
+                        <p className="control">
+                            <button className="button is-success" onClick={this.onCreatePaperBoard}>
+                                Create Paperboard
+                            </button>
+                        </p>
                     </div>
                 </div>
             </div>
