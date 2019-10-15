@@ -1,20 +1,3 @@
-#welcome-page{
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: space-around;
-
-    #background-image{
-        position: absolute;
-        z-index: -1;
-        max-width: none;
-        max-height: none;
-    }
-}
-
 .card {
     border-radius: 2%;
 }

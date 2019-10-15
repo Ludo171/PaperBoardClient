@@ -3,6 +3,7 @@ import {withRouter} from "react-router-dom";
 import {getAllPaperBoards, getPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
 import "./LoungePage.scss";
+import Background from "../components/Background";
 
 class LoungePage extends Component {
     state = {
@@ -69,9 +70,19 @@ class LoungePage extends Component {
             </div>
         ));
         return (
-            <div className="container">
-                <div className="title is-3 has-text-success">
-                    <h1>{"Hi " + pseudo + " !"}</h1>
+            <Background>
+                <div className="card">
+                    <div className="card-content">
+                        <div className="title is-3">
+                            <h1>{"Hi " + pseudo + " !"}</h1>
+                        </div>
+                        <div className="title is-1">
+                            <h1>{"Join a Board"}</h1>
+                        </div>
+                        <div className="paperboard-list">
+                            <div className="list is-hoverable">{list}</div>
+                        </div>
+                    </div>
                 </div>
                 <div className="field">
                     <p className="control">
@@ -80,13 +91,7 @@ class LoungePage extends Component {
                         </button>
                     </p>
                 </div>
-                <div className="title is-3 has-text-success">
-                    <h1>{"Join a paperboard :"}</h1>
-                </div>
-                <div className="paperboard-list">
-                    <div className="list is-hoverable">{list}</div>
-                </div>
-            </div>
+            </Background>
         );
     }
 }
