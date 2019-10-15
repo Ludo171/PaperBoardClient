@@ -2,9 +2,8 @@ import React, {Component} from "react";
 import {Link, withRouter} from "react-router-dom";
 import * as backgroundImage from "../assets/background-image1.jpg";
 import "./WelcomePage.scss";
-import axios from "axios";
 import PropTypes from "prop-types";
-import config from "../config/config";
+import {postUser} from "../services/users";
 
 class WelcomePage extends Component {
     constructor(props) {
@@ -37,8 +36,7 @@ class WelcomePage extends Component {
         window.removeEventListener("resize", this.resizeImageToFill);
     }
     onLogin = () => {
-        axios
-            .post(`${config.hostname}:${config.http_port}/user?pseudo=${this.state.pseudo}`)
+        postUser(this.state.pseudo)
             .then((response) => {
                 this.props.history.push({pathname: "/lounge", state: {detail: response.data}});
             })
