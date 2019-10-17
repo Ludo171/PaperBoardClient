@@ -4,6 +4,22 @@ import {getAllPaperBoards, getPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
 import "./LoungePage.scss";
 import Background from "../components/Background";
+import MaterialTable from "material-table";
+import * as moment from "moment";
+const columns = [
+    {
+        title: "Title",
+        field: "title",
+    },
+    {
+        title: "Nb of participants",
+        field: "numberOfConnectedUser",
+    },
+    {
+        title: "Creation date",
+        field: "creationDate",
+    },
+];
 
 class LoungePage extends Component {
     state = {
@@ -18,6 +34,7 @@ class LoungePage extends Component {
         getAllPaperBoards()
             .then((response) => {
                 this.setState({paperboards: response.data});
+                console.log(response.data);
             })
             .catch(function(error) {
                 alert(error);
@@ -57,18 +74,11 @@ class LoungePage extends Component {
 
     render() {
         const {pseudo, paperboards} = this.state;
-
-        const list = paperboards.map((paperboard, index) => (
-            <div
-                key={index}
-                className="list-item"
-                onClick={() => this.goToPaperBoard(paperboard.title)}>
-                <div>
-                    <p>{paperboard.title}</p>
-                    <p>{"Number of drawers : " + paperboard.numberOfConnectedUser}</p>
-                </div>
-            </div>
-        ));
+        paperboards.map((paperboard) => {
+            paperboard.creationDate = moment(paperboard.creationDate).format(
+                "dddd, MMMM Do YYYY, h:mm:ss a"
+            );
+        });
         return (
             <Background>
                 <div className="card">
@@ -79,14 +89,26 @@ class LoungePage extends Component {
                         <div className="title is-1">
                             <h1>{"Join a Board"}</h1>
                         </div>
-                        <div className="paperboard-list">
-                            <div className="list is-hoverable">{list}</div>
-                        </div>
+                        <MaterialTable
+                            title="Boards"
+                            columns={columns}
+                            data={paperboards}
+                            actions={[
+                                {
+                                    title: "Join",
+                                    icon: "create",
+                                    tooltip: "Join",
+                                    onClick: (event, rowData) => this.goToPaperBoard(rowData.title),
+                                },
+                            ]}
+                        />
                     </div>
                 </div>
                 <div className="field">
                     <p className="control">
-                        <button className="button is-success" onClick={this.onCreatePaperBoard}>
+                        <button
+                            className="button is-success is-large"
+                            onClick={this.onCreatePaperBoard}>
                             Create a new Paperboard
                         </button>
                     </p>

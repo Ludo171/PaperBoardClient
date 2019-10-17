@@ -1,8 +1,12 @@
+.card {
+    width: 50%;
+}
 .container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex: 1;
 }
 
 .dropdown-content {

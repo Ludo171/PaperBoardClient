@@ -57,7 +57,7 @@ class WelcomePage extends Component {
                                     <div className="field">
                                         <p className="control">
                                             <button
-                                                className="button is-success"
+                                                className="button is-success is-large"
                                                 onClick={this.onLogin}>
                                                 Go !
                                             </button>
