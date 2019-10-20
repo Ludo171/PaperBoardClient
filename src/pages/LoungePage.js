@@ -78,6 +78,7 @@ class LoungePage extends Component {
             paperboard.creationDate = moment(paperboard.creationDate).format(
                 "dddd, MMMM Do YYYY, h:mm:ss a"
             );
+            return paperboard;
         });
         return (
             <Background>
