@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
-import {createPaperBoard} from "../services/paperboards";
+import {createPaperBoard, uploadBgImage} from "../services/paperboards";
 import PropTypes from "prop-types";
 import {colors} from "../utils/colors";
 import "./CreateBoardPage.scss";
@@ -34,10 +34,12 @@ class CreateBoardPage extends Component {
         title: "",
         color: "",
         hexColorCode: "",
+        BackgroundImageTitle: "",
         isBackgroundColor: false,
         isBackgroundImage: false,
         isSwitchBgColorDisabled: false,
         isSwitchBgImageDisabled: false,
+        selectedFile: null,
     };
 
     defaultBoardTitle = "default-paper-board";
@@ -50,14 +52,24 @@ class CreateBoardPage extends Component {
         this.setState({color, hexColorCode});
     };
 
+    handleBgImage = (e) => {
+        e.preventDefault();
+        this.setState({
+            selectedFile: e.target.files[0],
+        });
+        console.log(e.target.files[0]);
+    };
+
     onCreatePaperBoard = () => {
-        const {title, color} = this.state;
-        createPaperBoard(title, color)
+        const {title, color, selectedFile} = this.state;
+        console.log(title, color, selectedFile);
+        createPaperBoard(title, color, selectedFile ? selectedFile.name : null)
             .then((response) => {
                 this.props.history.push({
                     pathname: "/paperboard/" + response.data.title,
                     state: {detail: response.data},
                 });
+                console.log(response.data);
             })
             .catch(function(error) {
                 if (error.response.status === 409) {
@@ -68,6 +80,13 @@ class CreateBoardPage extends Component {
                     );
                 }
             });
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append("file", this.state.selectedFile);
+            uploadBgImage(title, formData).then(() => {
+                alert("File uploaded successfully.");
+            });
+        }
     };
 
     handleSwitch = (name) => (event) => {
@@ -178,7 +197,23 @@ class CreateBoardPage extends Component {
                                         </div>
                                     </div>
                                 ) : null}
-                                {isBackgroundImage ? <div>todo</div> : null}
+                                {isBackgroundImage ? (
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="col-md-6">
+                                                <div className="form-group files color">
+                                                    <label>Upload Your File </label>
+                                                    <input
+                                                        type="file"
+                                                        className="form-control"
+                                                        name="file"
+                                                        onChange={this.handleBgImage}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
                     </div>
