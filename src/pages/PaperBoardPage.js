@@ -12,14 +12,9 @@ import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import {getCanvasSize} from "../utils/resize";
 import Background from "../components/Background";
-import {
-    ExitToApp,
-    Menu,
-    SaveAlt,
-    CloudUpload,
-    Message,
-    CenterFocusStrong,
-} from "@material-ui/icons";
+import {ExitToApp, Menu, SaveAlt, CloudUpload, Message} from "@material-ui/icons";
+import Chat from "../components/Chat";
+import TextField from "@material-ui/core/TextField";
 
 const mocked = {
     drawers: [{pseudo: "pat"}, {pseudo: "gégé"}],
@@ -30,6 +25,7 @@ class PaperBoardPage extends Component {
         left: false,
         width: 0,
         height: 0,
+        isChatDisplayed: false,
     };
 
     constructor(props) {
@@ -72,6 +68,13 @@ class PaperBoardPage extends Component {
         // TODO
     };
 
+    onChat = () => {
+        console.log("chat");
+        this.setState((prevState) => ({
+            isChatDisplayed: !prevState.isChatDisplayed,
+        }));
+    };
+
     render() {
         const {
             location: {
@@ -80,7 +83,7 @@ class PaperBoardPage extends Component {
         } = this.props;
 
         console.log(paperboard);
-        const {left, width, height} = this.state;
+        const {left, width, height, isChatDisplayed} = this.state;
 
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
         console.log({canvasWidth, canvasHeight});
@@ -142,23 +145,7 @@ class PaperBoardPage extends Component {
                         </Button>
                     </div>
                 </div>
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        position: "absolute",
-                        backgroundColor: "white",
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
-                        bottom: 50,
-                        right: 50,
-                        boxShadow: "6px 6px 6px #9E9E9E",
-                        shadowOpacity: 0.5,
-                    }}>
-                    <Message style={{width: 60, height: 60}} />
-                </div>
+
                 <SwipeableDrawer
                     open={left}
                     onClose={this.toggleDrawer("left", false)}
@@ -182,6 +169,56 @@ class PaperBoardPage extends Component {
                             }}></canvas>
                     </div>
                 </Background>
+
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexDirection: "column",
+                        position: "absolute",
+                        bottom: 50,
+                        right: 50,
+                    }}>
+                    {isChatDisplayed && <Chat height={height / 3} onCloseChat={this.onChat} />}
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}>
+                        {isChatDisplayed && (
+                            <div style={{paddingRight: width / 50}}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Message"
+                                    margin="normal"
+                                    variant="outlined"
+                                    style={{backgroundColor: "white", borderRadius: 5}}
+                                />
+                            </div>
+                        )}
+                        <div
+                            onClick={() => this.onChat()}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "white",
+                                width: isChatDisplayed ? 50 : 100,
+                                height: isChatDisplayed ? 50 : 100,
+                                borderRadius: isChatDisplayed ? 25 : 50,
+                                boxShadow: "6px 6px 6px #9E9E9E",
+                                shadowOpacity: 0.5,
+                            }}>
+                            <Message
+                                style={{
+                                    width: isChatDisplayed ? 20 : 60,
+                                    height: isChatDisplayed ? 20 : 60,
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
