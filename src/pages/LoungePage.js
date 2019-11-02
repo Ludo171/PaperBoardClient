@@ -61,11 +61,11 @@ class LoungePage extends Component {
     goToPaperBoard = (title) => {
         getPaperBoard(title)
             .then((response) => {
+                console.log(response.data);
                 this.props.history.push({
-                    pathname: "/paperboard",
+                    pathname: `/paperboard/${response.data.title}`,
                     state: {paperboard: response.data},
                 });
-                console.log(response.data);
             })
             .catch(function(error) {
                 alert(error);
