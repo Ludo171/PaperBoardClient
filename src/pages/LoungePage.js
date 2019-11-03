@@ -34,7 +34,6 @@ class LoungePage extends Component {
         getAllPaperBoards()
             .then((response) => {
                 this.setState({paperboards: response.data});
-                console.log(response.data);
             })
             .catch(function(error) {
                 alert(error);
@@ -62,10 +61,9 @@ class LoungePage extends Component {
         getPaperBoard(title)
             .then((response) => {
                 this.props.history.push({
-                    pathname: "/paperboard",
+                    pathname: `/paperboard/${response.data.title}`,
                     state: {paperboard: response.data},
                 });
-                console.log(response.data);
             })
             .catch(function(error) {
                 alert(error);
