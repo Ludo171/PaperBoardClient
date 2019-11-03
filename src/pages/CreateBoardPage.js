@@ -37,8 +37,6 @@ class CreateBoardPage extends Component {
         BackgroundImageTitle: "",
         isBackgroundColor: false,
         isBackgroundImage: false,
-        isSwitchBgColorDisabled: false,
-        isSwitchBgImageDisabled: false,
         selectedFile: null,
     };
 
@@ -94,29 +92,18 @@ class CreateBoardPage extends Component {
             this.setState({
                 isBackgroundColor: event.target.checked,
                 isBackgroundImage: false,
-                isSwitchBgColorDisabled: false,
-                isSwitchBgImageDisabled: event.target.checked,
             });
         } else {
             this.setState({
                 isBackgroundColor: false,
                 isBackgroundImage: event.target.checked,
-                isSwitchBgColorDisabled: event.target.checked,
-                isSwitchBgImageDisabled: false,
             });
         }
         this.setState({color: "", hexColorCode: ""});
     };
 
     render() {
-        const {
-            color,
-            hexColorCode,
-            isBackgroundColor,
-            isSwitchBgImageDisabled,
-            isSwitchBgColorDisabled,
-            isBackgroundImage,
-        } = this.state;
+        const {color, hexColorCode, isBackgroundColor, isBackgroundImage} = this.state;
         return (
             <Background>
                 <>
@@ -148,7 +135,6 @@ class CreateBoardPage extends Component {
                                                 value="checkedA"
                                             />
                                         }
-                                        disabled={isSwitchBgColorDisabled}
                                         label="Background Color"
                                     />
                                     <FormControlLabel
@@ -160,7 +146,6 @@ class CreateBoardPage extends Component {
                                                 color="primary"
                                             />
                                         }
-                                        disabled={isSwitchBgImageDisabled}
                                         label="Background Image"
                                     />
                                 </FormGroup>
