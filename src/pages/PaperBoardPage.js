@@ -145,7 +145,6 @@ class PaperBoardPage extends Component {
             },
         } = this.props;
 
-        console.log(paperboard);
         const {left, width, height, isChatDisplayed} = this.state;
 
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
