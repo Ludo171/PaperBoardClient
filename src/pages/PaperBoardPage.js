@@ -8,17 +8,59 @@ import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
+import {
+    TextFields as TextFieldIcon,
+    Photo,
+    Maximize,
+    CropLandscape,
+    Edit,
+    PanoramaFishEye,
+} from "@material-ui/icons";
 import {getCanvasSize} from "../utils/resize";
 import Background from "../components/Background";
 import {ExitToApp, Menu, SaveAlt, CloudUpload, Message} from "@material-ui/icons";
 import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
 
-const mocked = {
-    drawers: [{pseudo: "pat"}, {pseudo: "gégé"}],
-};
+const sideList = (side, toggleDrawer) => (
+    <div
+        className={"list"}
+        role="presentation"
+        onClick={toggleDrawer(side, false)}
+        onKeyDown={toggleDrawer(side, false)}>
+        <List>
+            <ListItem button key={"Text"}>
+                <ListItemIcon>
+                    <TextFieldIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Text"} />
+            </ListItem>
+        </List>
+        <Divider />
+        <List>
+            {[
+                {title: "Line", component: <Maximize />},
+                {title: "Rectangle", component: <CropLandscape />},
+                {title: "Circle", component: <PanoramaFishEye />},
+                {title: "Edit", component: <Edit />},
+            ].map((item) => (
+                <ListItem button key={item.title}>
+                    <ListItemIcon>{item.component}</ListItemIcon>
+                    <ListItemText primary={item.title} />
+                </ListItem>
+            ))}
+        </List>
+        <Divider />
+        <List>
+            <ListItem button key={"Picture"}>
+                <ListItemIcon>
+                    <Photo />
+                </ListItemIcon>
+                <ListItemText primary={"Picture"} />
+            </ListItem>
+        </List>
+    </div>
+);
 
 class PaperBoardPage extends Component {
     state = {
@@ -26,6 +68,7 @@ class PaperBoardPage extends Component {
         width: 0,
         height: 0,
         isChatDisplayed: false,
+        textFieldValue: "",
     };
 
     constructor(props) {
@@ -69,10 +112,30 @@ class PaperBoardPage extends Component {
     };
 
     onChat = () => {
-        console.log("chat");
         this.setState((prevState) => ({
             isChatDisplayed: !prevState.isChatDisplayed,
         }));
+    };
+
+    _handleTextFieldChange = (e) => {
+        if (e.key === "Enter") {
+            // Do code here
+            alert("enter is hit");
+        }
+        this.setState({
+            textFieldValue: e.target.value,
+        });
+    };
+
+    sendMessage = () => {
+        // TODO
+        alert(this.state.textFieldValue);
+    };
+
+    catchReturn = (e) => {
+        if (e.key === "Enter") {
+            this.sendMessage();
+        }
     };
 
     render() {
@@ -86,37 +149,6 @@ class PaperBoardPage extends Component {
         const {left, width, height, isChatDisplayed} = this.state;
 
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
-        console.log({canvasWidth, canvasHeight});
-
-        const sideList = (side) => (
-            <div
-                className={"list"}
-                role="presentation"
-                onClick={this.toggleDrawer(side, false)}
-                onKeyDown={this.toggleDrawer(side, false)}>
-                <List>
-                    {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                    {["All mail", "Trash", "Spam"].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
-                </List>
-            </div>
-        );
 
         return (
             <div style={{display: "flex", flexDirection: "column"}}>
@@ -150,7 +182,7 @@ class PaperBoardPage extends Component {
                     open={left}
                     onClose={this.toggleDrawer("left", false)}
                     onOpen={this.toggleDrawer("left", true)}>
-                    {sideList("left")}
+                    {sideList("left", this.toggleDrawer)}
                 </SwipeableDrawer>
                 <Background>
                     <div
@@ -194,11 +226,13 @@ class PaperBoardPage extends Component {
                                     margin="normal"
                                     variant="outlined"
                                     style={{backgroundColor: "white", borderRadius: 5}}
+                                    onChange={this._handleTextFieldChange}
+                                    onKeyPress={this.catchReturn}
                                 />
                             </div>
                         )}
                         <div
-                            onClick={() => this.onChat()}
+                            onClick={() => (isChatDisplayed ? this.sendMessage() : this.onChat())}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
