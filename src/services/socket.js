@@ -1,4 +1,3 @@
-import io from "socket.io-client";
 import config from "../config/config";
 import constants from "../config/constants";
 import Logger from "../utils/logger";
@@ -15,16 +14,27 @@ class SocketClient {
         this.componentName = "Socket Client";
         this.pseudo = pseudo;
         this.board = board;
-        this.backend_url = `${config.hostname}:${config.socket_port}/websockets/v1/paperboard/${this.board}`;
+        this.backend_url = `${config.socket_url}/${board}`;
+        // this.backend_url = "ws://localhost:8025/websockets/v1/paperboard/chose";
         this.socketClient = null;
 
         // METHODS
         this.init = this.init.bind(this);
         this.stop = this.stop.bind(this);
         this.onConnect = this.onConnect.bind(this);
+        this.onDisconnect = this.onDisconnect.bind(this);
         this.onMessage = this.onMessage.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
 
+        this.handlers = {
+            chatMessageHandlers: [],
+            askDeletionHandlers: [],
+            objCreatedHandlers: [],
+            objEditedHandlers: [],
+            objDeletedHandlers: [],
+            drawerConnectedHandlers: [],
+            drawerDisconnectedHandlers: [],
+        };
         this.logger = new Logger(this.componentName);
 
         return this;
@@ -32,14 +42,17 @@ class SocketClient {
 
     init() {
         this.logger.log(`Connecting to WebSocketServer [${this.backend_url}]...`);
-        const socket = io.connect(this.backend_url);
+        this.logger.log("Config at this point :");
+        this.logger.log(config);
+        const socket = new WebSocket(this.backend_url);
         this.socketClient = socket;
-        this.socketClient.on("connect", () => this.onConnect());
-        this.socketClient.on("message", (message) => this.onMessage(message));
+        this.socketClient.onopen = this.onConnect;
+        this.socketClient.onmessage = this.onMessage;
+        this.socketClient.onclose = this.onDisconnect;
         this.logger.log(this.socketClient);
     }
     stop() {
-        this.socketClient.disconnect();
+        this.socketClient.close();
         this.socketClient = null;
     }
 
@@ -50,75 +63,77 @@ class SocketClient {
             to: "server",
             payload: {},
         });
+        this.logger.log(`Connection successful to [${this.backend_url}]`);
     }
-    onMessage(message) {
+    onDisconnect() {
+        this.logger.log(`Disconnected from server [${this.backend_url}]`);
+    }
+    onMessage(socketMessage) {
         let data = null;
         try {
-            data = JSON.parse(message);
+            data = JSON.parse(socketMessage.data);
             this.logger.log(
                 `Received ${data.type} from ${data.from === undefined ? "server" : data.from}.`
             );
         } catch (error) {
             this.logger.log("Invalid message sent through WebSocket. Unable to parse.", error);
-            this.logger.log(message);
+            this.logger.log(socketMessage);
             data = {};
         }
         switch (data.type) {
-            case constants.SIGNALING_SERVER.MSG_WELCOME:
+            case constants.SOCKET_MSG.CHAT_MESSAGE:
                 this.logger.log(
-                    `Trigger welcome handlers (${this.handlers.welcomeHandlers.length}).`
+                    `Trigger chat message handlers (${this.handlers.chatMessageHandlers.length}).`
                 );
-                this.handlers.welcomeHandlers.forEach((handleWelcome) => handleWelcome());
+                this.handlers.chatMessageHandlers.forEach((chatMessageHandler) =>
+                    chatMessageHandler()
+                );
                 break;
-            case constants.SIGNALING_SERVER.MSG_CALL_REQUEST:
+            case constants.SOCKET_MSG.ASK_DELETION:
                 this.logger.log(
-                    `Trigger call request handlers (${this.handlers.callRequestHandlers.length}).`
+                    `Trigger ask deletion handlers (${this.handlers.askDeletionHandlers.length}).`
                 );
                 this.logger.log(data);
-                this.handlers.callRequestHandlers.forEach((callRequestHandler) =>
-                    callRequestHandler(data.from, data.role, data.conference)
+                this.handlers.askDeletionHandlers.forEach((askDeletionHandler) =>
+                    askDeletionHandler()
                 );
                 break;
-            case constants.SIGNALING_SERVER.MSG_CALL_REQUEST_ANSWER:
+            case constants.SOCKET_MSG.OBJECT_CREATED:
                 this.logger.log(
-                    `Trigger call request answer handlers (${this.handlers.callRequestAnswerHandlers.length}).`
+                    `Trigger object created handlers (${this.handlers.objCreatedHandlers.length}).`
                 );
-                this.handlers.callRequestAnswerHandlers.forEach((callRequestAnswerHandler) =>
-                    callRequestAnswerHandler(data.from, data.answer)
-                );
-                break;
-            case constants.SIGNALING_SERVER.MSG_OFFER:
-                this.logger.log(`Trigger offer handlers (${this.handlers.offerHandlers.length}).`);
-                this.handlers.offerHandlers.forEach((handleOffer) =>
-                    handleOffer(data.from, data.offer, data.conference)
+                this.handlers.objCreatedHandlers.forEach((objCreatedHandler) =>
+                    objCreatedHandler()
                 );
                 break;
-            case constants.SIGNALING_SERVER.MSG_ANSWER:
+            case constants.SOCKET_MSG.OBJECT_EDITED:
                 this.logger.log(
-                    `Trigger answer handlers (${this.handlers.answerHandlers.length}).`
+                    `Trigger object edited (${this.handlers.objEditedHandlers.length}).`
                 );
-                this.handlers.answerHandlers.forEach((handleAnswer) =>
-                    handleAnswer(data.from, data.answer)
-                );
+                this.handlers.objEditedHandlers.forEach((objEditedHandler) => objEditedHandler());
                 break;
-            case constants.SIGNALING_SERVER.MSG_CANDIDATE:
+            case constants.SOCKET_MSG.OBJECT_DELETED:
                 this.logger.log(
-                    `Trigger candidate handlers (${this.handlers.candidateHandlers.length}).`
+                    `Trigger object deleted (${this.handlers.objDeletedHandlers.length}).`
                 );
-                this.handlers.candidateHandlers.forEach((handleCandidate) =>
-                    handleCandidate(data.from, data.candidate)
+                this.handlers.objDeletedHandlers.forEach((objDeletedHandler) =>
+                    objDeletedHandler()
                 );
                 break;
-            case constants.SIGNALING_SERVER.MSG_CLOSE:
-                this.logger.log(`Trigger close handlers (${this.handlers.closeHandlers.length}).`);
-                this.handlers.closeHandlers.forEach((handleClose) => handleClose(data.from));
-                break;
-            case constants.SIGNALING_SERVER.MSG_USERS_UPDATE:
+            case constants.SOCKET_MSG.DRAWER_CONNECTED:
                 this.logger.log(
-                    `Trigger users update handlers (${this.handlers.usersUpdateHandlers.length}).`
+                    `Trigger drawer connected handlers (${this.handlers.drawerConnectedHandlers.length}).`
                 );
-                this.handlers.usersUpdateHandlers.forEach((handleUsersUpdate) =>
-                    handleUsersUpdate(data.usersList)
+                this.handlers.drawerConnectedHandlers.forEach((drawerConnectedHandler) =>
+                    drawerConnectedHandler()
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
+                this.logger.log(
+                    `Trigger drawer disconnected handlers (${this.handlers.drawerDisconnectedHandlers.length}).`
+                );
+                this.handlers.drawerDisconnectedHandlers.forEach((drawerDisconnectedHandler) =>
+                    drawerDisconnectedHandler()
                 );
                 break;
             default:
@@ -144,8 +159,83 @@ class SocketClient {
                 );
                 message = {};
             }
-            this.socketClient.emit("message", message);
+            this.socketClient.send(message);
         }
+    }
+
+    subscribeToEvent(eventName, handler, subscriber) {
+        switch (eventName) {
+            case constants.SOCKET_MSG.CHAT_MESSAGE:
+                this.handlers.chatMessageHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.ASK_DELETION:
+                this.handlers.askDeletionHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.OBJECT_CREATED:
+                this.handlers.objCreatedHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.OBJECT_EDITED:
+                this.handlers.objEditedHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.OBJECT_DELETED:
+                this.handlers.objDeletedHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.DRAWER_CONNECTED:
+                this.handlers.drawerConnectedHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
+                this.handlers.drawerDisconnectedHandlers.push(handler);
+                break;
+            default:
+                this.logger.log(
+                    `Component [${subscriber}] attempted to subscribe to unexpected event [${eventName}].`
+                );
+        }
+        this.logger.log(`Component [${subscriber}] subscribed to ${eventName}.`);
+    }
+    unsubscribeToEvent(eventName, handler, subscriber) {
+        switch (eventName) {
+            case constants.SOCKET_MSG.CHAT_MESSAGE:
+                this.handlers.chatMessageHandlers = this.handlers.chatMessageHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.ASK_DELETION:
+                this.handlers.askDeletionHandlers = this.handlers.askDeletionHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.OBJECT_CREATED:
+                this.handlers.objCreatedHandlers = this.handlers.objCreatedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.OBJECT_EDITED:
+                this.handlers.objEditedHandlers = this.handlers.objEditedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.OBJECT_DELETED:
+                this.handlers.objDeletedHandlers = this.handlers.objDeletedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_CONNECTED:
+                this.handlers.drawerConnectedHandler = this.handlers.drawerConnectedHandler.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
+                this.handlers.drawerDisconnectedHandlers = this.handlers.drawerDisconnectedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            default:
+                this.logger.log(
+                    `Component [${subscriber}] attempted to unsubscribe from unexpected event [${eventName}].`
+                );
+        }
+        this.logger.log(`Component [${subscriber}] unsubscribed from ${eventName}.`);
     }
 }
 
