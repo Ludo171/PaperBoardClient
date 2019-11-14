@@ -85,9 +85,10 @@ class SocketClient {
                 this.logger.log(
                     `Trigger chat message handlers (${this.handlers.chatMessageHandlers.length}).`
                 );
-                this.handlers.chatMessageHandlers.forEach((chatMessageHandler) =>
-                    chatMessageHandler()
-                );
+                this.handlers.chatMessageHandlers.forEach((chatMessageHandler) => {
+                    chatMessageHandler(data.from, data.payload.msg);
+                    console.log(data);
+                });
                 break;
             case constants.SOCKET_MSG.ASK_DELETION:
                 this.logger.log(

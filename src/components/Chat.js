@@ -3,48 +3,9 @@ import PropTypes from "prop-types";
 import "./Background.scss";
 import {Close} from "@material-ui/icons";
 import {IconButton} from "@material-ui/core";
-import Message from "./Message";
-
 class Chat extends Component {
     render() {
-        const {height, onCloseChat} = this.props;
-        const messages = [
-            <Message
-                key={1}
-                color={"red"}
-                name={"bryan"}
-                message={"lol je suis moi"}
-                isAuthor={true}
-            />,
-            <Message
-                key={2}
-                color={"blue"}
-                name={"john"}
-                message={"mais non ?"}
-                isAuthor={false}
-            />,
-            <Message
-                key={3}
-                color={"blue"}
-                name={"john"}
-                message={"mais non ?"}
-                isAuthor={false}
-            />,
-            <Message
-                key={4}
-                color={"blue"}
-                name={"john"}
-                message={"mais non ?"}
-                isAuthor={false}
-            />,
-            <Message
-                key={5}
-                color={"blue"}
-                name={"john"}
-                message={"mais non ?"}
-                isAuthor={false}
-            />,
-        ];
+        const {height, onCloseChat, messages} = this.props;
         return (
             <div
                 id="page"
@@ -96,5 +57,6 @@ class Chat extends Component {
 Chat.propTypes = {
     height: PropTypes.number,
     onCloseChat: PropTypes.object,
+    messages: PropTypes.object,
 };
 export default Chat;

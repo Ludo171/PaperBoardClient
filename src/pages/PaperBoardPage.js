@@ -18,9 +18,13 @@ import {
 } from "@material-ui/icons";
 import {getCanvasSize} from "../utils/resize";
 import Background from "../components/Background";
-import {ExitToApp, Menu, SaveAlt, CloudUpload, Message} from "@material-ui/icons";
+import {ExitToApp, Menu, SaveAlt, CloudUpload, Message as MessageIcon} from "@material-ui/icons";
 import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
+import SocketClient from "../services/socket";
+import constants from "../config/constants";
+import Message from "../components/Message";
+const color = require("string-to-color");
 
 const sideList = (side, toggleDrawer) => (
     <div
@@ -69,16 +73,29 @@ class PaperBoardPage extends Component {
         height: 0,
         isChatDisplayed: false,
         textFieldValue: "",
+        messages: [],
     };
 
     constructor(props) {
         super(props);
+        const {
+            location: {
+                state: {paperboard, pseudo},
+            },
+        } = this.props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+        this.socketClientInstance = new SocketClient(pseudo, paperboard.title);
     }
 
     componentDidMount() {
         this.updateWindowDimensions();
         window.addEventListener("resize", this.updateWindowDimensions);
+        this.socketClientInstance.init();
+        this.socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.CHAT_MESSAGE,
+            this.receiveMessage,
+            this
+        );
     }
 
     componentWillUnmount() {
@@ -119,8 +136,7 @@ class PaperBoardPage extends Component {
 
     _handleTextFieldChange = (e) => {
         if (e.key === "Enter") {
-            // Do code here
-            alert("enter is hit");
+            this.sendMessage();
         }
         this.setState({
             textFieldValue: e.target.value,
@@ -128,8 +144,41 @@ class PaperBoardPage extends Component {
     };
 
     sendMessage = () => {
-        // TODO
-        alert(this.state.textFieldValue);
+        const {
+            location: {
+                state: {pseudo},
+            },
+        } = this.props;
+        this.socketClientInstance.sendMessage({
+            type: constants.SOCKET_MSG.CHAT_MESSAGE,
+            from: pseudo,
+            to: "server",
+            payload: {
+                msg: this.state.textFieldValue,
+            },
+        });
+        this.setState({textFieldValue: ""});
+    };
+
+    receiveMessage = (writer, msg) => {
+        const {
+            location: {
+                state: {pseudo},
+            },
+        } = this.props;
+        const {messages} = this.state;
+        messages.push(
+            <Message
+                key={messages.length}
+                color={color(writer)}
+                name={writer}
+                message={msg}
+                isAuthor={writer == pseudo}
+            />
+        );
+        this.setState({
+            messages,
+        });
     };
 
     catchReturn = (e) => {
@@ -139,13 +188,7 @@ class PaperBoardPage extends Component {
     };
 
     render() {
-        const {
-            location: {
-                state: {paperboard},
-            },
-        } = this.props;
-
-        const {left, width, height, isChatDisplayed} = this.state;
+        const {left, width, height, isChatDisplayed, messages, textFieldValue} = this.state;
 
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
 
@@ -210,7 +253,9 @@ class PaperBoardPage extends Component {
                         bottom: 50,
                         right: 50,
                     }}>
-                    {isChatDisplayed && <Chat height={height / 3} onCloseChat={this.onChat} />}
+                    {isChatDisplayed && (
+                        <Chat height={height / 3} onCloseChat={this.onChat} messages={messages} />
+                    )}
                     <div
                         style={{
                             display: "flex",
@@ -227,6 +272,7 @@ class PaperBoardPage extends Component {
                                     style={{backgroundColor: "white", borderRadius: 5}}
                                     onChange={this._handleTextFieldChange}
                                     onKeyPress={this.catchReturn}
+                                    value={textFieldValue}
                                 />
                             </div>
                         )}
@@ -243,7 +289,7 @@ class PaperBoardPage extends Component {
                                 boxShadow: "6px 6px 6px #9E9E9E",
                                 shadowOpacity: 0.5,
                             }}>
-                            <Message
+                            <MessageIcon
                                 style={{
                                     width: isChatDisplayed ? 20 : 60,
                                     height: isChatDisplayed ? 20 : 60,

@@ -6,6 +6,7 @@ import "./LoungePage.scss";
 import Background from "../components/Background";
 import MaterialTable from "material-table";
 import * as moment from "moment";
+import SocketClient from "../services/socket";
 const columns = [
     {
         title: "Title",
@@ -36,7 +37,7 @@ class LoungePage extends Component {
                 this.setState({paperboards: response.data});
             })
             .catch(function(error) {
-                alert(error);
+                alert("getAllPaperBoards" + error);
             });
     }
 
@@ -62,7 +63,7 @@ class LoungePage extends Component {
             .then((response) => {
                 this.props.history.push({
                     pathname: `/paperboard/${response.data.title}`,
-                    state: {paperboard: response.data},
+                    state: {paperboard: response.data, pseudo: this.state.pseudo},
                 });
             })
             .catch(function(error) {

@@ -55,8 +55,8 @@ class CreateBoardPage extends Component {
         createPaperBoard(title, color)
             .then((response) => {
                 this.props.history.push({
-                    pathname: "/paperboard/" + response.data.title,
-                    state: {detail: response.data},
+                    pathname: `/paperboard/${response.data.title}`,
+                    state: {paperboard: response.data, pseudo: this.state.pseudo},
                 });
             })
             .catch(function(error) {
