@@ -39,9 +39,9 @@ const uploadBgImage = (paperboardName, data) => {
 };
 
 const downloadBgImage = (paperboardName) => {
-    return axios.get(`${config.hostname}:${config.http_port}/paperboard/download/image`, {
-        paperboardName,
-    });
+    return axios.get(
+        `${config.hostname}:${config.http_port}/paperboard/download/image?paperboardName=${paperboardName}`
+    );
 };
 
 export {getAllPaperBoards, createPaperBoard, getPaperBoard, uploadBgImage, downloadBgImage};

@@ -21,6 +21,8 @@ import Background from "../components/Background";
 import {ExitToApp, Menu, SaveAlt, CloudUpload, Message} from "@material-ui/icons";
 import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
+import {downloadBgImage} from "../services/paperboards";
+const FileSaver = require("file-saver");
 
 const sideList = (side, toggleDrawer) => (
     <div
@@ -69,11 +71,27 @@ class PaperBoardPage extends Component {
         height: 0,
         isChatDisplayed: false,
         textFieldValue: "",
+        image: null,
     };
 
     constructor(props) {
         super(props);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+        const {
+            location: {
+                state: {
+                    paperboard: {title},
+                },
+            },
+        } = this.props;
+        downloadBgImage(title).then((res) => {
+            console.log(res);
+            // blob = new Blob([blob], {type: 'image/png'})
+            const url = window.URL.createObjectURL(new Blob([res.data], {type: "image/jpg"}));
+            console.log(url);
+            // FileSaver.saveAs(res.data, "hry.jpg");
+            this.setState({image: url, bytes: res.data});
+        });
     }
 
     componentDidMount() {
@@ -144,8 +162,8 @@ class PaperBoardPage extends Component {
                 state: {paperboard},
             },
         } = this.props;
-
-        const {left, width, height, isChatDisplayed} = this.state;
+        console.log(paperboard);
+        const {left, width, height, isChatDisplayed, image} = this.state;
 
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
 
@@ -176,7 +194,6 @@ class PaperBoardPage extends Component {
                         </Button>
                     </div>
                 </div>
-
                 <SwipeableDrawer
                     open={left}
                     onClose={this.toggleDrawer("left", false)}
@@ -200,7 +217,7 @@ class PaperBoardPage extends Component {
                             }}></canvas>
                     </div>
                 </Background>
-
+                <img src={image} />
                 <div
                     style={{
                         display: "flex",
