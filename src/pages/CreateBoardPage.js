@@ -52,11 +52,16 @@ class CreateBoardPage extends Component {
 
     onCreatePaperBoard = () => {
         const {title, color} = this.state;
+        const {
+            location: {
+                state: {pseudo},
+            },
+        } = this.props;
         createPaperBoard(title, color)
             .then((response) => {
                 this.props.history.push({
                     pathname: `/paperboard/${response.data.title}`,
-                    state: {paperboard: response.data, pseudo: this.state.pseudo},
+                    state: {paperboard: response.data, pseudo: pseudo},
                 });
             })
             .catch(function(error) {

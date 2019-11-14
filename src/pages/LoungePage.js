@@ -43,6 +43,7 @@ class LoungePage extends Component {
 
     componentDidMount() {
         if (this.props.location && this.props.location.state) {
+            console.log(this.props.location.state);
             const {
                 location: {
                     state: {
@@ -55,7 +56,7 @@ class LoungePage extends Component {
     }
 
     onCreatePaperBoard = () => {
-        this.props.history.push({pathname: "/new-board"});
+        this.props.history.push({pathname: "/new-board", state: {pseudo: this.state.pseudo}});
     };
 
     goToPaperBoard = (title) => {

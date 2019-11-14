@@ -74,6 +74,7 @@ class PaperBoardPage extends Component {
         isChatDisplayed: false,
         textFieldValue: "",
         messages: [],
+        pseudo: "",
     };
 
     constructor(props) {
@@ -96,6 +97,12 @@ class PaperBoardPage extends Component {
             this.receiveMessage,
             this
         );
+        const {
+            location: {
+                state: {pseudo},
+            },
+        } = this.props;
+        this.setState({pseudo});
     }
 
     componentWillUnmount() {
@@ -120,7 +127,15 @@ class PaperBoardPage extends Component {
     };
 
     onQuit = () => {
-        this.props.history.push({pathname: "/lounge"});
+        const {pseudo} = this.state;
+        console.log({pseudo});
+        this.socketClientInstance.sendMessage({
+            type: constants.SOCKET_MSG.LEAVE_BOARD,
+            from: pseudo,
+            to: "server",
+            payload: {},
+        });
+        this.props.history.push({pathname: "/lounge", state: {detail: {pseudo}}});
     };
 
     onImport = () => {
