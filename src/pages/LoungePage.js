@@ -6,7 +6,6 @@ import "./LoungePage.scss";
 import Background from "../components/Background";
 import MaterialTable from "material-table";
 import * as moment from "moment";
-import SocketClient from "../services/socket";
 const columns = [
     {
         title: "Title",
@@ -43,7 +42,6 @@ class LoungePage extends Component {
 
     componentDidMount() {
         if (this.props.location && this.props.location.state) {
-            console.log(this.props.location.state);
             const {
                 location: {
                     state: {
@@ -62,6 +60,7 @@ class LoungePage extends Component {
     goToPaperBoard = (title) => {
         getPaperBoard(title)
             .then((response) => {
+                console.log({paperboard: response.data});
                 this.props.history.push({
                     pathname: `/paperboard/${response.data.title}`,
                     state: {paperboard: response.data, pseudo: this.state.pseudo},
@@ -74,6 +73,7 @@ class LoungePage extends Component {
 
     render() {
         const {pseudo, paperboards} = this.state;
+        console.log({paperboards});
         paperboards.map((paperboard) => {
             paperboard.creationDate = moment(paperboard.creationDate).format(
                 "dddd, MMMM Do YYYY, h:mm:ss a"

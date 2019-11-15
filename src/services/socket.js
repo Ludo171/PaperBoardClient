@@ -125,16 +125,17 @@ class SocketClient {
                 this.logger.log(
                     `Trigger drawer connected handlers (${this.handlers.drawerConnectedHandlers.length}).`
                 );
-                this.handlers.drawerConnectedHandlers.forEach((drawerConnectedHandler) =>
-                    drawerConnectedHandler()
-                );
+                this.handlers.drawerConnectedHandlers.forEach((drawerConnectedHandler) => {
+                    console.log(data);
+                    drawerConnectedHandler(data.payload.userlist);
+                });
                 break;
             case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
                 this.logger.log(
                     `Trigger drawer disconnected handlers (${this.handlers.drawerDisconnectedHandlers.length}).`
                 );
                 this.handlers.drawerDisconnectedHandlers.forEach((drawerDisconnectedHandler) =>
-                    drawerDisconnectedHandler()
+                    drawerDisconnectedHandler(data.from)
                 );
                 break;
             default:

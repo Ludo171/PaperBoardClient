@@ -24,6 +24,7 @@ import TextField from "@material-ui/core/TextField";
 import SocketClient from "../services/socket";
 import constants from "../config/constants";
 import Message from "../components/Message";
+import ListOfUsers from "../components/ListOfUsers";
 const color = require("string-to-color");
 
 const sideList = (side, toggleDrawer) => (
@@ -67,25 +68,26 @@ const sideList = (side, toggleDrawer) => (
 );
 
 class PaperBoardPage extends Component {
-    state = {
-        left: false,
-        width: 0,
-        height: 0,
-        isChatDisplayed: false,
-        textFieldValue: "",
-        messages: [],
-        pseudo: "",
-    };
-
     constructor(props) {
         super(props);
         const {
             location: {
                 state: {paperboard, pseudo},
             },
-        } = this.props;
+        } = props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.socketClientInstance = new SocketClient(pseudo, paperboard.title);
+        this.state = {
+            paperboard,
+            pseudo,
+            left: false,
+            width: 0,
+            height: 0,
+            isChatDisplayed: false,
+            textFieldValue: "",
+            messages: [],
+            drawers: [],
+        };
     }
 
     componentDidMount() {
@@ -97,12 +99,22 @@ class PaperBoardPage extends Component {
             this.receiveMessage,
             this
         );
-        const {
-            location: {
-                state: {pseudo},
+        this.socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
+            (pseudo) => {
+                let {drawers} = this.state;
+                drawers = drawers.filter((drawer) => drawer !== pseudo);
+                this.setState({drawers});
             },
-        } = this.props;
-        this.setState({pseudo});
+            this
+        );
+        this.socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_CONNECTED,
+            (pseudos) => {
+                this.setState({drawers: pseudos});
+            },
+            this
+        );
     }
 
     componentWillUnmount() {
@@ -128,7 +140,6 @@ class PaperBoardPage extends Component {
 
     onQuit = () => {
         const {pseudo} = this.state;
-        console.log({pseudo});
         this.socketClientInstance.sendMessage({
             type: constants.SOCKET_MSG.LEAVE_BOARD,
             from: pseudo,
@@ -205,8 +216,10 @@ class PaperBoardPage extends Component {
     render() {
         const {left, width, height, isChatDisplayed, messages, textFieldValue} = this.state;
 
+        const {paperboard, drawers} = this.state;
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
-
+        console.log(this.state);
+        console.log(drawers);
         return (
             <div style={{display: "flex", flexDirection: "column"}}>
                 <div
@@ -222,6 +235,10 @@ class PaperBoardPage extends Component {
                     <Button onClick={this.toggleDrawer("left", true)}>
                         <Menu />
                     </Button>
+                    <div style={{display: "flex", alignItems: "center", color: "black"}}>
+                        {paperboard && paperboard.title.toString().toUpperCase()}
+                    </div>
+                    <ListOfUsers users={drawers} />
                     <div>
                         <Button onClick={this.onImport}>
                             <CloudUpload />
