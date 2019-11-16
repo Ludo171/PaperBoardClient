@@ -57,6 +57,7 @@ class CreateBoardPage extends Component {
                 state: {pseudo},
             },
         } = this.props;
+        console.log("test");
         createPaperBoard(title, color)
             .then((response) => {
                 this.props.history.push({
@@ -113,12 +114,14 @@ class CreateBoardPage extends Component {
                         <div className="card-content">
                             <div className="field">
                                 <p className="control has-icons-left">
-                                    <input
-                                        type="text"
-                                        className="input is-large"
-                                        placeholder="Title - required"
-                                        value={this.state.title}
-                                        onChange={this.handleTitleChanges}></input>
+                                    <form onSubmit={this.onCreatePaperBoard}>
+                                        <input
+                                            type="text"
+                                            className="input is-large"
+                                            placeholder="Title - required"
+                                            value={this.state.title}
+                                            onChange={this.handleTitleChanges}></input>
+                                    </form>
                                     <span className="icon is-small is-left">
                                         <i className="fas fa-lock"></i>
                                     </span>
