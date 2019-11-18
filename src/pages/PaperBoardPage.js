@@ -21,7 +21,7 @@ import Background from "../components/Background";
 import {ExitToApp, Menu, SaveAlt, CloudUpload, Message as MessageIcon} from "@material-ui/icons";
 import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
-import SocketClient from "../services/socket";
+import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Message from "../components/Message";
 import ListOfUsers from "../components/ListOfUsers";
@@ -76,7 +76,6 @@ class PaperBoardPage extends Component {
             },
         } = props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-        this.socketClientInstance = new SocketClient(pseudo, paperboard.title);
         this.state = {
             paperboard,
             pseudo,
@@ -93,13 +92,12 @@ class PaperBoardPage extends Component {
     componentDidMount() {
         this.updateWindowDimensions();
         window.addEventListener("resize", this.updateWindowDimensions);
-        this.socketClientInstance.init();
-        this.socketClientInstance.subscribeToEvent(
+        socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.CHAT_MESSAGE,
             this.receiveMessage,
             this
         );
-        this.socketClientInstance.subscribeToEvent(
+        socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_DISCONNECTED,
             (pseudo) => {
                 let {drawers} = this.state;
@@ -108,7 +106,7 @@ class PaperBoardPage extends Component {
             },
             this
         );
-        this.socketClientInstance.subscribeToEvent(
+        socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_CONNECTED,
             (pseudos) => {
                 this.setState({drawers: pseudos});
@@ -140,13 +138,13 @@ class PaperBoardPage extends Component {
 
     onQuit = () => {
         const {pseudo} = this.state;
-        this.socketClientInstance.sendMessage({
+        socketClientInstance.sendMessage({
             type: constants.SOCKET_MSG.LEAVE_BOARD,
             from: pseudo,
             to: "server",
             payload: {},
         });
-        this.props.history.push({pathname: "/lounge", state: {detail: {pseudo}}});
+        this.props.history.push({pathname: "/lounge", state: {pseudo}});
     };
 
     onImport = () => {
@@ -175,7 +173,7 @@ class PaperBoardPage extends Component {
                 state: {pseudo},
             },
         } = this.props;
-        this.socketClientInstance.sendMessage({
+        socketClientInstance.sendMessage({
             type: constants.SOCKET_MSG.CHAT_MESSAGE,
             from: pseudo,
             to: "server",
@@ -199,7 +197,7 @@ class PaperBoardPage extends Component {
                 color={color(writer)}
                 name={writer}
                 message={msg}
-                isAuthor={writer == pseudo}
+                isAuthor={writer === pseudo}
             />
         );
         this.setState({

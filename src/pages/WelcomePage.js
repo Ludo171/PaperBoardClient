@@ -2,32 +2,48 @@ import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
 import "./WelcomePage.scss";
 import PropTypes from "prop-types";
-import {postUser} from "../services/users";
 import Background from "../components/Background";
+import socketClientInstance from "../services/socket";
+import constants from "../config/constants";
 
 class WelcomePage extends Component {
     constructor(props) {
         super(props);
         this.state = {pseudo: ""};
+        socketClientInstance.init();
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.IDENTIFY_ANSWER,
+            this.handleServerLoginAnswer,
+            this
+        );
     }
+
     onLogin = (event) => {
         event.preventDefault();
-        postUser(this.state.pseudo)
-            .then((response) => {
-                this.props.history.push({pathname: "/lounge", state: {detail: response.data}});
-            })
-            .catch((error) => {
-                if (error.response.status === 409) {
-                    alert(
-                        "A user with the pseudo " +
-                            this.state.pseudo +
-                            " is already connected. Please use another name"
-                    );
-                } else {
-                    alert(error);
-                }
-            });
+        socketClientInstance.sendMessage({
+            type: constants.SOCKET_MSG.IDENTIFY,
+            from: "client",
+            to: "server",
+            payload: {pseudo: this.state.pseudo},
+        });
     };
+
+    handleServerLoginAnswer = (data) => {
+        if (data.payload.pseudoAvailable && this.state.pseudo) {
+            console.log({data});
+            this.props.history.push({
+                pathname: "/lounge",
+                state: {pseudo: this.state.pseudo},
+            });
+        } else {
+            alert(
+                "A user with the pseudo " +
+                    this.state.pseudo +
+                    " is already connected. Please use another name"
+            );
+        }
+    };
+
     handleChange = (event) => {
         this.setState({pseudo: event.target.value});
     };
@@ -37,23 +53,23 @@ class WelcomePage extends Component {
                 <div className="card">
                     <div className="card-content">
                         <p className="title is-1">Welcome on PaperBoard !</p>
-                        <p className="subtitle">{"Don't think to much, draw it !"}</p>
+                        <p className="subtitle">{"Don't think too much, draw it !"}</p>
                         <div className="card">
                             <div className="card-content" id="card-input">
                                 <p className="title is-3">Your pseudo ?</p>
                                 <div className="box">
-                                    <div className="field">
-                                        <p className="control has-icons-left">
-                                            <form onSubmit={this.onLogin}>
+                                    <form onSubmit={this.onLogin}>
+                                        <div className="field">
+                                            <p className="control has-icons-left">
                                                 <input
                                                     type="text"
                                                     className="input"
                                                     placeholder="Pseudo"
                                                     value={this.state.value}
                                                     onChange={this.handleChange}></input>
-                                            </form>
-                                        </p>
-                                    </div>
+                                            </p>
+                                        </div>
+                                    </form>
                                     <div className="field">
                                         <p className="control">
                                             <button

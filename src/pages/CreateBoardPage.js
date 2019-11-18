@@ -8,6 +8,8 @@ import Background from "../components/Background";
 import Switch from "@material-ui/core/Switch";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import socketClientInstance from "../services/socket";
+import constants from "../config/constants";
 
 const getColorList = (handleColor) => {
     const list = [];
@@ -38,6 +40,26 @@ class CreateBoardPage extends Component {
         isBackgroundImage: false,
         isSwitchBgColorDisabled: false,
         isSwitchBgImageDisabled: false,
+        paperboard: null,
+        pseudo: "",
+    };
+
+    constructor(props) {
+        super(props);
+        console.log(props);
+
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this
+        );
+    }
+
+    componentDidMount = () => {
+        const {
+            location: {state},
+        } = this.props;
+        this.setState({pseudo: state ? state.pseudo : ""});
     };
 
     defaultBoardTitle = "default-paper-board";
@@ -52,20 +74,21 @@ class CreateBoardPage extends Component {
 
     onCreatePaperBoard = () => {
         const {title, color} = this.state;
-        const {
-            location: {
-                state: {pseudo},
-            },
-        } = this.props;
         console.log("test");
         createPaperBoard(title, color)
             .then((response) => {
-                this.props.history.push({
-                    pathname: `/paperboard/${response.data.title}`,
-                    state: {paperboard: response.data, pseudo: pseudo},
+                console.log(response);
+                this.setState({paperboard: response.data}, () => {
+                    socketClientInstance.sendMessage({
+                        type: constants.SOCKET_MSG.JOIN_BOARD,
+                        from: this.state.pseudo,
+                        to: "server",
+                        payload: {board: title},
+                    });
                 });
             })
             .catch(function(error) {
+                console.log(error);
                 if (error.response.status === 409) {
                     alert(
                         "A board with the name " +
@@ -74,6 +97,15 @@ class CreateBoardPage extends Component {
                     );
                 }
             });
+    };
+
+    handleJoinBoardServerResponse = (data) => {
+        const {pseudo, paperboard} = this.state;
+        console.log(data);
+        this.props.history.push({
+            pathname: `/paperboard/${paperboard.title}`,
+            state: {paperboard, pseudo},
+        });
     };
 
     handleSwitch = (name) => (event) => {
@@ -106,100 +138,97 @@ class CreateBoardPage extends Component {
         } = this.state;
         return (
             <Background>
-                <>
-                    <div className="title is-1 has-text-success">
-                        <h1>Set up your board and create it !</h1>
-                    </div>
-                    <div className="card">
-                        <div className="card-content">
+                <div className="title is-1 has-text-success">
+                    <h1>Set up your board and create it !</h1>
+                </div>
+                <div className="card">
+                    <div className="card-content">
+                        <form onSubmit={this.onCreatePaperBoard}>
                             <div className="field">
                                 <p className="control has-icons-left">
-                                    <form onSubmit={this.onCreatePaperBoard}>
-                                        <input
-                                            type="text"
-                                            className="input is-large"
-                                            placeholder="Title - required"
-                                            value={this.state.title}
-                                            onChange={this.handleTitleChanges}></input>
-                                    </form>
+                                    <input
+                                        type="text"
+                                        className="input is-large"
+                                        placeholder="Title - required"
+                                        value={this.state.title}
+                                        onChange={this.handleTitleChanges}></input>
+
                                     <span className="icon is-small is-left">
                                         <i className="fas fa-lock"></i>
                                     </span>
                                 </p>
                             </div>
-                            <div className="field">
-                                <FormGroup row>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={isBackgroundColor}
-                                                onChange={this.handleSwitch("bgColor")}
-                                                value="checkedA"
-                                            />
-                                        }
-                                        disabled={isSwitchBgColorDisabled}
-                                        label="Background Color"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={isBackgroundImage}
-                                                onChange={this.handleSwitch("bgImage")}
-                                                value="checkedB"
-                                                color="primary"
-                                            />
-                                        }
-                                        disabled={isSwitchBgImageDisabled}
-                                        label="Background Image"
-                                    />
-                                </FormGroup>
-                            </div>
-                            <div className="empty-div">
-                                {isBackgroundColor ? (
-                                    <div className="dropdown">
-                                        <div className="dropdown is-hoverable">
-                                            <div className="dropdown-trigger">
-                                                <button
-                                                    className="button"
-                                                    aria-haspopup="true"
-                                                    aria-controls="dropdown-menu4">
-                                                    <p
-                                                        style={{
-                                                            color: hexColorCode,
-                                                            marginRight: "5%",
-                                                        }}>
-                                                        &#9632;
-                                                    </p>
-                                                    <span>
-                                                        {color ? color : "Background color"}
-                                                    </span>
-                                                </button>
-                                            </div>
-                                            <div
-                                                className="dropdown-menu"
-                                                id="dropdown-menu4"
-                                                role="menu">
-                                                <div className="dropdown-content">
-                                                    {getColorList(this.handleColor)}
-                                                </div>
+                        </form>
+                        <div className="field">
+                            <FormGroup row>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={isBackgroundColor}
+                                            onChange={this.handleSwitch("bgColor")}
+                                            value="checkedA"
+                                        />
+                                    }
+                                    disabled={isSwitchBgColorDisabled}
+                                    label="Background Color"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={isBackgroundImage}
+                                            onChange={this.handleSwitch("bgImage")}
+                                            value="checkedB"
+                                            color="primary"
+                                        />
+                                    }
+                                    disabled={isSwitchBgImageDisabled}
+                                    label="Background Image"
+                                />
+                            </FormGroup>
+                        </div>
+                        <div className="empty-div">
+                            {isBackgroundColor ? (
+                                <div className="dropdown">
+                                    <div className="dropdown is-hoverable">
+                                        <div className="dropdown-trigger">
+                                            <button
+                                                className="button"
+                                                aria-haspopup="true"
+                                                aria-controls="dropdown-menu4">
+                                                <p
+                                                    style={{
+                                                        color: hexColorCode,
+                                                        marginRight: "5%",
+                                                    }}>
+                                                    &#9632;
+                                                </p>
+                                                <span>{color ? color : "Background color"}</span>
+                                            </button>
+                                        </div>
+                                        <div
+                                            className="dropdown-menu"
+                                            id="dropdown-menu4"
+                                            role="menu">
+                                            <div className="dropdown-content">
+                                                {getColorList(this.handleColor)}
                                             </div>
                                         </div>
                                     </div>
-                                ) : null}
-                                {isBackgroundImage ? <div>todo</div> : null}
-                            </div>
+                                </div>
+                            ) : null}
+                            {isBackgroundImage ? <div>todo</div> : null}
                         </div>
                     </div>
-                    <div className="field">
-                        <p className="control">
-                            <button
-                                className="button is-success is-large"
-                                onClick={this.onCreatePaperBoard}>
-                                Create !
-                            </button>
-                        </p>
-                    </div>
-                </>
+                </div>
+                <div className="field">
+                    <p className="control">
+                        <button
+                            className="button is-success is-large"
+                            onClick={this.onCreatePaperBoard}>
+                            Create !
+                        </button>
+                    </p>
+                </div>
             </Background>
         );
     }

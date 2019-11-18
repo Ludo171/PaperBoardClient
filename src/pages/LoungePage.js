@@ -6,6 +6,8 @@ import "./LoungePage.scss";
 import Background from "../components/Background";
 import MaterialTable from "material-table";
 import * as moment from "moment";
+import socketClientInstance from "../services/socket";
+import constants from "../config/constants";
 const columns = [
     {
         title: "Title",
@@ -25,6 +27,7 @@ class LoungePage extends Component {
     state = {
         pseudo: "must auth",
         paperboards: [],
+        chosenPaperboard: null,
     };
 
     defaultBoardTitle = "default-paper-board";
@@ -38,15 +41,18 @@ class LoungePage extends Component {
             .catch(function(error) {
                 alert("getAllPaperBoards" + error);
             });
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this
+        );
     }
 
     componentDidMount() {
         if (this.props.location && this.props.location.state) {
             const {
                 location: {
-                    state: {
-                        detail: {pseudo},
-                    },
+                    state: {pseudo},
                 },
             } = this.props;
             this.setState({pseudo});
@@ -54,21 +60,36 @@ class LoungePage extends Component {
     }
 
     onCreatePaperBoard = () => {
+        console.log({pseudo: this.state.pseudo});
         this.props.history.push({pathname: "/new-board", state: {pseudo: this.state.pseudo}});
     };
 
     goToPaperBoard = (title) => {
         getPaperBoard(title)
             .then((response) => {
-                console.log({paperboard: response.data});
-                this.props.history.push({
-                    pathname: `/paperboard/${response.data.title}`,
-                    state: {paperboard: response.data, pseudo: this.state.pseudo},
+                this.setState({chosenPaperboard: response.data}, () => {
+                    socketClientInstance.sendMessage({
+                        type: constants.SOCKET_MSG.JOIN_BOARD,
+                        from: this.state.pseudo,
+                        to: "server",
+                        payload: {board: title},
+                    });
                 });
             })
             .catch(function(error) {
                 alert(error);
             });
+    };
+
+    handleJoinBoardServerResponse = (data) => {
+        const {pseudo, chosenPaperboard} = this.state;
+        console.log(data);
+        if (chosenPaperboard) {
+            this.props.history.push({
+                pathname: `/paperboard/${chosenPaperboard.title}`,
+                state: {paperboard: chosenPaperboard, pseudo},
+            });
+        }
     };
 
     render() {

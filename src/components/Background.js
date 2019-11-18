@@ -43,6 +43,6 @@ class Background extends Component {
     }
 }
 Background.propTypes = {
-    children: PropTypes.object,
+    children: PropTypes.array,
 };
 export default Background;
