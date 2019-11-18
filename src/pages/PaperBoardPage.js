@@ -25,16 +25,18 @@ import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Message from "../components/Message";
 import ListOfUsers from "../components/ListOfUsers";
+import Canvas from "../components/Canvas";
+import ShapePanel from "../components/ShapePanel";
 const color = require("string-to-color");
 
-const sideList = (side, toggleDrawer) => (
+const sideList = (side, toggleDrawer, createTextField, createCircle) => (
     <div
         className={"list"}
         role="presentation"
         onClick={toggleDrawer(side, false)}
         onKeyDown={toggleDrawer(side, false)}>
         <List>
-            <ListItem button key={"Text"}>
+            <ListItem button key={"Text"} onClick={createTextField}>
                 <ListItemIcon>
                     <TextFieldIcon />
                 </ListItemIcon>
@@ -46,10 +48,10 @@ const sideList = (side, toggleDrawer) => (
             {[
                 {title: "Line", component: <Maximize />},
                 {title: "Rectangle", component: <CropLandscape />},
-                {title: "Circle", component: <PanoramaFishEye />},
+                {title: "Circle", component: <PanoramaFishEye />, method: createCircle},
                 {title: "Edit", component: <Edit />},
             ].map((item) => (
-                <ListItem button key={item.title}>
+                <ListItem button key={item.title} onClick={item.method}>
                     <ListItemIcon>{item.component}</ListItemIcon>
                     <ListItemText primary={item.title} />
                 </ListItem>
@@ -86,6 +88,7 @@ class PaperBoardPage extends Component {
             textFieldValue: "",
             messages: [],
             drawers: [],
+            isShapePanelToggeled: false,
         };
     }
 
@@ -211,10 +214,29 @@ class PaperBoardPage extends Component {
         }
     };
 
+    createTextField = () => {
+        // TODO
+        alert("create text field");
+    };
+
+    createCircle = () => {
+        this.canvas.createCircle();
+    };
+
+    editCircle = () => {
+        this.canvas.editShape();
+    };
+
+    toggleShapePanel = () => {
+        this.setState((prevState) => ({
+            isShapePanelToggeled: !prevState.isShapePanelToggeled,
+        }));
+    };
+
     render() {
         const {left, width, height, isChatDisplayed, messages, textFieldValue} = this.state;
 
-        const {paperboard, drawers} = this.state;
+        const {paperboard, drawers, isShapePanelToggeled} = this.state;
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
         console.log(this.state);
         console.log(drawers);
@@ -254,7 +276,7 @@ class PaperBoardPage extends Component {
                     open={left}
                     onClose={this.toggleDrawer("left", false)}
                     onOpen={this.toggleDrawer("left", true)}>
-                    {sideList("left", this.toggleDrawer)}
+                    {sideList("left", this.toggleDrawer, this.createTextField, this.createCircle)}
                 </SwipeableDrawer>
                 <Background>
                     <div
@@ -266,12 +288,14 @@ class PaperBoardPage extends Component {
                             justifyContent: "center",
                             flex: "1",
                         }}>
-                        <canvas
-                            style={{
-                                width: canvasWidth,
-                                height: canvasHeight,
-                            }}></canvas>
+                        <Canvas
+                            ref={(el) => (this.canvas = el)}
+                            width={canvasWidth}
+                            height={canvasHeight}
+                            toggleShapePanel={this.toggleShapePanel}
+                        />
                     </div>
+                    {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />}
                 </Background>
 
                 <div
