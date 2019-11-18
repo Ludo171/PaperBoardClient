@@ -11,7 +11,7 @@ const constants = {
 
         //   CLIENTS <---> SERVER
         CHAT_MESSAGE: "Chat Message",
-        ASK_DELETION: "Ask to Delete",
+        DELETE_OBJECT: "Delete Object",
 
         //   SERVER ---> CLIENTS
         IDENTIFY_ANSWER: "Pseudo Request Answer",
@@ -19,9 +19,10 @@ const constants = {
         DRAWER_LEFT_BOARD: "Drawer Left Board",
         OBJECT_CREATED: "Object Created",
         OBJECT_EDITED: "Object Edited",
+        OBJECT_EDITED: "Object Edited",
         OBJECT_DELETED: "Object Deleted",
-        DRAWER_CONNECTED: "New Drawer Connected",
-        DRAWER_DISCONNECTED: "Drawer Disconnected",
+        OBJECT_LOCKED: "Object Locked",
+        OBJECT_UNLOCKED: "Object Unlocked",
     },
 };
 
