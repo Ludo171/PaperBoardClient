@@ -36,6 +36,6 @@ class ListOfUsers extends Component {
     }
 }
 ListOfUsers.propTypes = {
-    users: PropTypes.object,
+    users: PropTypes.any,
 };
 export default ListOfUsers;

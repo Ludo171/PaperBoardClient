@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {withRouter} from "react-router-dom";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -18,7 +17,7 @@ import {
 } from "@material-ui/icons";
 import {getCanvasSize} from "../utils/resize";
 import Background from "../components/Background";
-import {ExitToApp, Menu, SaveAlt, CloudUpload, Message as MessageIcon} from "@material-ui/icons";
+import {ExitToApp, SaveAlt, CloudUpload, Message as MessageIcon} from "@material-ui/icons";
 import Chat from "../components/Chat";
 import TextField from "@material-ui/core/TextField";
 import socketClientInstance from "../services/socket";
@@ -29,13 +28,9 @@ import Canvas from "../components/Canvas";
 import ShapePanel from "../components/ShapePanel";
 const color = require("string-to-color");
 
-const sideList = (side, toggleDrawer, createTextField, createCircle) => (
-    <div
-        className={"list"}
-        role="presentation"
-        onClick={toggleDrawer(side, false)}
-        onKeyDown={toggleDrawer(side, false)}>
-        <List>
+const sideList = (createTextField, createCircle) => (
+    <div style={{maxWidth: 360, backgroundColor: "white"}}>
+        <List component="nav" aria-label="main mailbox folders">
             <ListItem button key={"Text"} onClick={createTextField}>
                 <ListItemIcon>
                     <TextFieldIcon />
@@ -81,7 +76,6 @@ class PaperBoardPage extends Component {
         this.state = {
             paperboard,
             pseudo,
-            left: false,
             width: 0,
             height: 0,
             isChatDisplayed: false,
@@ -125,14 +119,6 @@ class PaperBoardPage extends Component {
     updateWindowDimensions() {
         this.setState({width: window.innerWidth, height: window.innerHeight});
     }
-
-    toggleDrawer = (side, open) => (event) => {
-        if (event && event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
-            return;
-        }
-
-        this.setState({[side]: open});
-    };
 
     onSave = () => {
         alert("TODO SAVE");
@@ -234,7 +220,7 @@ class PaperBoardPage extends Component {
     };
 
     render() {
-        const {left, width, height, isChatDisplayed, messages, textFieldValue} = this.state;
+        const {width, height, isChatDisplayed, messages, textFieldValue} = this.state;
 
         const {paperboard, drawers, isShapePanelToggeled} = this.state;
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
@@ -252,11 +238,15 @@ class PaperBoardPage extends Component {
                         height: (height * 9) / 10,
                         backgroundColor: "#a8caff",
                     }}>
-                    <Button onClick={this.toggleDrawer("left", true)}>
-                        <Menu />
-                    </Button>
-                    <div style={{display: "flex", alignItems: "center", color: "black"}}>
-                        {paperboard && paperboard.title.toString().toUpperCase()}
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            color: "black",
+                            marginLeft: 15,
+                            fontWeight: "bold",
+                        }}>
+                        {paperboard && `Paperboard : ${paperboard.title.toString().toUpperCase()}`}
                     </div>
                     <ListOfUsers users={drawers} />
                     <div>
@@ -271,31 +261,25 @@ class PaperBoardPage extends Component {
                         </Button>
                     </div>
                 </div>
-
-                <SwipeableDrawer
-                    open={left}
-                    onClose={this.toggleDrawer("left", false)}
-                    onOpen={this.toggleDrawer("left", true)}>
-                    {sideList("left", this.toggleDrawer, this.createTextField, this.createCircle)}
-                </SwipeableDrawer>
                 <Background>
                     <div
                         style={{
-                            backgroundColor: "white",
                             display: "flex",
+                            width: "100%",
                             flexDirection: "row",
                             alignItems: "center",
-                            justifyContent: "center",
+                            justifyContent: "space-between",
                             flex: "1",
                         }}>
+                        {sideList(this.createTextField, this.createCircle)}
                         <Canvas
                             ref={(el) => (this.canvas = el)}
                             width={canvasWidth}
                             height={canvasHeight}
                             toggleShapePanel={this.toggleShapePanel}
                         />
+                        {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />}
                     </div>
-                    {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />}
                 </Background>
 
                 <div

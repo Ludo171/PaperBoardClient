@@ -19,7 +19,6 @@ const constants = {
         DRAWER_LEFT_BOARD: "Drawer Left Board",
         OBJECT_CREATED: "Object Created",
         OBJECT_EDITED: "Object Edited",
-        OBJECT_EDITED: "Object Edited",
         OBJECT_DELETED: "Object Deleted",
         OBJECT_LOCKED: "Object Locked",
         OBJECT_UNLOCKED: "Object Unlocked",

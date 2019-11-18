@@ -23,16 +23,21 @@ class Canvas extends Component {
                     style={{
                         width,
                         height,
+                        backgroundColor: "white",
+                        marginLeft: 15,
+                        marginRight: 15,
                     }}
                 />
-                <div onClick={this.selectShape}>test select shape</div>
+                <div onClick={this.selectShape} style={{backgroundColor: "white"}}>
+                    test select shape
+                </div>
             </>
         );
     }
 }
 Canvas.propTypes = {
-    width: PropTypes.string,
-    height: PropTypes.string,
-    toggleShapePanel: PropTypes.object,
+    width: PropTypes.any,
+    height: PropTypes.any,
+    toggleShapePanel: PropTypes.any,
 };
 export default Canvas;
