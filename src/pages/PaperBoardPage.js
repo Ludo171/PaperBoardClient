@@ -69,21 +69,21 @@ const sideList = (createTextField, createCircle) => (
 class PaperBoardPage extends Component {
     constructor(props) {
         super(props);
-        const {
-            location: {
-                state: {paperboard, pseudo, drawers},
-            },
-        } = props;
+        // const {
+        //     location: {
+        //         state: {paperboard, pseudo, drawers},
+        //     },
+        // } = props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.state = {
-            paperboard,
-            pseudo,
+            paperboard: {title: "lol"},
+            pseudo: "",
             width: 0,
             height: 0,
             isChatDisplayed: false,
             textFieldValue: "",
             messages: [],
-            drawers,
+            drawers: [],
             isShapePanelToggeled: false,
         };
     }
