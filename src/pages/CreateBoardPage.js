@@ -116,11 +116,11 @@ class CreateBoardPage extends Component {
             });
     };
 
-    handleJoinBoardServerResponse = (data) => {
+    handleJoinBoardServerResponse = (drawers) => {
         const {pseudo, paperboard} = this.state;
         this.props.history.push({
             pathname: `/paperboard/${paperboard.title}`,
-            state: {paperboard, pseudo},
+            state: {paperboard, pseudo, drawers},
         });
     };
 
