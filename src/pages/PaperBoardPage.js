@@ -27,6 +27,7 @@ import ListOfUsers from "../components/ListOfUsers";
 import Canvas from "../components/Canvas";
 import ShapePanel from "../components/ShapePanel";
 import Toast from "light-toast";
+import * as backgroundImage from "../assets/background-image1.jpg";
 
 const color = require("string-to-color");
 
@@ -272,21 +273,26 @@ class PaperBoardPage extends Component {
 
     render() {
         const {width, height, isChatDisplayed, messages, textFieldValue} = this.state;
-
         const {paperboard, drawers, isShapePanelToggeled} = this.state;
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
         return (
-            <div style={{display: "flex", flexDirection: "column"}}>
+            <Background
+                customStyle={{
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+                imgSrc={backgroundImage}>
+                {/* TITLE BAR (ON THE TOP) */}
                 <div
                     style={{
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "space-between",
                         justifyContent: "space-between",
-                        flex: "1",
-                        height: (height * 9) / 10,
-                        backgroundColor: "#a8caff",
+                        height: "50px",
+                        backgroundColor: "#f9a322",
                     }}>
+                    {/* PAPERBOARD TITLE */}
                     <div
                         style={{
                             display: "flex",
@@ -297,7 +303,9 @@ class PaperBoardPage extends Component {
                         }}>
                         {paperboard && `Paperboard : ${paperboard.title.toString().toUpperCase()}`}
                     </div>
+                    {/* LIST OF CONNECTED USERS */}
                     <ListOfUsers users={drawers} />
+                    {/* BOARD ACTION BUTTONS */}
                     <div>
                         <Button onClick={this.onImport}>
                             <CloudUpload />
@@ -310,27 +318,31 @@ class PaperBoardPage extends Component {
                         </Button>
                     </div>
                 </div>
-                <Background>
-                    <div
-                        style={{
-                            display: "flex",
-                            width: "100%",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            flex: "1",
-                        }}>
-                        {sideList(this.createTextField, this.createCircle)}
-                        <Canvas
-                            ref={(el) => (this.canvas = el)}
-                            width={canvasWidth}
-                            height={canvasHeight}
-                            toggleShapePanel={this.toggleShapePanel}
-                        />
-                        {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />}
-                    </div>
-                </Background>
+                {/* PAPERBOARD PAGE */}
+                <div
+                    style={{
+                        display: "flex",
+                        width: "100%",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flex: "1",
+                    }}>
+                    {/* ACTION BUTTONS NAV BAR */}
+                    {sideList(this.createTextField, this.createCircle)}
 
+                    {/* CANVAS MANAGER */}
+                    <Canvas
+                        ref={(el) => (this.canvas = el)}
+                        width={canvasWidth}
+                        height={canvasHeight}
+                        toggleShapePanel={this.toggleShapePanel}
+                    />
+
+                    {/* SHAPE OPTIONS PANEL */}
+                    {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />}
+                </div>
+                {/* CHAT */}
                 <div
                     style={{
                         display: "flex",
@@ -340,15 +352,18 @@ class PaperBoardPage extends Component {
                         bottom: 50,
                         right: 50,
                     }}>
+                    {/* CHAT MESSAGE PANEL */}
                     {isChatDisplayed && (
                         <Chat height={height / 3} onCloseChat={this.onChat} messages={messages} />
                     )}
+
                     <div
                         style={{
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center",
                         }}>
+                        {/* MESSAGE INPUT */}
                         {isChatDisplayed && (
                             <div style={{paddingRight: width / 50}}>
                                 <TextField
@@ -363,6 +378,7 @@ class PaperBoardPage extends Component {
                                 />
                             </div>
                         )}
+                        {/* CHAT PANEL BUTTON */}
                         <div
                             onClick={() => (isChatDisplayed ? this.sendMessage() : this.onChat())}
                             style={{
@@ -385,7 +401,7 @@ class PaperBoardPage extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </Background>
         );
     }
 }

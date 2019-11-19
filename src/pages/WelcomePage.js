@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import Background from "../components/Background";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
+import * as backgroundImage from "../assets/background-image1.jpg";
 
 class WelcomePage extends Component {
     constructor(props) {
@@ -57,7 +58,7 @@ class WelcomePage extends Component {
 
     render() {
         return (
-            <Background>
+            <Background imgSrc={backgroundImage}>
                 <div className="card">
                     <div className="card-content">
                         <p className="title is-1">Welcome on PaperBoard !</p>

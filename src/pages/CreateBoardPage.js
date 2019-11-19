@@ -11,6 +11,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Toast from "light-toast";
+import * as backgroundImage from "../assets/background-image2.jpg";
 
 const getColorList = (handleColor) => {
     const list = [];
@@ -167,7 +168,7 @@ class CreateBoardPage extends Component {
             isBackgroundImage,
         } = this.state;
         return (
-            <Background>
+            <Background imgSrc={backgroundImage}>
                 <div className="title is-1 has-text-success">
                     <h1>Set up your board and create it !</h1>
                 </div>

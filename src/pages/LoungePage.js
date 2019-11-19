@@ -9,6 +9,7 @@ import * as moment from "moment";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Toast from "light-toast";
+import * as backgroundImage from "../assets/background-image3.jpg";
 
 const columns = [
     {
@@ -133,7 +134,7 @@ class LoungePage extends Component {
             return paperboard;
         });
         return (
-            <Background>
+            <Background imgSrc={backgroundImage}>
                 <div className="card">
                     <div className="card-content">
                         <div className="title is-3">
