@@ -15,22 +15,23 @@ class ListOfUsers extends Component {
                     alignItems: "center",
                     justifyContent: "center",
                 }}>
-                {users.map((user, id) => (
-                    <div
-                        key={id}
-                        style={{
-                            backgroundColor: color(user),
-                            width: 24,
-                            height: 24,
-                            borderRadius: 12,
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            color: "white",
-                        }}>
-                        {user[0]}
-                    </div>
-                ))}
+                {users &&
+                    users.map((user, id) => (
+                        <div
+                            key={id}
+                            style={{
+                                backgroundColor: color(user),
+                                width: 24,
+                                height: 24,
+                                borderRadius: 12,
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                color: "white",
+                            }}>
+                            {user[0]}
+                        </div>
+                    ))}
             </div>
         );
     }

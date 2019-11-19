@@ -81,13 +81,12 @@ class LoungePage extends Component {
             });
     };
 
-    handleJoinBoardServerResponse = (data) => {
+    handleJoinBoardServerResponse = (drawers) => {
         const {pseudo, chosenPaperboard} = this.state;
-        console.log(data);
         if (chosenPaperboard) {
             this.props.history.push({
                 pathname: `/paperboard/${chosenPaperboard.title}`,
-                state: {paperboard: chosenPaperboard, pseudo},
+                state: {paperboard: chosenPaperboard, pseudo, drawers},
             });
         }
     };

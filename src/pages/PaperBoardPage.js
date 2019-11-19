@@ -69,7 +69,7 @@ class PaperBoardPage extends Component {
         super(props);
         const {
             location: {
-                state: {paperboard, pseudo},
+                state: {paperboard, pseudo, drawers},
             },
         } = props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -81,7 +81,7 @@ class PaperBoardPage extends Component {
             isChatDisplayed: false,
             textFieldValue: "",
             messages: [],
-            drawers: [],
+            drawers,
             isShapePanelToggeled: false,
         };
     }
@@ -95,8 +95,10 @@ class PaperBoardPage extends Component {
             this
         );
         socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
+            constants.SOCKET_MSG.DRAWER_LEFT_BOARD,
             (pseudo) => {
+                console.log("PAPERBOARD PAGE");
+                console.log(pseudo);
                 let {drawers} = this.state;
                 drawers = drawers.filter((drawer) => drawer !== pseudo);
                 this.setState({drawers});
@@ -104,9 +106,11 @@ class PaperBoardPage extends Component {
             this
         );
         socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_CONNECTED,
-            (pseudos) => {
-                this.setState({drawers: pseudos});
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            (drawers) => {
+                console.log("PAPERBOARD PAGE");
+                console.log(drawers);
+                this.setState({drawers});
             },
             this
         );

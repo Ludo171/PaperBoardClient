@@ -88,7 +88,7 @@ class SocketClient {
                     `Trigger drawer join board handlers (${this.handlers.drawerJoinBoardHandlers.length}).`
                 );
                 this.handlers.drawerJoinBoardHandlers.forEach((drawerJoinBoardHandler) => {
-                    drawerJoinBoardHandler(data);
+                    drawerJoinBoardHandler(data.payload.userlist);
                     console.log(data);
                 });
                 break;
@@ -182,6 +182,7 @@ class SocketClient {
                 this.handlers.identifyHandlers.push(handler);
                 break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
+                console.log("susbcribe to drawer joiin board");
                 this.handlers.drawerJoinBoardHandlers.push(handler);
                 break;
             case constants.SOCKET_MSG.CHAT_MESSAGE:
