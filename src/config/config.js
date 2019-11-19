@@ -16,6 +16,4 @@ if (["dev", "develop", "development"].includes(process.env.NODE_ENV)) {
     config.socket_port = process.env.REACT_APP_SOCKET_PORT_DEV;
     config.socket_url = `${process.env.REACT_APP_SOCKET_PROTOCOL_DEV}://${process.env.REACT_APP_HOSTNAME_DEV}:${process.env.REACT_APP_SOCKET_PORT_DEV}/${process.env.REACT_APP_SOCKET_API_DEV}`;
 }
-
-console.log(process.env);
 export default config;

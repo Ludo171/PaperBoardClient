@@ -3,7 +3,7 @@ import constants from "../config/constants";
 import Logger from "../utils/logger";
 
 class SocketClient {
-    constructor(pseudo, board) {
+    constructor() {
         // SINGLETON PATTERN
         if (!!SocketClient.instance) {
             return SocketClient.instance;
@@ -12,10 +12,7 @@ class SocketClient {
 
         // ATTRIBUTES
         this.componentName = "Socket Client";
-        this.pseudo = pseudo;
-        this.board = board;
-        this.backend_url = `${config.socket_url}/${board}`;
-        // this.backend_url = "ws://localhost:8025/websockets/v1/paperboard/chose";
+        this.backend_url = `${config.socket_url}`;
         this.socketClient = null;
 
         // METHODS
@@ -27,6 +24,9 @@ class SocketClient {
         this.sendMessage = this.sendMessage.bind(this);
 
         this.handlers = {
+            identifyHandlers: [],
+            drawerJoinBoardHandlers: [],
+            drawerLeftBoardHandlers: [],
             chatMessageHandlers: [],
             askDeletionHandlers: [],
             objCreatedHandlers: [],
@@ -57,12 +57,6 @@ class SocketClient {
     }
 
     onConnect() {
-        this.sendMessage({
-            type: constants.SOCKET_MSG.JOIN_BOARD,
-            from: this.pseudo,
-            to: "server",
-            payload: {},
-        });
         this.logger.log(`Connection successful to [${this.backend_url}]`);
     }
     onDisconnect() {
@@ -81,13 +75,36 @@ class SocketClient {
             data = {};
         }
         switch (data.type) {
+            case constants.SOCKET_MSG.IDENTIFY_ANSWER:
+                this.logger.log(
+                    `Trigger identify handlers (${this.handlers.identifyHandlers.length}).`
+                );
+                this.handlers.identifyHandlers.forEach((identifyHandler) => {
+                    identifyHandler(data);
+                });
+                break;
+            case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
+                this.logger.log(
+                    `Trigger drawer join board handlers (${this.handlers.drawerJoinBoardHandlers.length}).`
+                );
+                this.handlers.drawerJoinBoardHandlers.forEach((drawerJoinBoardHandler) => {
+                    drawerJoinBoardHandler(data.payload.userlist);
+                });
+                break;
+            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
+                this.logger.log(
+                    `Trigger drawer join board handlers (${this.handlers.drawerLeftBoardHandlers.length}).`
+                );
+                this.handlers.drawerLeftBoardHandlers.forEach((drawerLeftBoardHandler) => {
+                    drawerLeftBoardHandler(data.payload.leaver, data.payload.userlist);
+                });
+                break;
             case constants.SOCKET_MSG.CHAT_MESSAGE:
                 this.logger.log(
                     `Trigger chat message handlers (${this.handlers.chatMessageHandlers.length}).`
                 );
                 this.handlers.chatMessageHandlers.forEach((chatMessageHandler) => {
-                    chatMessageHandler(data.from, data.payload.msg);
-                    console.log(data);
+                    chatMessageHandler(data.payload.writer, data.payload.msg);
                 });
                 break;
             case constants.SOCKET_MSG.ASK_DELETION:
@@ -125,16 +142,16 @@ class SocketClient {
                 this.logger.log(
                     `Trigger drawer connected handlers (${this.handlers.drawerConnectedHandlers.length}).`
                 );
-                this.handlers.drawerConnectedHandlers.forEach((drawerConnectedHandler) =>
-                    drawerConnectedHandler()
-                );
+                this.handlers.drawerConnectedHandlers.forEach((drawerConnectedHandler) => {
+                    drawerConnectedHandler(data.payload.userlist);
+                });
                 break;
             case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
                 this.logger.log(
                     `Trigger drawer disconnected handlers (${this.handlers.drawerDisconnectedHandlers.length}).`
                 );
                 this.handlers.drawerDisconnectedHandlers.forEach((drawerDisconnectedHandler) =>
-                    drawerDisconnectedHandler()
+                    drawerDisconnectedHandler(data.from)
                 );
                 break;
             default:
@@ -160,12 +177,25 @@ class SocketClient {
                 );
                 message = {};
             }
-            this.socketClient.send(message);
+            if (this.socketClient) {
+                this.socketClient.send(message);
+            } else {
+                alert("You have been disconnected, don't forgzt to reconnect");
+            }
         }
     }
 
     subscribeToEvent(eventName, handler, subscriber) {
         switch (eventName) {
+            case constants.SOCKET_MSG.IDENTIFY_ANSWER:
+                this.handlers.identifyHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
+                this.handlers.drawerJoinBoardHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
+                this.handlers.drawerLeftBoardHandlers.push(handler);
+                break;
             case constants.SOCKET_MSG.CHAT_MESSAGE:
                 this.handlers.chatMessageHandlers.push(handler);
                 break;
@@ -231,6 +261,21 @@ class SocketClient {
                     (fn) => fn !== handler
                 );
                 break;
+            case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
+                this.handlers.drawerJoinBoardHandlers = this.handlers.drawerJoinBoardHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
+                this.handlers.drawerLeftBoardHandlers = this.handlers.drawerLeftBoardHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.IDENTIFY_ANSWER:
+                this.handlers.identifyHandlers = this.handlers.identifyHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
             default:
                 this.logger.log(
                     `Component [${subscriber}] attempted to unsubscribe from unexpected event [${eventName}].`
@@ -240,4 +285,5 @@ class SocketClient {
     }
 }
 
-export default SocketClient;
+const socketClientInstance = new SocketClient();
+export default socketClientInstance;

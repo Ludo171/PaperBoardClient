@@ -1,5 +1,3 @@
-"use strict";
-
 class Logger {
     constructor(moduleName, subModuleName = null) {
         this.moduleName = subModuleName === null ? moduleName : moduleName + "/" + subModuleName;
