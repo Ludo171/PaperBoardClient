@@ -9,6 +9,8 @@ import * as moment from "moment";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Toast from "light-toast";
+import {Refresh} from "@material-ui/icons";
+import {IconButton} from "@material-ui/core";
 
 const columns = [
     {
@@ -36,13 +38,8 @@ class LoungePage extends Component {
 
     constructor(props) {
         super(props);
-        getAllPaperBoards()
-            .then((response) => {
-                this.setState({paperboards: response.data});
-            })
-            .catch(function(error) {
-                alert("getAllPaperBoards" + error);
-            });
+        this.getAllPaperBoards();
+        this.loopGetAllPaperBoards();
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             this.handleJoinBoardServerResponse,
@@ -77,7 +74,27 @@ class LoungePage extends Component {
             this.handleDrawerDisconnected,
             this
         );
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
     }
+
+    getAllPaperBoards = () => {
+        getAllPaperBoards()
+            .then((response) => {
+                this.setState({paperboards: response.data});
+            })
+            .catch(function(error) {
+                alert("getAllPaperBoards" + error);
+            });
+    };
+
+    loopGetAllPaperBoards = () => {
+        setTimeout(() => {
+            this.getAllPaperBoards();
+            this.loopGetAllPaperBoards();
+        }, 30000);
+    };
 
     onCreatePaperBoard = () => {
         this.props.history.push({pathname: "/new-board", state: {pseudo: this.state.pseudo}});
@@ -116,7 +133,7 @@ class LoungePage extends Component {
             3000,
             () => {}
         );
-        setTimeout(() => {
+        this.timeout = setTimeout(() => {
             this.props.history.push({
                 pathname: "/",
             });
@@ -143,7 +160,22 @@ class LoungePage extends Component {
                             <h1>{"Join a Board"}</h1>
                         </div>
                         <MaterialTable
-                            title="Boards"
+                            title={
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flex: 1,
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}>
+                                    Boards
+                                    <IconButton
+                                        onClick={this.getAllPaperBoards}
+                                        style={{marginLeft: 30}}>
+                                        <Refresh />
+                                    </IconButton>
+                                </div>
+                            }
                             columns={columns}
                             data={paperboards}
                             actions={[
