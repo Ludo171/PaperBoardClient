@@ -60,6 +60,9 @@ class SocketClient {
         this.logger.log(`Connection successful to [${this.backend_url}]`);
     }
     onDisconnect() {
+        this.handlers.drawerDisconnectedHandlers.forEach((drawerDisconnectedHandler) => {
+            drawerDisconnectedHandler();
+        });
         this.logger.log(`Disconnected from server [${this.backend_url}]`);
     }
     onMessage(socketMessage) {
@@ -88,6 +91,7 @@ class SocketClient {
                     `Trigger drawer join board handlers (${this.handlers.drawerJoinBoardHandlers.length}).`
                 );
                 this.handlers.drawerJoinBoardHandlers.forEach((drawerJoinBoardHandler) => {
+                    // console.log(data);
                     drawerJoinBoardHandler(data.payload.userlist);
                 });
                 break;

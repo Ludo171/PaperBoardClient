@@ -17,6 +17,7 @@ const constants = {
         IDENTIFY_ANSWER: "Pseudo Request Answer",
         DRAWER_JOIN_BOARD: "New Drawer Joined Board",
         DRAWER_LEFT_BOARD: "Drawer Left Board",
+        DRAWER_DISCONNECTED: "Drawer Disconnected",
         OBJECT_CREATED: "Object Created",
         OBJECT_EDITED: "Object Edited",
         OBJECT_DELETED: "Object Deleted",

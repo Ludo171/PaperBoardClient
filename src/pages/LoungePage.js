@@ -8,6 +8,8 @@ import MaterialTable from "material-table";
 import * as moment from "moment";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
+import Toast from "light-toast";
+
 const columns = [
     {
         title: "Title",
@@ -46,6 +48,11 @@ class LoungePage extends Component {
             this.handleJoinBoardServerResponse,
             this
         );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
+            this.handleDrawerDisconnected,
+            this
+        );
     }
 
     componentDidMount() {
@@ -63,6 +70,11 @@ class LoungePage extends Component {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             this.handleJoinBoardServerResponse,
+            this
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
+            this.handleDrawerDisconnected,
             this
         );
     }
@@ -96,6 +108,20 @@ class LoungePage extends Component {
                 state: {paperboard: chosenPaperboard, pseudo, drawers},
             });
         }
+    };
+
+    handleDrawerDisconnected = () => {
+        Toast.fail(
+            "You have been disconnected from server, you will be redirected to login page",
+            3000,
+            () => {}
+        );
+        setTimeout(() => {
+            this.props.history.push({
+                pathname: "/",
+            });
+            Toast.hide();
+        }, 3000);
     };
 
     render() {

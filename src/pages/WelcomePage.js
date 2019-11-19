@@ -9,7 +9,7 @@ import constants from "../config/constants";
 class WelcomePage extends Component {
     constructor(props) {
         super(props);
-        this.state = {pseudo: ""};
+        this.state = {pseudo: "", isDisconnected: false};
         socketClientInstance.init();
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.IDENTIFY_ANSWER,
@@ -54,6 +54,7 @@ class WelcomePage extends Component {
     handleChange = (event) => {
         this.setState({pseudo: event.target.value});
     };
+
     render() {
         return (
             <Background>

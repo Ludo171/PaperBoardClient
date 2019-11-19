@@ -26,6 +26,8 @@ import Message from "../components/Message";
 import ListOfUsers from "../components/ListOfUsers";
 import Canvas from "../components/Canvas";
 import ShapePanel from "../components/ShapePanel";
+import Toast from "light-toast";
+
 const color = require("string-to-color");
 
 const sideList = (createTextField, createCircle) => (
@@ -112,6 +114,12 @@ class PaperBoardPage extends Component {
             },
             this
         );
+
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
+            this.handleDrawerDisconnected,
+            this
+        );
     }
 
     componentWillUnmount() {
@@ -137,6 +145,11 @@ class PaperBoardPage extends Component {
             (drawers) => {
                 this.setState({drawers});
             },
+            this
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
+            this.handleDrawerDisconnected,
             this
         );
     }
@@ -241,6 +254,20 @@ class PaperBoardPage extends Component {
         this.setState((prevState) => ({
             isShapePanelToggeled: !prevState.isShapePanelToggeled,
         }));
+    };
+
+    handleDrawerDisconnected = () => {
+        Toast.fail(
+            "You have been disconnected from server, you will be redirected to login page",
+            3000,
+            () => {}
+        );
+        setTimeout(() => {
+            this.props.history.push({
+                pathname: "/",
+            });
+            Toast.hide();
+        }, 3000);
     };
 
     render() {
