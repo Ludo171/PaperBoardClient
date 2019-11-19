@@ -46,7 +46,6 @@ class CreateBoardPage extends Component {
 
     constructor(props) {
         super(props);
-        console.log(props);
 
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
@@ -62,6 +61,14 @@ class CreateBoardPage extends Component {
         this.setState({pseudo: state ? state.pseudo : ""});
     };
 
+    componentWillUnmount() {
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this
+        );
+    }
+
     defaultBoardTitle = "default-paper-board";
 
     handleTitleChanges = (event) => {
@@ -74,10 +81,8 @@ class CreateBoardPage extends Component {
 
     onCreatePaperBoard = () => {
         const {title, color} = this.state;
-        console.log("test");
         createPaperBoard(title, color)
             .then((response) => {
-                console.log(response);
                 this.setState({paperboard: response.data}, () => {
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.JOIN_BOARD,
@@ -88,7 +93,6 @@ class CreateBoardPage extends Component {
                 });
             })
             .catch(function(error) {
-                console.log(error);
                 if (error.response.status === 409) {
                     alert(
                         "A board with the name " +
@@ -101,7 +105,6 @@ class CreateBoardPage extends Component {
 
     handleJoinBoardServerResponse = (data) => {
         const {pseudo, paperboard} = this.state;
-        console.log(data);
         this.props.history.push({
             pathname: `/paperboard/${paperboard.title}`,
             state: {paperboard, pseudo},
@@ -143,22 +146,20 @@ class CreateBoardPage extends Component {
                 </div>
                 <div className="card">
                     <div className="card-content">
-                        <form onSubmit={this.onCreatePaperBoard}>
-                            <div className="field">
-                                <p className="control has-icons-left">
-                                    <input
-                                        type="text"
-                                        className="input is-large"
-                                        placeholder="Title - required"
-                                        value={this.state.title}
-                                        onChange={this.handleTitleChanges}></input>
+                        <div className="field">
+                            <p className="control has-icons-left">
+                                <input
+                                    type="text"
+                                    className="input is-large"
+                                    placeholder="Title - required"
+                                    value={this.state.title}
+                                    onChange={this.handleTitleChanges}></input>
 
-                                    <span className="icon is-small is-left">
-                                        <i className="fas fa-lock"></i>
-                                    </span>
-                                </p>
-                            </div>
-                        </form>
+                                <span className="icon is-small is-left">
+                                    <i className="fas fa-lock"></i>
+                                </span>
+                            </p>
+                        </div>
                         <div className="field">
                             <FormGroup row>
                                 <FormControlLabel

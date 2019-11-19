@@ -18,6 +18,14 @@ class WelcomePage extends Component {
         );
     }
 
+    componentWillUnmount() {
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.IDENTIFY_ANSWER,
+            this.handleServerLoginAnswer,
+            this
+        );
+    }
+
     onLogin = (event) => {
         event.preventDefault();
         socketClientInstance.sendMessage({
@@ -30,7 +38,6 @@ class WelcomePage extends Component {
 
     handleServerLoginAnswer = (data) => {
         if (data.payload.pseudoAvailable && this.state.pseudo) {
-            console.log({data});
             this.props.history.push({
                 pathname: "/lounge",
                 state: {pseudo: this.state.pseudo},

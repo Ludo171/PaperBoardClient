@@ -26,6 +26,7 @@ class SocketClient {
         this.handlers = {
             identifyHandlers: [],
             drawerJoinBoardHandlers: [],
+            drawerLeftBoardHandlers: [],
             chatMessageHandlers: [],
             askDeletionHandlers: [],
             objCreatedHandlers: [],
@@ -80,7 +81,6 @@ class SocketClient {
                 );
                 this.handlers.identifyHandlers.forEach((identifyHandler) => {
                     identifyHandler(data);
-                    console.log(data);
                 });
                 break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
@@ -89,7 +89,14 @@ class SocketClient {
                 );
                 this.handlers.drawerJoinBoardHandlers.forEach((drawerJoinBoardHandler) => {
                     drawerJoinBoardHandler(data.payload.userlist);
-                    console.log(data);
+                });
+                break;
+            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
+                this.logger.log(
+                    `Trigger drawer join board handlers (${this.handlers.drawerLeftBoardHandlers.length}).`
+                );
+                this.handlers.drawerLeftBoardHandlers.forEach((drawerLeftBoardHandler) => {
+                    drawerLeftBoardHandler(data.payload.leaver, data.payload.userlist);
                 });
                 break;
             case constants.SOCKET_MSG.CHAT_MESSAGE:
@@ -98,7 +105,6 @@ class SocketClient {
                 );
                 this.handlers.chatMessageHandlers.forEach((chatMessageHandler) => {
                     chatMessageHandler(data.from, data.payload.msg);
-                    console.log(data);
                 });
                 break;
             case constants.SOCKET_MSG.ASK_DELETION:
@@ -137,7 +143,6 @@ class SocketClient {
                     `Trigger drawer connected handlers (${this.handlers.drawerConnectedHandlers.length}).`
                 );
                 this.handlers.drawerConnectedHandlers.forEach((drawerConnectedHandler) => {
-                    console.log(data);
                     drawerConnectedHandler(data.payload.userlist);
                 });
                 break;
@@ -172,7 +177,11 @@ class SocketClient {
                 );
                 message = {};
             }
-            this.socketClient.send(message);
+            if (this.socketClient) {
+                this.socketClient.send(message);
+            } else {
+                alert("You have been disconnected, don't forgzt to reconnect");
+            }
         }
     }
 
@@ -182,8 +191,10 @@ class SocketClient {
                 this.handlers.identifyHandlers.push(handler);
                 break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
-                console.log("susbcribe to drawer joiin board");
                 this.handlers.drawerJoinBoardHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
+                this.handlers.drawerLeftBoardHandlers.push(handler);
                 break;
             case constants.SOCKET_MSG.CHAT_MESSAGE:
                 this.handlers.chatMessageHandlers.push(handler);
@@ -247,6 +258,21 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
                 this.handlers.drawerDisconnectedHandlers = this.handlers.drawerDisconnectedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
+                this.handlers.drawerJoinBoardHandlers = this.handlers.drawerJoinBoardHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
+                this.handlers.drawerLeftBoardHandlers = this.handlers.drawerLeftBoardHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.IDENTIFY_ANSWER:
+                this.handlers.identifyHandlers = this.handlers.identifyHandlers.filter(
                     (fn) => fn !== handler
                 );
                 break;

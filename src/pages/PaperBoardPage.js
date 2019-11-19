@@ -73,6 +73,7 @@ class PaperBoardPage extends Component {
             },
         } = props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+        console.log("CONSTRUCTOR");
         this.state = {
             paperboard,
             pseudo,
@@ -96,20 +97,18 @@ class PaperBoardPage extends Component {
         );
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_LEFT_BOARD,
-            (pseudo) => {
-                console.log("PAPERBOARD PAGE");
-                console.log(pseudo);
-                let {drawers} = this.state;
-                drawers = drawers.filter((drawer) => drawer !== pseudo);
+            (leaver, drawers) => {
                 this.setState({drawers});
+                const {pseudo} = this.state;
+                if (pseudo === leaver) {
+                    this.props.history.push({pathname: "/lounge", state: {pseudo}});
+                }
             },
             this
         );
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             (drawers) => {
-                console.log("PAPERBOARD PAGE");
-                console.log(drawers);
                 this.setState({drawers});
             },
             this
@@ -118,6 +117,29 @@ class PaperBoardPage extends Component {
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateWindowDimensions);
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.CHAT_MESSAGE,
+            this.receiveMessage,
+            this
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_LEFT_BOARD,
+            (leaver, drawers) => {
+                this.setState({drawers});
+                const {pseudo} = this.state;
+                if (pseudo === leaver) {
+                    this.props.history.push({pathname: "/lounge", state: {pseudo}});
+                }
+            },
+            this
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            (drawers) => {
+                this.setState({drawers});
+            },
+            this
+        );
     }
 
     updateWindowDimensions() {
@@ -137,7 +159,6 @@ class PaperBoardPage extends Component {
             to: "server",
             payload: {},
         });
-        this.props.history.push({pathname: "/lounge", state: {pseudo}});
     };
 
     onImport = () => {
@@ -228,8 +249,6 @@ class PaperBoardPage extends Component {
 
         const {paperboard, drawers, isShapePanelToggeled} = this.state;
         const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
-        console.log(this.state);
-        console.log(drawers);
         return (
             <div style={{display: "flex", flexDirection: "column"}}>
                 <div

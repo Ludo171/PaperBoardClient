@@ -59,14 +59,23 @@ class LoungePage extends Component {
         }
     }
 
+    componentWillUnmount() {
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this
+        );
+    }
+
     onCreatePaperBoard = () => {
-        console.log({pseudo: this.state.pseudo});
         this.props.history.push({pathname: "/new-board", state: {pseudo: this.state.pseudo}});
     };
 
     goToPaperBoard = (title) => {
+        console.log(title);
         getPaperBoard(title)
             .then((response) => {
+                console.log(response.data);
                 this.setState({chosenPaperboard: response.data}, () => {
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.JOIN_BOARD,
@@ -83,6 +92,7 @@ class LoungePage extends Component {
 
     handleJoinBoardServerResponse = (drawers) => {
         const {pseudo, chosenPaperboard} = this.state;
+        console.log(chosenPaperboard);
         if (chosenPaperboard) {
             this.props.history.push({
                 pathname: `/paperboard/${chosenPaperboard.title}`,
@@ -93,7 +103,6 @@ class LoungePage extends Component {
 
     render() {
         const {pseudo, paperboards} = this.state;
-        console.log({paperboards});
         paperboards.map((paperboard) => {
             paperboard.creationDate = moment(paperboard.creationDate).format(
                 "dddd, MMMM Do YYYY, h:mm:ss a"

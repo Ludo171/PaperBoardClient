@@ -5,7 +5,6 @@ const color = require("string-to-color");
 class ListOfUsers extends Component {
     render() {
         const {users} = this.props;
-        console.log({users});
 
         return (
             <div
