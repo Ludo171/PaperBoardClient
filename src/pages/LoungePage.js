@@ -72,10 +72,8 @@ class LoungePage extends Component {
     };
 
     goToPaperBoard = (title) => {
-        console.log(title);
         getPaperBoard(title)
             .then((response) => {
-                console.log(response.data);
                 this.setState({chosenPaperboard: response.data}, () => {
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.JOIN_BOARD,
@@ -92,7 +90,6 @@ class LoungePage extends Component {
 
     handleJoinBoardServerResponse = (drawers) => {
         const {pseudo, chosenPaperboard} = this.state;
-        console.log(chosenPaperboard);
         if (chosenPaperboard) {
             this.props.history.push({
                 pathname: `/paperboard/${chosenPaperboard.title}`,

@@ -55,8 +55,8 @@ class Chat extends Component {
 }
 
 Chat.propTypes = {
-    height: PropTypes.number,
-    onCloseChat: PropTypes.object,
-    messages: PropTypes.object,
+    height: PropTypes.any,
+    onCloseChat: PropTypes.any,
+    messages: PropTypes.any,
 };
 export default Chat;

@@ -73,7 +73,6 @@ class PaperBoardPage extends Component {
             },
         } = props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-        console.log("CONSTRUCTOR");
         this.state = {
             paperboard,
             pseudo,
