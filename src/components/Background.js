@@ -3,10 +3,6 @@ import PropTypes from "prop-types";
 import "./Background.scss";
 
 class Background extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         this.backgroundImg = new Image();
         this.backgroundImg.addEventListener("load", () => this.refreshBackground());
@@ -59,7 +55,7 @@ class Background extends Component {
             height: "100%",
         };
 
-        if (style == undefined) {
+        if (style === undefined) {
             style = defaultStyle;
         } else {
             const keys = Object.keys(defaultStyle);

@@ -27,12 +27,12 @@ import ListOfUsers from "../components/ListOfUsers";
 import Canvas from "../components/Canvas";
 import ShapePanel from "../components/ShapePanel";
 import Toast from "light-toast";
-import * as backgroundImage from "../assets/background-image1.jpg";
+import * as backgroundImage from "../assets/cappuccino2.jpg";
 
 const color = require("string-to-color");
 
 const sideList = (createTextField, createCircle) => (
-    <div style={{maxWidth: 360, backgroundColor: "white"}}>
+    <div style={{maxWidth: 360, backgroundColor: "white", flexGrow: 1}}>
         <List component="nav" aria-label="main mailbox folders">
             <ListItem button key={"Text"} onClick={createTextField}>
                 <ListItemIcon>
@@ -274,7 +274,7 @@ class PaperBoardPage extends Component {
     render() {
         const {width, height, isChatDisplayed, messages, textFieldValue} = this.state;
         const {paperboard, drawers, isShapePanelToggeled} = this.state;
-        const {canvasWidth, canvasHeight} = getCanvasSize((height * 9) / 10, width);
+        const sizeRatio = 9 / 16;
         return (
             <Background
                 customStyle={{
@@ -325,22 +325,25 @@ class PaperBoardPage extends Component {
                         width: "100%",
                         flexDirection: "row",
                         alignItems: "center",
-                        justifyContent: "space-between",
-                        flex: "1",
+                        // justifyContent: "space-between",
+                        flex: 1,
                     }}>
                     {/* ACTION BUTTONS NAV BAR */}
-                    {sideList(this.createTextField, this.createCircle)}
+                    {/* {sideList(this.createTextField, this.createCircle)} */}
+                    <div style={{width: "100px", height: "100px", backgroundColor: "red"}}></div>
 
                     {/* CANVAS MANAGER */}
                     <Canvas
                         ref={(el) => (this.canvas = el)}
-                        width={canvasWidth}
-                        height={canvasHeight}
+                        // customStyle={{flex: 1}}
+                        resolutionWidth={1600}
+                        resolutionHeight={900}
                         toggleShapePanel={this.toggleShapePanel}
                     />
 
                     {/* SHAPE OPTIONS PANEL */}
-                    {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />}
+                    {/* {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />} */}
+                    <div style={{width: "100px", height: "100px", backgroundColor: "red"}}></div>
                 </div>
                 {/* CHAT */}
                 <div
