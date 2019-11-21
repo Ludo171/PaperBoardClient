@@ -7,7 +7,7 @@ import constants from "../config/constants";
 import CanvasManager from "../components/CanvasManager";
 import EditShapePanel from "../components/EditShapePanel";
 import * as backgroundImage from "../assets/cappuccino2.jpg";
-import shapePanel from "../components/ShapePanel";
+import ShapePanel from "../components/ShapePanel";
 import HeaderMenu from "../components/HeaderMenu";
 import ChatComponent from "../components/ChatComponent";
 
@@ -78,16 +78,6 @@ class PaperBoardPage extends Component {
         });
     };
 
-    onClickCreateObject = (objectType) => {
-        alert("create " + objectType);
-        // this.canvas.createCircle();
-    };
-
-    onClickEditObject = (editionType) => {
-        alert("edit " + editionType);
-        // this.canvas.editShape();
-    };
-
     render() {
         const {paperboard, drawers, pseudo} = this.state;
         return (
@@ -110,7 +100,7 @@ class PaperBoardPage extends Component {
                         flex: 1,
                     }}>
                     {/* ACTION BUTTONS NAV BAR */}
-                    {shapePanel(this.onClickCreateObject)}
+                    <ShapePanel pseudo={pseudo} />
 
                     {/* CANVAS MANAGER */}
                     <CanvasManager
@@ -121,7 +111,7 @@ class PaperBoardPage extends Component {
                     />
 
                     {/* SHAPE OPTIONS PANEL */}
-                    <EditShapePanel onClickEditObject={this.onClickEditObject} />
+                    <EditShapePanel />
                 </div>
                 {/* CHAT */}
                 <div
