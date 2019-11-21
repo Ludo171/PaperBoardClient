@@ -32,7 +32,7 @@ import * as backgroundImage from "../assets/cappuccino2.jpg";
 const color = require("string-to-color");
 
 const sideList = (createTextField, createCircle) => (
-    <div style={{maxWidth: 360, backgroundColor: "white", flexGrow: 1}}>
+    <div style={{maxWidth: 250, backgroundColor: "white"}}>
         <List component="nav" aria-label="main mailbox folders">
             <ListItem button key={"Text"} onClick={createTextField}>
                 <ListItemIcon>
@@ -329,21 +329,18 @@ class PaperBoardPage extends Component {
                         flex: 1,
                     }}>
                     {/* ACTION BUTTONS NAV BAR */}
-                    {/* {sideList(this.createTextField, this.createCircle)} */}
-                    <div style={{width: "100px", height: "100px", backgroundColor: "red"}}></div>
+                    {sideList(this.createTextField, this.createCircle)}
 
                     {/* CANVAS MANAGER */}
                     <Canvas
                         ref={(el) => (this.canvas = el)}
-                        // customStyle={{flex: 1}}
-                        resolutionWidth={1600}
-                        resolutionHeight={900}
+                        resolutionWidth={1080}
+                        resolutionHeight={720}
                         toggleShapePanel={this.toggleShapePanel}
                     />
 
                     {/* SHAPE OPTIONS PANEL */}
-                    {/* {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />} */}
-                    <div style={{width: "100px", height: "100px", backgroundColor: "red"}}></div>
+                    {isShapePanelToggeled && <ShapePanel editCircle={this.editCircle} />}
                 </div>
                 {/* CHAT */}
                 <div

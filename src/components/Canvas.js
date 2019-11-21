@@ -3,6 +3,13 @@ import PropTypes from "prop-types";
 import ReactResizeDetector from "react-resize-detector";
 
 class Canvas extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            maxWidth: "100%",
+        };
+    }
+
     componentDidMount() {
         this.count = 0;
     }
@@ -20,38 +27,45 @@ class Canvas extends Component {
     };
 
     _onResize() {
-        this.count += 1;
-        console.log(`Canvas resized ${this.count} times !`);
-        const canvas = document.getElementById("canvascanvas");
-        console.log(this.props.sizeRatio);
-        console.log(canvas.style);
-        console.log(
-            `canvas.style.height:${canvas.height}, canvas.style.width:${canvas.style.width}`
-        );
-        canvas.style.height = `${canvas.style.width * this.props.sizeRatio}px`;
+        const margin = 50;
+        const maxWidth = this.parentContainer.clientWidth - margin;
+        const maxHeight = this.parentContainer.clientHeight - margin;
+        const parentContainerProp = maxHeight / maxWidth;
+
+        const canvasProp = this.props.resolutionHeight / this.props.resolutionWidth;
+
+        if (canvasProp > parentContainerProp) {
+            this.canvas.height = this.props.resolutionHeight;
+            this.canvas.style.height = `${maxHeight}px`;
+            this.canvas.width = this.props.resolutionWidth;
+            this.canvas.style.width = `${maxHeight / canvasProp}px`;
+        } else {
+            this.canvas.width = this.props.resolutionWidth;
+            this.canvas.style.width = `${maxWidth}px`;
+            this.canvas.height = this.props.resolutionHeight;
+            this.canvas.style.height = `${maxWidth * canvasProp}px`;
+        }
     }
 
     render() {
         return (
             <div
+                ref={(el) => (this.parentContainer = el)}
                 id="paperboard-canvas"
                 style={{
                     flex: 1,
-                    height: "100%",
-                    backgroundColor: "blue",
                     display: "flex",
+                    height: "100%",
                     flexDirection: "column",
                     justifyContent: "center",
+                    alignItems: "center",
                 }}>
-                <ReactResizeDetector handleWidth onResize={() => this._onResize()} />
+                <ReactResizeDetector handleWidth handleHeight onResize={() => this._onResize()} />
                 <canvas
                     ref={(el) => (this.canvas = el)}
                     id="canvascanvas"
                     style={{
-                        width: "100%",
                         backgroundColor: "white",
-                        // marginLeft: 15,
-                        // marginRight: 15,
                     }}
                 />
                 <div
