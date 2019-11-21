@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import Background from "../components/Background";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
-import * as backgroundImage from "../assets/background-image1.jpg";
+import * as backgroundImage from "../assets/welcome.jpg";
 
 class WelcomePage extends Component {
     constructor(props) {
@@ -58,7 +58,14 @@ class WelcomePage extends Component {
 
     render() {
         return (
-            <Background imgSrc={backgroundImage}>
+            <Background
+                customStyle={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+                imgSrc={backgroundImage}>
                 <div className="card">
                     <div className="card-content">
                         <p className="title is-1">Welcome on PaperBoard !</p>
@@ -72,14 +79,14 @@ class WelcomePage extends Component {
                                             <p className="control has-icons-left">
                                                 <input
                                                     type="text"
-                                                    className="input"
+                                                    className="input is-success"
                                                     placeholder="Pseudo"
                                                     value={this.state.value}
                                                     onChange={this.handleChange}></input>
                                             </p>
                                         </div>
                                     </form>
-                                    <div className="field">
+                                    <div className="field" style={{marginTop: 15}}>
                                         <p className="control">
                                             <button
                                                 className="button is-success is-large"

@@ -15,7 +15,6 @@ import {
     Edit,
     PanoramaFishEye,
 } from "@material-ui/icons";
-import {getCanvasSize} from "../utils/resize";
 import Background from "../components/Background";
 import {ExitToApp, SaveAlt, CloudUpload, Message as MessageIcon} from "@material-ui/icons";
 import Chat from "../components/Chat";
@@ -70,21 +69,21 @@ const sideList = (createTextField, createCircle) => (
 class PaperBoardPage extends Component {
     constructor(props) {
         super(props);
-        // const {
-        //     location: {
-        //         state: {paperboard, pseudo, drawers},
-        //     },
-        // } = props;
+        const {
+            location: {
+                state: {paperboard, pseudo, drawers},
+            },
+        } = props;
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.state = {
-            paperboard: {title: "lol"},
-            pseudo: "",
+            paperboard,
+            pseudo,
             width: 0,
             height: 0,
             isChatDisplayed: false,
             textFieldValue: "",
             messages: [],
-            drawers: [],
+            drawers,
             isShapePanelToggeled: false,
         };
     }
@@ -274,7 +273,6 @@ class PaperBoardPage extends Component {
     render() {
         const {width, height, isChatDisplayed, messages, textFieldValue} = this.state;
         const {paperboard, drawers, isShapePanelToggeled} = this.state;
-        const sizeRatio = 9 / 16;
         return (
             <Background
                 customStyle={{
