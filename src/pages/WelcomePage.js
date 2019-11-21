@@ -10,7 +10,7 @@ import * as backgroundImage from "../assets/welcome.jpg";
 class WelcomePage extends Component {
     constructor(props) {
         super(props);
-        this.state = {pseudo: "", isDisconnected: false};
+        this.state = {pseudo: ""};
         socketClientInstance.init();
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.IDENTIFY_ANSWER,

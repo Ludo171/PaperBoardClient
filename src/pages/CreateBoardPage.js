@@ -10,7 +10,6 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
-import Toast from "light-toast";
 import * as backgroundImage from "../assets/Wood-4.jpg";
 
 const getColorList = (handleColor) => {
@@ -54,12 +53,6 @@ class CreateBoardPage extends Component {
             this.handleJoinBoardServerResponse,
             this
         );
-
-        socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
-            this.handleDrawerDisconnected,
-            this
-        );
     }
 
     componentDidMount = () => {
@@ -73,12 +66,6 @@ class CreateBoardPage extends Component {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             this.handleJoinBoardServerResponse,
-            this
-        );
-
-        socketClientInstance.unsubscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
-            this.handleDrawerDisconnected,
             this
         );
     }
@@ -142,20 +129,6 @@ class CreateBoardPage extends Component {
             });
         }
         this.setState({color: "", hexColorCode: ""});
-    };
-
-    handleDrawerDisconnected = () => {
-        Toast.fail(
-            "You have been disconnected from server, you will be redirected to login page",
-            3000,
-            () => {}
-        );
-        setTimeout(() => {
-            this.props.history.push({
-                pathname: "/",
-            });
-            Toast.hide();
-        }, 3000);
     };
 
     render() {

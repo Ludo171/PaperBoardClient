@@ -6,7 +6,6 @@ import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import CanvasManager from "../components/CanvasManager";
 import EditShapePanel from "../components/EditShapePanel";
-import Toast from "light-toast";
 import * as backgroundImage from "../assets/cappuccino2.jpg";
 import shapePanel from "../components/ShapePanel";
 import HeaderMenu from "../components/HeaderMenu";
@@ -46,11 +45,6 @@ class PaperBoardPage extends Component {
             },
             this
         );
-        socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
-            this.handleDrawerDisconnected,
-            this
-        );
     }
 
     componentWillUnmount() {
@@ -70,11 +64,6 @@ class PaperBoardPage extends Component {
             (drawers) => {
                 this.setState({drawers});
             },
-            this
-        );
-        socketClientInstance.unsubscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
-            this.handleDrawerDisconnected,
             this
         );
     }
@@ -97,20 +86,6 @@ class PaperBoardPage extends Component {
     onClickEditObject = (editionType) => {
         alert("edit " + editionType);
         // this.canvas.editShape();
-    };
-
-    handleDrawerDisconnected = () => {
-        Toast.fail(
-            "You have been disconnected from server, you will be redirected to login page",
-            3000,
-            () => {}
-        );
-        setTimeout(() => {
-            this.props.history.push({
-                pathname: "/",
-            });
-            Toast.hide();
-        }, 3000);
     };
 
     render() {

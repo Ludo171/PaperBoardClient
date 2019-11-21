@@ -6,12 +6,11 @@ import "./LoungePage.scss";
 import Background from "../components/Background";
 import MaterialTable from "material-table";
 import * as moment from "moment";
-import socketClientInstance from "../services/socket";
-import constants from "../config/constants";
-import Toast from "light-toast";
 import * as backgroundImage from "../assets/wood.jpg";
 import {Refresh} from "@material-ui/icons";
 import {IconButton} from "@material-ui/core";
+import socketClientInstance from "../services/socket";
+import constants from "../config/constants";
 
 const columns = [
     {
@@ -41,16 +40,6 @@ class LoungePage extends Component {
         super(props);
         this.getAllPaperBoards();
         this.loopGetAllPaperBoards();
-        socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
-            this.handleJoinBoardServerResponse,
-            this
-        );
-        socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
-            this.handleDrawerDisconnected,
-            this
-        );
     }
 
     componentDidMount() {
@@ -61,22 +50,6 @@ class LoungePage extends Component {
                 },
             } = this.props;
             this.setState({pseudo});
-        }
-    }
-
-    componentWillUnmount() {
-        socketClientInstance.unsubscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
-            this.handleJoinBoardServerResponse,
-            this
-        );
-        socketClientInstance.unsubscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_DISCONNECTED,
-            this.handleDrawerDisconnected,
-            this
-        );
-        if (this.timeout) {
-            clearTimeout(this.timeout);
         }
     }
 
@@ -126,20 +99,6 @@ class LoungePage extends Component {
                 state: {paperboard: chosenPaperboard, pseudo, drawers},
             });
         }
-    };
-
-    handleDrawerDisconnected = () => {
-        Toast.fail(
-            "You have been disconnected from server, you will be redirected to login page",
-            3000,
-            () => {}
-        );
-        this.timeout = setTimeout(() => {
-            this.props.history.push({
-                pathname: "/",
-            });
-            Toast.hide();
-        }, 3000);
     };
 
     render() {
