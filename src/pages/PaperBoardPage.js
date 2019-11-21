@@ -24,7 +24,7 @@ import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Message from "../components/Message";
 import ListOfUsers from "../components/ListOfUsers";
-import Canvas from "../components/Canvas";
+import CanvasManager from "../components/CanvasManager";
 import ShapePanel from "../components/ShapePanel";
 import Toast from "light-toast";
 import * as backgroundImage from "../assets/cappuccino2.jpg";
@@ -332,7 +332,7 @@ class PaperBoardPage extends Component {
                     {sideList(this.createTextField, this.createCircle)}
 
                     {/* CANVAS MANAGER */}
-                    <Canvas
+                    <CanvasManager
                         ref={(el) => (this.canvas = el)}
                         resolutionWidth={1080}
                         resolutionHeight={720}

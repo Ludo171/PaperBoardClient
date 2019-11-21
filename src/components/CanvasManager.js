@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import ReactResizeDetector from "react-resize-detector";
 
-class Canvas extends Component {
+class CanvasManager extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -77,9 +77,9 @@ class Canvas extends Component {
         );
     }
 }
-Canvas.propTypes = {
+CanvasManager.propTypes = {
     resolutionWidth: PropTypes.any,
     resolutionHeight: PropTypes.any,
     toggleShapePanel: PropTypes.any,
 };
-export default Canvas;
+export default CanvasManager;
