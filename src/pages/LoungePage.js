@@ -40,6 +40,11 @@ class LoungePage extends Component {
         super(props);
         this.getAllPaperBoards();
         this.loopGetAllPaperBoards();
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this
+        );
     }
 
     componentDidMount() {
@@ -51,6 +56,14 @@ class LoungePage extends Component {
             } = this.props;
             this.setState({pseudo});
         }
+    }
+
+    componentWillUnmount() {
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this
+        );
     }
 
     getAllPaperBoards = () => {
