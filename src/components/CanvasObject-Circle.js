@@ -16,6 +16,7 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
         lineWidth: creationOptions.lineWidth || 10,
         lineColor: creationOptions.lineColor || "red",
 
+        lockColor: "yellow",
         isLocked: true,
         editionState: null, // null | "Resizing radius" | "Moving" | ...
         oldDragX: null,
@@ -23,15 +24,48 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
 
         refreshArea: function(x1, y1, x2, y2) {
             this.ctx.save();
+
             this.ctx.beginPath();
             this.ctx.lineWidth = this.lineWidth;
             this.ctx.strokeStyle = this.lineColor;
             this.ctx.arc(this.X, this.Y, this.radius, 0, 2 * Math.PI, true);
             this.ctx.stroke();
+
+            if (this.isLocked) {
+                const margin = 10;
+                this.ctx.beginPath();
+                this.ctx.strokeStyle = this.lockColor;
+                this.ctx.lineWidth = 5;
+                this.ctx.rect(
+                    this.X - this.radius - margin,
+                    this.Y - this.radius - margin,
+                    2 * (this.radius + margin),
+                    2 * (this.radius + margin)
+                );
+                this.ctx.stroke();
+                this.ctx.lineWidth = 8;
+                this.ctx.beginPath();
+                this.ctx.arc(
+                    this.X - this.radius - margin,
+                    this.Y - this.radius - margin,
+                    1,
+                    0,
+                    2 * Math.PI
+                );
+                this.ctx.stroke();
+                this.ctx.beginPath();
+                this.ctx.arc(
+                    this.X + this.radius + margin,
+                    this.Y + this.radius + margin,
+                    1,
+                    0,
+                    2 * Math.PI
+                );
+                this.ctx.stroke();
+            }
+
             this.ctx.restore();
         },
-
-        resize: function(newX, newY, newRadius) {},
 
         onMouseDown: function(x, y) {
             const movingSquareRadius = this.radius * this.radius;

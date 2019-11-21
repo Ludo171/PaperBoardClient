@@ -15,11 +15,6 @@ class CanvasManager extends Component {
             height: this.props.resolutionHeight,
         };
         this.ctx = null;
-        socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.OBJECT_CREATED,
-            this.createCircle,
-            this
-        );
     }
 
     componentDidMount() {
@@ -28,12 +23,19 @@ class CanvasManager extends Component {
         this.canvas.addEventListener("mouseup", (e) => this.handleMouseUp(e));
         this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e));
         this.canvas.addEventListener("mouseleave", () => this.handleMouseLeave());
+
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_CREATED,
+            this.createCircle,
+            this
+        );
     }
     componentWillUnmount() {
         this.canvas.removeEventListener("mousedown", (e) => this.handleMouseDown(e));
         this.canvas.removeEventListener("mouseup", (e) => this.handleMouseUp(e));
         this.canvas.removeEventListener("mousemove", (e) => this.handleMouseMove(e));
         this.canvas.removeEventListener("mouseleave", () => this.handleMouseLeave());
+
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.OBJECT_CREATED,
             this.createCircle,
@@ -67,7 +69,7 @@ class CanvasManager extends Component {
 
     // --- CANVAS MANAGEMENT
     _onResize() {
-        const margin = 50;
+        const margin = 20;
         const maxWidth = this.parentContainer.clientWidth - margin;
         const maxHeight = this.parentContainer.clientHeight - margin;
         const parentContainerProp = maxHeight / maxWidth;
