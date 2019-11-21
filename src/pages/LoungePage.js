@@ -9,7 +9,7 @@ import * as moment from "moment";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Toast from "light-toast";
-import * as backgroundImage from "../assets/background-image3.jpg";
+import * as backgroundImage from "../assets/wood.jpg";
 import {Refresh} from "@material-ui/icons";
 import {IconButton} from "@material-ui/core";
 
@@ -151,12 +151,25 @@ class LoungePage extends Component {
             return paperboard;
         });
         return (
-            <Background imgSrc={backgroundImage}>
+            <Background
+                customStyle={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+                imgSrc={backgroundImage}>
+                <h1
+                    style={{
+                        fontWeight: "bold",
+                        fontSize: 80,
+                        marginBottom: 25,
+                        color: "white",
+                    }}>
+                    {`${pseudo} choose your place of inspiration`}
+                </h1>
                 <div className="card">
                     <div className="card-content">
-                        <div className="title is-3">
-                            <h1>{"Hi " + pseudo + " !"}</h1>
-                        </div>
                         <div className="title is-1">
                             <h1>{"Join a Board"}</h1>
                         </div>
@@ -190,7 +203,7 @@ class LoungePage extends Component {
                         />
                     </div>
                 </div>
-                <div className="field">
+                <div className="field" style={{marginTop: 15}}>
                     <p className="control">
                         <button
                             className="button is-success is-large"

@@ -11,7 +11,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import Toast from "light-toast";
-import * as backgroundImage from "../assets/background-image2.jpg";
+import * as backgroundImage from "../assets/Wood-4.jpg";
 
 const getColorList = (handleColor) => {
     const list = [];
@@ -168,21 +168,27 @@ class CreateBoardPage extends Component {
             isBackgroundImage,
         } = this.state;
         return (
-            <Background imgSrc={backgroundImage}>
-                <div className="title is-1 has-text-success">
-                    <h1>Set up your board and create it !</h1>
-                </div>
+            <Background
+                customStyle={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+                imgSrc={backgroundImage}>
                 <div className="card">
                     <div className="card-content">
+                        <h1 style={{fontWeight: "bold", fontSize: 50}}>
+                            Set up your board and create it !
+                        </h1>
                         <div className="field">
                             <p className="control has-icons-left">
                                 <input
                                     type="text"
-                                    className="input is-large"
+                                    className="input is-large is-success"
                                     placeholder="Title - required"
                                     value={this.state.title}
                                     onChange={this.handleTitleChanges}></input>
-
                                 <span className="icon is-small is-left">
                                     <i className="fas fa-lock"></i>
                                 </span>
@@ -249,7 +255,7 @@ class CreateBoardPage extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="field">
+                <div className="field" style={{marginTop: 15}}>
                     <p className="control">
                         <button
                             className="button is-success is-large"
