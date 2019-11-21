@@ -5,7 +5,7 @@ import {Close} from "@material-ui/icons";
 import {IconButton} from "@material-ui/core";
 class Chat extends Component {
     render() {
-        const {height, onCloseChat, messages} = this.props;
+        const {onCloseChat, messages} = this.props;
         return (
             <div
                 id="page"
@@ -15,7 +15,7 @@ class Chat extends Component {
                     justifyContent: "flex-start",
                     width: "100%",
                     backgroundColor: "#e8e8e8",
-                    height,
+                    height: window.innerHeight / 3,
                     borderRadius: 10,
                     borderWidth: 1,
                     borderColor: "#e8e8e8",
@@ -55,7 +55,6 @@ class Chat extends Component {
 }
 
 Chat.propTypes = {
-    height: PropTypes.any,
     onCloseChat: PropTypes.any,
     messages: PropTypes.any,
 };
