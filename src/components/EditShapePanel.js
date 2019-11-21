@@ -4,15 +4,33 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import {ColorLens} from "@material-ui/icons";
-import {Icon} from "@material-ui/core";
+import {ColorLens, Delete} from "@material-ui/icons";
+import {Icon, Divider, ListSubheader} from "@material-ui/core";
 
 class EditShapePanel extends Component {
+    onClickEditObject = (editionType) => {
+        alert("edit " + editionType);
+        // this.canvas.editShape();
+    };
     render() {
-        const {onClickEditObject} = this.props;
         return (
             <div style={{maxWidth: 360, backgroundColor: "white"}}>
-                <List component="nav" aria-label="main mailbox folders">
+                <List
+                    component="nav"
+                    aria-label="main mailbox folders"
+                    subheader={
+                        <ListSubheader component="div" id="nested-list-subheader">
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    fontSize: "2em",
+                                }}>
+                                Edit
+                            </div>
+                        </ListSubheader>
+                    }>
                     {[
                         {title: "Color", component: <ColorLens />},
                         {
@@ -27,11 +45,23 @@ class EditShapePanel extends Component {
                         <ListItem
                             button
                             key={item.title}
-                            onClick={() => onClickEditObject(item.title)}>
+                            onClick={() => this.onClickEditObject(item.title)}>
                             <ListItemIcon>{item.component}</ListItemIcon>
                             <ListItemText primary={item.title} />
                         </ListItem>
                     ))}
+                </List>
+                <Divider />
+                <List>
+                    <ListItem
+                        button
+                        key={"Delete"}
+                        onClick={() => this.onClickEditObject("Delete")}>
+                        <ListItemIcon>
+                            <Delete />
+                        </ListItemIcon>
+                        <ListItemText primary={"Delete"} />
+                    </ListItem>
                 </List>
             </div>
         );

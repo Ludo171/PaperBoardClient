@@ -2,6 +2,8 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import ReactResizeDetector from "react-resize-detector";
 import generateCanvasObjectCircle from "./CanvasObject-Circle";
+import socketClientInstance from "../services/socket";
+import constants from "../config/constants";
 
 class CanvasManager extends Component {
     constructor(props) {
@@ -13,6 +15,11 @@ class CanvasManager extends Component {
             height: this.props.resolutionHeight,
         };
         this.ctx = null;
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_CREATED,
+            this.createCircle,
+            this
+        );
     }
 
     componentDidMount() {
@@ -27,6 +34,11 @@ class CanvasManager extends Component {
         this.canvas.removeEventListener("mouseup", (e) => this.handleMouseUp(e));
         this.canvas.removeEventListener("mousemove", (e) => this.handleMouseMove(e));
         this.canvas.removeEventListener("mouseleave", () => this.handleMouseLeave());
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_CREATED,
+            this.createCircle,
+            this
+        );
     }
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
