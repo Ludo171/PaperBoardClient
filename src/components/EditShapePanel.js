@@ -7,18 +7,14 @@ import ListItemText from "@material-ui/core/ListItemText";
 import {ColorLens} from "@material-ui/icons";
 import {Icon} from "@material-ui/core";
 
-class ShapePanel extends Component {
-    changeColor = () => {
-        this.props.editCircle();
-        alert("color changed");
-    };
-
+class EditShapePanel extends Component {
     render() {
+        const {onClickEditObject} = this.props;
         return (
             <div style={{maxWidth: 360, backgroundColor: "white"}}>
                 <List component="nav" aria-label="main mailbox folders">
                     {[
-                        {title: "Color", component: <ColorLens />, method: this.changeColor},
+                        {title: "Color", component: <ColorLens />},
                         {
                             title: "Width",
                             component: (
@@ -28,7 +24,10 @@ class ShapePanel extends Component {
                             ),
                         },
                     ].map((item) => (
-                        <ListItem button key={item.title} onClick={item.method}>
+                        <ListItem
+                            button
+                            key={item.title}
+                            onClick={() => onClickEditObject(item.title)}>
                             <ListItemIcon>{item.component}</ListItemIcon>
                             <ListItemText primary={item.title} />
                         </ListItem>
@@ -38,7 +37,7 @@ class ShapePanel extends Component {
         );
     }
 }
-ShapePanel.propTypes = {
-    editCircle: PropTypes.any,
+EditShapePanel.propTypes = {
+    onClickEditObject: PropTypes.any,
 };
-export default ShapePanel;
+export default EditShapePanel;

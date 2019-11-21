@@ -14,7 +14,7 @@ import {
 } from "@material-ui/icons";
 import {Icon, ListSubheader} from "@material-ui/core";
 
-const shapePanel = (createTextField, createCircle) => (
+const shapePanel = (onClickCreateObject) => (
     <div style={{maxWidth: 250, backgroundColor: "white"}}>
         <List
             component="nav"
@@ -32,7 +32,7 @@ const shapePanel = (createTextField, createCircle) => (
                     </div>
                 </ListSubheader>
             }>
-            <ListItem button key={"Text"} onClick={createTextField}>
+            <ListItem button key={"Text"} onClick={() => onClickCreateObject("Text")}>
                 <ListItemIcon>
                     <TextFieldIcon />
                 </ListItemIcon>
@@ -42,13 +42,13 @@ const shapePanel = (createTextField, createCircle) => (
         <Divider />
         <List>
             {[
-                {title: "Line", component: <Maximize />},
-                {title: "Rectangle", component: <CropLandscape />},
-                {title: "Circle", component: <PanoramaFishEye />, method: createCircle},
                 {
                     title: "Draw",
                     component: <Edit />,
                 },
+                {title: "Line", component: <Maximize />},
+                {title: "Rectangle", component: <CropLandscape />},
+                {title: "Circle", component: <PanoramaFishEye />},
                 {
                     title: "Triangle",
                     component: (
@@ -58,7 +58,7 @@ const shapePanel = (createTextField, createCircle) => (
                     ),
                 },
             ].map((item) => (
-                <ListItem button key={item.title} onClick={item.method}>
+                <ListItem button key={item.title} onClick={() => onClickCreateObject(item.title)}>
                     <ListItemIcon>{item.component}</ListItemIcon>
                     <ListItemText primary={item.title} />
                 </ListItem>
