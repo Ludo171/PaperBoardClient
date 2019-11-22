@@ -18,7 +18,9 @@ class CanvasManager extends Component {
     }
 
     componentDidMount() {
-        this.setState({ctx: this.canvas.getContext("2d")});
+        this.setState({ctx: this.canvas.getContext("2d")}, () => {
+            this.objPile = this.generateObjectPile(this.props.drawings);
+        });
         this.canvas.addEventListener("mousedown", (e) => this.handleMouseDown(e));
         this.canvas.addEventListener("mouseup", (e) => this.handleMouseUp(e));
         this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e));
@@ -43,6 +45,23 @@ class CanvasManager extends Component {
             this
         );
     }
+
+    generateObjectPile = (drawings) => {
+        const {ctx, width, height} = this.state;
+        return drawings.map((drawing) => {
+            switch (drawing.type) {
+                case "circle":
+                    return generateCanvasObjectCircle(ctx, 0, 0, width, height, drawing.id, {
+                        X: drawing.position.x,
+                        Y: drawing.position.Y,
+                        radius: drawing.radius,
+                        lineWidth: drawing.lineWidth,
+                        lineColor: drawing.lineColor,
+                    });
+                    break;
+            }
+        });
+    };
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
     createCircle = (data) => {
@@ -225,5 +244,6 @@ CanvasManager.propTypes = {
     resolutionWidth: PropTypes.any,
     resolutionHeight: PropTypes.any,
     toggleShapePanel: PropTypes.any,
+    drawings: PropTypes.any,
 };
 export default CanvasManager;
