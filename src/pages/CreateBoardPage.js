@@ -151,7 +151,7 @@ class CreateBoardPage extends Component {
                 imgSrc={backgroundImage}>
                 <div className="card">
                     <div className="card-content">
-                        <h1 style={{fontWeight: "bold", fontSize: 50}}>
+                        <h1 style={{fontWeight: "bold", fontSize: "4em", textAlign: "center"}}>
                             Set up your board and create it !
                         </h1>
                         <div className="field">

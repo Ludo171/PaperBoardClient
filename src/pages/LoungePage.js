@@ -134,9 +134,10 @@ class LoungePage extends Component {
                 <h1
                     style={{
                         fontWeight: "bold",
-                        fontSize: 80,
+                        fontSize: "4em",
                         marginBottom: 25,
                         color: "white",
+                        textAlign: "center",
                     }}>
                     {`${pseudo} choose your place of inspiration`}
                 </h1>

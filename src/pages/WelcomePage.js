@@ -68,8 +68,12 @@ class WelcomePage extends Component {
                 imgSrc={backgroundImage}>
                 <div className="card">
                     <div className="card-content">
-                        <p className="title is-1">Welcome on PaperBoard !</p>
-                        <p className="subtitle">{"Don't think too much, draw it !"}</p>
+                        <p className="title is-1" style={{textAlign: "center"}}>
+                            Welcome on PaperBoard !
+                        </p>
+                        <p className="subtitle" style={{textAlign: "center"}}>
+                            {"Don't think too much, draw it !"}
+                        </p>
                         <div className="card">
                             <div className="card-content" id="card-input">
                                 <p className="title is-3">Your pseudo ?</p>
