@@ -4,10 +4,12 @@ import ReactResizeDetector from "react-resize-detector";
 import generateCanvasObjectCircle from "./CanvasObject-Circle";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
+const color = require("string-to-color");
 
 class CanvasManager extends Component {
     constructor(props) {
         super(props);
+        this.componentName = "CanvasManager";
         this.objPile = [];
         this.state = {
             ctx: null,
@@ -29,7 +31,17 @@ class CanvasManager extends Component {
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.OBJECT_CREATED,
             this.createCircle,
-            this
+            this.componentName
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_LOCKED,
+            this.onObjectLocked,
+            this.componentName
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_UNLOCKED,
+            this.onObjectUnlocked,
+            this.componentName
         );
     }
 
@@ -42,30 +54,45 @@ class CanvasManager extends Component {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.OBJECT_CREATED,
             this.createCircle,
-            this
+            this.componentName
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_LOCKED,
+            this.onObjectLocked,
+            this.componentName
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_UNLOCKED,
+            this.onObjectUnlocked,
+            this.componentName
         );
     }
 
     generateObjectPile = (drawings) => {
         const {ctx, width, height} = this.state;
-        return drawings.map((drawing) => {
-            switch (drawing.type) {
-                case "circle":
-                    return generateCanvasObjectCircle(ctx, 0, 0, width, height, drawing.id, {
-                        X: drawing.position.x,
-                        Y: drawing.position.Y,
-                        radius: drawing.radius,
-                        lineWidth: drawing.lineWidth,
-                        lineColor: drawing.lineColor,
-                    });
-                    break;
-            }
-        });
+        const keys = Object.keys(drawings);
+        if (keys.length > 0) {
+            return keys.map((key) => {
+                const drawing = drawings[key];
+                switch (drawing.type) {
+                    case "circle":
+                        return generateCanvasObjectCircle(ctx, 0, 0, width, height, drawing.id, {
+                            X: drawing.position.x,
+                            Y: drawing.position.y,
+                            radius: drawing.radius,
+                            lineWidth: drawing.lineWidth,
+                            lineColor: drawing.lineColor,
+                        });
+                        break;
+                }
+            });
+        } else {
+            return [];
+        }
     };
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
     createCircle = (data) => {
-        console.log(data);
         const newCircle = generateCanvasObjectCircle(
             this.state.ctx,
             0,
@@ -73,6 +100,7 @@ class CanvasManager extends Component {
             this.state.width,
             this.state.height,
             data.id,
+            data.pseudo,
             {
                 X: parseFloat(data.X),
                 Y: parseFloat(data.Y),
@@ -81,9 +109,44 @@ class CanvasManager extends Component {
                 lineColor: data.lineColor,
             }
         );
-        console.log(newCircle);
         this.objPile.push(newCircle);
         newCircle.refreshArea(0, 0, this.state.width, this.state.height);
+    };
+
+    onObjectLocked = (payload) => {
+        const objectId = payload.drawingId;
+        const lockedBy = payload.pseudo;
+        let found = false;
+        let i = 0;
+        while (i < this.objPile.length && !found) {
+            if (this.objPile[i].id === objectId) {
+                found = true;
+            } else {
+                i += 1;
+            }
+        }
+        if (found) {
+            this.objPile[i].isLocked = true;
+            this.objPile[i].lockedBy = lockedBy;
+            this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+        }
+    };
+    onObjectUnlocked = (payload) => {
+        const objectId = payload.drawingId;
+        let found = false;
+        let i = 0;
+        while (i < this.objPile.length && !found) {
+            if (this.objPile[i].id === objectId) {
+                found = true;
+            } else {
+                i += 1;
+            }
+        }
+        if (found) {
+            this.objPile[i].isLocked = false;
+            this.objPile[i].lockedBy = "";
+            this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+        }
     };
 
     // --- CANVAS MANAGEMENT
@@ -107,9 +170,7 @@ class CanvasManager extends Component {
             this.canvas.style.height = `${maxWidth * canvasProp}px`;
         }
 
-        for (let i = 0; i < this.objPile.length; i++) {
-            this.objPile[i].refreshArea(0, 0, this.state.width, this.state.height);
-        }
+        this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
     }
 
     refreshCanvasArea(x1, y1, x2, y2) {
@@ -140,8 +201,33 @@ class CanvasManager extends Component {
                     i = 0; // end of collision detection
                 }
             }
-            if (collisionIndex !== null) {
-                this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+
+            // Unlock any other object not selected on this click
+            for (let i = 0; i < this.objPile.length; i++) {
+                if (i !== collisionIndex && this.objPile[i].isLocked) {
+                    // Unlock any object that has been previously locked
+                    socketClientInstance.sendMessage({
+                        type: constants.SOCKET_MSG.UNLOCK_OBJECT,
+                        from: this.props.pseudo,
+                        to: "server",
+                        payload: {
+                            drawingId: this.objPile[i].id,
+                        },
+                    });
+                }
+            }
+
+            // Try to lock the selected object
+            if (collisionIndex !== null && !this.objPile[collisionIndex].isLocked) {
+                const object = this.objPile[collisionIndex];
+                socketClientInstance.sendMessage({
+                    type: constants.SOCKET_MSG.LOCK_OBJECT,
+                    from: object.owner,
+                    to: "server",
+                    payload: {
+                        drawingId: object.id,
+                    },
+                });
             }
         }
     }
@@ -244,6 +330,7 @@ CanvasManager.propTypes = {
     resolutionWidth: PropTypes.any,
     resolutionHeight: PropTypes.any,
     toggleShapePanel: PropTypes.any,
+    pseudo: PropTypes.any,
     drawings: PropTypes.any,
 };
 export default CanvasManager;

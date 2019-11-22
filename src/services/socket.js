@@ -24,11 +24,13 @@ class SocketClient {
         this.sendMessage = this.sendMessage.bind(this);
 
         this.handlers = {
-            identifyHandlers: [],
-            drawerJoinBoardHandlers: [],
+            identifiedHandlers: [],
+            drawerJoinedBoardHandlers: [],
             drawerLeftBoardHandlers: [],
             chatMessageHandlers: [],
             askDeletionHandlers: [],
+            objLockedHandlers: [],
+            objUnlockedHandlers: [],
             objCreatedHandlers: [],
             objEditedHandlers: [],
             objDeletedHandlers: [],
@@ -80,23 +82,23 @@ class SocketClient {
         switch (data.type) {
             case constants.SOCKET_MSG.IDENTIFY_ANSWER:
                 this.logger.log(
-                    `Trigger identify handlers (${this.handlers.identifyHandlers.length}).`
+                    `Trigger identified handlers (${this.handlers.identifiedHandlers.length}).`
                 );
-                this.handlers.identifyHandlers.forEach((identifyHandler) => {
-                    identifyHandler(data);
+                this.handlers.identifiedHandlers.forEach((identifiedHandler) => {
+                    identifiedHandler(data);
                 });
                 break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
                 this.logger.log(
-                    `Trigger drawer join board handlers (${this.handlers.drawerJoinBoardHandlers.length}).`
+                    `Trigger drawer joined board handlers (${this.handlers.drawerJoinedBoardHandlers.length}).`
                 );
-                this.handlers.drawerJoinBoardHandlers.forEach((drawerJoinBoardHandler) => {
-                    drawerJoinBoardHandler(data.payload.userlist);
+                this.handlers.drawerJoinedBoardHandlers.forEach((drawerJoinedBoardHandler) => {
+                    drawerJoinedBoardHandler(data.payload.userlist);
                 });
                 break;
             case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
                 this.logger.log(
-                    `Trigger drawer join board handlers (${this.handlers.drawerLeftBoardHandlers.length}).`
+                    `Trigger drawer left board handlers (${this.handlers.drawerLeftBoardHandlers.length}).`
                 );
                 this.handlers.drawerLeftBoardHandlers.forEach((drawerLeftBoardHandler) => {
                     drawerLeftBoardHandler(data.payload.leaver, data.payload.userlist);
@@ -114,9 +116,26 @@ class SocketClient {
                 this.logger.log(
                     `Trigger ask deletion handlers (${this.handlers.askDeletionHandlers.length}).`
                 );
-                this.logger.log(data);
                 this.handlers.askDeletionHandlers.forEach((askDeletionHandler) =>
                     askDeletionHandler()
+                );
+                break;
+            case constants.SOCKET_MSG.OBJECT_LOCKED:
+                this.logger.log(
+                    `Trigger object locked handlers (${this.handlers.objLockedHandlers.length}).`
+                );
+                this.logger.log(data);
+                this.handlers.objLockedHandlers.forEach((objLockedHandler) =>
+                    objLockedHandler(data.payload)
+                );
+                break;
+            case constants.SOCKET_MSG.OBJECT_UNLOCKED:
+                this.logger.log(
+                    `Trigger object unlocked handlers (${this.handlers.objUnlockedHandlers.length}).`
+                );
+                this.logger.log(data);
+                this.handlers.objUnlockedHandlers.forEach((objUnlockedHandler) =>
+                    objUnlockedHandler(data.payload)
                 );
                 break;
             case constants.SOCKET_MSG.OBJECT_CREATED:
@@ -191,10 +210,10 @@ class SocketClient {
     subscribeToEvent(eventName, handler, subscriber) {
         switch (eventName) {
             case constants.SOCKET_MSG.IDENTIFY_ANSWER:
-                this.handlers.identifyHandlers.push(handler);
+                this.handlers.identifiedHandlers.push(handler);
                 break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
-                this.handlers.drawerJoinBoardHandlers.push(handler);
+                this.handlers.drawerJoinedBoardHandlers.push(handler);
                 break;
             case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
                 this.handlers.drawerLeftBoardHandlers.push(handler);
@@ -204,6 +223,12 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.ASK_DELETION:
                 this.handlers.askDeletionHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.OBJECT_LOCKED:
+                this.handlers.objLockedHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.OBJECT_UNLOCKED:
+                this.handlers.objUnlockedHandlers.push(handler);
                 break;
             case constants.SOCKET_MSG.OBJECT_CREATED:
                 this.handlers.objCreatedHandlers.push(handler);
@@ -229,6 +254,21 @@ class SocketClient {
     }
     unsubscribeToEvent(eventName, handler, subscriber) {
         switch (eventName) {
+            case constants.SOCKET_MSG.IDENTIFY_ANSWER:
+                this.handlers.identifiedHandlers = this.handlers.identifiedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
+                this.handlers.drawerJoinedBoardHandlers = this.handlers.drawerJoinedBoardHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
+                this.handlers.drawerLeftBoardHandlers = this.handlers.drawerLeftBoardHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
             case constants.SOCKET_MSG.CHAT_MESSAGE:
                 this.handlers.chatMessageHandlers = this.handlers.chatMessageHandlers.filter(
                     (fn) => fn !== handler
@@ -236,6 +276,16 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.ASK_DELETION:
                 this.handlers.askDeletionHandlers = this.handlers.askDeletionHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.OBJECT_LOCKED:
+                this.handlers.objLockedHandlers = this.handlers.objLockedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.OBJECT_UNLOCKED:
+                this.handlers.objUnlockedHandlers = this.handlers.objUnlockedHandlers.filter(
                     (fn) => fn !== handler
                 );
                 break;
@@ -261,21 +311,6 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
                 this.handlers.drawerDisconnectedHandlers = this.handlers.drawerDisconnectedHandlers.filter(
-                    (fn) => fn !== handler
-                );
-                break;
-            case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
-                this.handlers.drawerJoinBoardHandlers = this.handlers.drawerJoinBoardHandlers.filter(
-                    (fn) => fn !== handler
-                );
-                break;
-            case constants.SOCKET_MSG.DRAWER_LEFT_BOARD:
-                this.handlers.drawerLeftBoardHandlers = this.handlers.drawerLeftBoardHandlers.filter(
-                    (fn) => fn !== handler
-                );
-                break;
-            case constants.SOCKET_MSG.IDENTIFY_ANSWER:
-                this.handlers.identifyHandlers = this.handlers.identifyHandlers.filter(
                     (fn) => fn !== handler
                 );
                 break;

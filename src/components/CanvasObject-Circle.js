@@ -1,8 +1,20 @@
-const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, creationOptions = {}) {
+import * as color from "string-to-color";
+
+const generateCanvasObjectCircle = function(
+    ctx,
+    refX,
+    refY,
+    refW,
+    refH,
+    id,
+    owner,
+    creationOptions = {}
+) {
     const Circle = {
         type: "circle",
-        id: id,
+        id,
         name: `circle-${id}`,
+        owner,
 
         ctx: ctx,
         refX: refX,
@@ -16,8 +28,8 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
         lineWidth: creationOptions.lineWidth || 10,
         lineColor: creationOptions.lineColor || "red",
 
-        lockColor: "yellow",
-        isLocked: true,
+        isLocked: false,
+        lockedBy: "",
         editionState: null, // null | "Resizing radius" | "Moving" | ...
         oldDragX: null,
         oldDragY: null,
@@ -32,10 +44,13 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
             this.ctx.stroke();
 
             if (this.isLocked) {
-                const margin = 10;
+                const margin = 15;
+
+                // Dashed selection rectangle
                 this.ctx.beginPath();
-                this.ctx.strokeStyle = this.lockColor;
+                this.ctx.strokeStyle = color(this.lockedBy);
                 this.ctx.lineWidth = 5;
+                this.ctx.setLineDash([8, 8]);
                 this.ctx.rect(
                     this.X - this.radius - margin,
                     this.Y - this.radius - margin,
@@ -43,25 +58,34 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
                     2 * (this.radius + margin)
                 );
                 this.ctx.stroke();
-                this.ctx.lineWidth = 8;
+
+                // NorthWest Corner
+                this.ctx.strokeStyle = color(this.lockedBy);
+                this.ctx.setLineDash([]);
                 this.ctx.beginPath();
                 this.ctx.arc(
                     this.X - this.radius - margin,
                     this.Y - this.radius - margin,
-                    1,
+                    10,
                     0,
                     2 * Math.PI
                 );
                 this.ctx.stroke();
+                this.ctx.fillStyle = color(this.lockedBy);
+                this.ctx.fill();
+
+                // SouthEast Corner
                 this.ctx.beginPath();
                 this.ctx.arc(
                     this.X + this.radius + margin,
                     this.Y + this.radius + margin,
-                    1,
+                    10,
                     0,
                     2 * Math.PI
                 );
                 this.ctx.stroke();
+                this.ctx.fillStyle = color(this.lockedBy);
+                this.ctx.fill();
             }
 
             this.ctx.restore();
@@ -96,6 +120,10 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
             const resizingSquareRadius =
                 (this.radius + this.lineWidth + 10) * (this.radius + this.lineWidth + 10);
             const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
+            if (!this.isLocked && squareDistance < resizingSquareRadius) {
+                const elementToChange = document.getElementsByTagName("body")[0];
+                elementToChange.style.cursor = "url('cursor url with protocol'), grab";
+            }
             if (squareDistance < movingSquareRadius) {
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), move";
@@ -110,7 +138,7 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
         },
 
         onMouseDrag: function(x, y) {
-            if (this.editionState === "Resizing radius") {
+            if (this.isLocked && this.editionState === "Resizing radius") {
                 const oldDist = Math.sqrt(
                     (this.oldDragX - this.X) * (this.oldDragX - this.X) +
                         (this.oldDragY - this.Y) * (this.oldDragY - this.Y)
@@ -123,7 +151,7 @@ const generateCanvasObjectCircle = function(ctx, refX, refY, refW, refH, id, cre
                 this.oldDragX = x;
                 this.oldDragY = y;
                 return true;
-            } else if (this.editionState === "Moving") {
+            } else if (this.isLocked && this.editionState === "Moving") {
                 console.log("Move it !");
                 this.X += x - this.oldDragX;
                 this.Y += y - this.oldDragY;
