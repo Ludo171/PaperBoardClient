@@ -91,7 +91,6 @@ class SocketClient {
                     `Trigger drawer join board handlers (${this.handlers.drawerJoinBoardHandlers.length}).`
                 );
                 this.handlers.drawerJoinBoardHandlers.forEach((drawerJoinBoardHandler) => {
-                    // console.log(data);
                     drawerJoinBoardHandler(data.payload.userlist);
                 });
                 break;
@@ -125,7 +124,7 @@ class SocketClient {
                     `Trigger object created handlers (${this.handlers.objCreatedHandlers.length}).`
                 );
                 this.handlers.objCreatedHandlers.forEach((objCreatedHandler) =>
-                    objCreatedHandler()
+                    objCreatedHandler(data.payload)
                 );
                 break;
             case constants.SOCKET_MSG.OBJECT_EDITED:

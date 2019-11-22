@@ -18,7 +18,9 @@ class CanvasManager extends Component {
     }
 
     componentDidMount() {
-        this.setState({ctx: this.canvas.getContext("2d")});
+        this.setState({ctx: this.canvas.getContext("2d")}, () => {
+            this.objPile = this.generateObjectPile(this.props.drawings);
+        });
         this.canvas.addEventListener("mousedown", (e) => this.handleMouseDown(e));
         this.canvas.addEventListener("mouseup", (e) => this.handleMouseUp(e));
         this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e));
@@ -30,6 +32,7 @@ class CanvasManager extends Component {
             this
         );
     }
+
     componentWillUnmount() {
         this.canvas.removeEventListener("mousedown", (e) => this.handleMouseDown(e));
         this.canvas.removeEventListener("mouseup", (e) => this.handleMouseUp(e));
@@ -43,28 +46,44 @@ class CanvasManager extends Component {
         );
     }
 
+    generateObjectPile = (drawings) => {
+        const {ctx, width, height} = this.state;
+        return drawings.map((drawing) => {
+            switch (drawing.type) {
+                case "circle":
+                    return generateCanvasObjectCircle(ctx, 0, 0, width, height, drawing.id, {
+                        X: drawing.position.x,
+                        Y: drawing.position.Y,
+                        radius: drawing.radius,
+                        lineWidth: drawing.lineWidth,
+                        lineColor: drawing.lineColor,
+                    });
+                    break;
+            }
+        });
+    };
+
     // --- INTERACTIONS WITH OTHER COMPONENTS
-    createCircle = () => {
+    createCircle = (data) => {
+        console.log(data);
         const newCircle = generateCanvasObjectCircle(
             this.state.ctx,
             0,
             0,
             this.state.width,
             this.state.height,
-            "150225f5srfzf"
+            data.id,
+            {
+                X: parseFloat(data.X),
+                Y: parseFloat(data.Y),
+                radius: parseFloat(data.radius),
+                lineWidth: parseFloat(data.lineWidth),
+                lineColor: data.lineColor,
+            }
         );
+        console.log(newCircle);
         this.objPile.push(newCircle);
         newCircle.refreshArea(0, 0, this.state.width, this.state.height);
-    };
-
-    //
-    selectShape = () => {
-        this.props.toggleShapePanel();
-        alert("shape selected");
-    };
-
-    editShape = () => {
-        alert("edit canvas shape");
     };
 
     // --- CANVAS MANAGEMENT
@@ -217,11 +236,6 @@ class CanvasManager extends Component {
                         borderRadius: "10px",
                     }}
                 />
-                <div
-                    onClick={this.selectShape}
-                    style={{backgroundColor: "white", position: "absolute"}}>
-                    test select shape
-                </div>
             </div>
         );
     }
@@ -230,5 +244,6 @@ CanvasManager.propTypes = {
     resolutionWidth: PropTypes.any,
     resolutionHeight: PropTypes.any,
     toggleShapePanel: PropTypes.any,
+    drawings: PropTypes.any,
 };
 export default CanvasManager;
