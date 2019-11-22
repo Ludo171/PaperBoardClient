@@ -12,7 +12,7 @@ const config = {
 if (["dev", "develop", "development"].includes(process.env.NODE_ENV)) {
     config.hostname = process.env.REACT_APP_HOSTNAME_DEV;
     config.http_port = process.env.REACT_APP_REST_PORT_DEV;
-    config.rest_url = `${process.env.REACT_APP_REST_PROTOCOL}://${process.env.REACT_APP_HOSTNAME_DEV}:${process.env.REACT_APP_REST_PORT_DEV}`;
+    config.rest_url = `${process.env.REACT_APP_REST_PROTOCOL_DEV}://${process.env.REACT_APP_HOSTNAME_DEV}:${process.env.REACT_APP_REST_PORT_DEV}`;
     config.socket_port = process.env.REACT_APP_SOCKET_PORT_DEV;
     config.socket_url = `${process.env.REACT_APP_SOCKET_PROTOCOL_DEV}://${process.env.REACT_APP_HOSTNAME_DEV}:${process.env.REACT_APP_SOCKET_PORT_DEV}/${process.env.REACT_APP_SOCKET_API_DEV}`;
 }
