@@ -80,6 +80,8 @@ class PaperBoardPage extends Component {
 
     render() {
         const {paperboard, drawers, pseudo} = this.state;
+        const resolutionHeight = 720;
+        const resolutionWidth = 1080;
         return (
             <Background
                 customStyle={{
@@ -100,13 +102,17 @@ class PaperBoardPage extends Component {
                         flex: 1,
                     }}>
                     {/* ACTION BUTTONS NAV BAR */}
-                    <ShapePanel pseudo={pseudo} />
+                    <ShapePanel
+                        pseudo={pseudo}
+                        resolutionWidth={resolutionWidth}
+                        resolutionHeight={resolutionHeight}
+                    />
 
                     {/* CANVAS MANAGER */}
                     <CanvasManager
                         ref={(el) => (this.canvas = el)}
-                        resolutionWidth={1080}
-                        resolutionHeight={720}
+                        resolutionWidth={resolutionWidth}
+                        resolutionHeight={resolutionHeight}
                         toggleShapePanel={this.toggleShapePanel}
                     />
 

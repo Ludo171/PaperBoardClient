@@ -19,12 +19,16 @@ import constants from "../config/constants";
 
 class ShapePanel extends Component {
     onClickCreateObject = (objectType) => {
-        const {pseudo} = this.props;
+        const {pseudo, resolutionHeight, resolutionWidth} = this.props;
         socketClientInstance.sendMessage({
             type: constants.SOCKET_MSG.CREATE_OBJECT,
             from: pseudo,
             to: "server",
-            payload: {shape: objectType},
+            payload: {
+                shape: objectType,
+                positionX: (resolutionWidth / 2).toString(),
+                positionY: (resolutionHeight / 2).toString(),
+            },
         });
     };
     render() {
@@ -96,5 +100,7 @@ class ShapePanel extends Component {
 }
 ShapePanel.propTypes = {
     pseudo: PropTypes.any,
+    resolutionWidth: PropTypes.any,
+    resolutionHeight: PropTypes.any,
 };
 export default ShapePanel;

@@ -30,6 +30,7 @@ class CanvasManager extends Component {
             this
         );
     }
+
     componentWillUnmount() {
         this.canvas.removeEventListener("mousedown", (e) => this.handleMouseDown(e));
         this.canvas.removeEventListener("mouseup", (e) => this.handleMouseUp(e));
@@ -44,15 +45,24 @@ class CanvasManager extends Component {
     }
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
-    createCircle = () => {
+    createCircle = (data) => {
+        console.log(data);
         const newCircle = generateCanvasObjectCircle(
             this.state.ctx,
             0,
             0,
             this.state.width,
             this.state.height,
-            "150225f5srfzf"
+            data.id,
+            {
+                X: parseFloat(data.X),
+                Y: parseFloat(data.Y),
+                radius: parseFloat(data.radius),
+                lineWidth: parseFloat(data.lineWidth),
+                lineColor: data.lineColor,
+            }
         );
+        console.log(newCircle);
         this.objPile.push(newCircle);
         newCircle.refreshArea(0, 0, this.state.width, this.state.height);
     };
