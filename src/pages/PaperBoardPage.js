@@ -114,6 +114,7 @@ class PaperBoardPage extends Component {
                         resolutionWidth={resolutionWidth}
                         resolutionHeight={resolutionHeight}
                         toggleShapePanel={this.toggleShapePanel}
+                        board={paperboard}
                         pseudo={pseudo}
                         drawings={paperboard.drawings}
                     />

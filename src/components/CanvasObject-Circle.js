@@ -27,9 +27,18 @@ const generateCanvasObjectCircle = function(
         radius: creationOptions.radius || 50,
         lineWidth: creationOptions.lineWidth || 10,
         lineColor: creationOptions.lineColor || "red",
+        fillColor: creationOptions.linearColor || null,
 
         isLocked: false,
         lockedBy: "",
+        previousState: {
+            X: creationOptions.X || (refX + refW) / 2,
+            Y: creationOptions.Y || (refY + refH) / 2,
+            radius: creationOptions.radius || 50,
+            lineWidth: creationOptions.lineWidth || 10,
+            lineColor: creationOptions.lineColor || "red",
+            fillColor: creationOptions.linearColor || null,
+        },
         editionState: null, // null | "Resizing radius" | "Moving" | ...
         oldDragX: null,
         oldDragY: null,
@@ -42,6 +51,10 @@ const generateCanvasObjectCircle = function(
             this.ctx.strokeStyle = this.lineColor;
             this.ctx.arc(this.X, this.Y, this.radius, 0, 2 * Math.PI, true);
             this.ctx.stroke();
+            if (this.fillColor !== null) {
+                this.ctx.fillStyle = color(this.lockedBy);
+                this.ctx.fill();
+            }
 
             if (this.isLocked) {
                 const margin = 15;
@@ -166,6 +179,21 @@ const generateCanvasObjectCircle = function(
             this.editionState = null;
             this.oldDragX = null;
             this.oldDragY = null;
+            const result = {modifications: {}, shouldUnlock: true};
+            const keys = Object.keys(this.previousState);
+            for (let i = 0; i < keys.length; i++) {
+                if (this.previousState[keys[i]] !== this[keys[i]]) {
+                    result.modifications[keys[i]] = this[keys[i]];
+                    this.previousState[keys[i]] = this[keys[i]];
+                }
+            }
+
+            const movingSquareRadius = this.radius * this.radius;
+            const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
+            if (squareDistance < movingSquareRadius) {
+                result.shouldUnlock = false;
+            }
+            return result;
         },
     };
     return Circle;

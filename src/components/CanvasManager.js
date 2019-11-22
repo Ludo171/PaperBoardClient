@@ -222,7 +222,7 @@ class CanvasManager extends Component {
                 const object = this.objPile[collisionIndex];
                 socketClientInstance.sendMessage({
                     type: constants.SOCKET_MSG.LOCK_OBJECT,
-                    from: object.owner,
+                    from: this.props.pseudo,
                     to: "server",
                     payload: {
                         drawingId: object.id,
@@ -289,8 +289,34 @@ class CanvasManager extends Component {
                 ((e.clientY - rect.top) * this.state.height) /
                 Number(this.canvas.style.height.replace("px", ""));
 
+            console.log("ON MOUSE UP");
             for (let i = 0; i < this.objPile.length; i++) {
-                this.objPile[i].onMouseUp(x, y);
+                const report = this.objPile[i].onMouseUp(x, y);
+                console.log(report);
+                if (Object.keys(report.modifications).length > 0) {
+                    console.log(`Should send modifications for ${this.objPile[i].name}`);
+                    const payload = report.modifications;
+                    payload.pseudo = this.props.pseudo;
+                    payload.board = this.props.board;
+                    payload.drawingId = this.objPile[i].id;
+                    socketClientInstance.sendMessage({
+                        type: constants.SOCKET_MSG.EDIT_OBJECT,
+                        from: this.props.pseudo,
+                        to: "server",
+                        payload,
+                    });
+                }
+
+                if (report.shouldUnlock) {
+                    socketClientInstance.sendMessage({
+                        type: constants.SOCKET_MSG.UNLOCK_OBJECT,
+                        from: this.props.pseudo,
+                        to: "server",
+                        payload: {
+                            drawingId: this.objPile[i].id,
+                        },
+                    });
+                }
             }
         }
     }
@@ -330,6 +356,7 @@ CanvasManager.propTypes = {
     resolutionWidth: PropTypes.any,
     resolutionHeight: PropTypes.any,
     toggleShapePanel: PropTypes.any,
+    board: PropTypes.any,
     pseudo: PropTypes.any,
     drawings: PropTypes.any,
 };
