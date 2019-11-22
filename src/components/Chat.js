@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import "./Background.scss";
 import {Close} from "@material-ui/icons";
 import {IconButton} from "@material-ui/core";
 class Chat extends Component {
