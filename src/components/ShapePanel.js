@@ -20,20 +20,12 @@ import constants from "../config/constants";
 class ShapePanel extends Component {
     onClickCreateObject = (objectType) => {
         const {pseudo} = this.props;
-        // alert("create " + objectType + pseudo);
-        // switch (objectType) {
-        //     case "Text":
-        //         console.log("text");
-        //         break;
-        //     case "Circle":
         socketClientInstance.sendMessage({
             type: constants.SOCKET_MSG.CREATE_OBJECT,
             from: pseudo,
             to: "server",
             payload: {shape: objectType},
         });
-        // break;
-        // }
     };
     render() {
         return (

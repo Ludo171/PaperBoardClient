@@ -57,16 +57,6 @@ class CanvasManager extends Component {
         newCircle.refreshArea(0, 0, this.state.width, this.state.height);
     };
 
-    //
-    selectShape = () => {
-        this.props.toggleShapePanel();
-        alert("shape selected");
-    };
-
-    editShape = () => {
-        alert("edit canvas shape");
-    };
-
     // --- CANVAS MANAGEMENT
     _onResize() {
         const margin = 20;
@@ -217,11 +207,6 @@ class CanvasManager extends Component {
                         borderRadius: "10px",
                     }}
                 />
-                <div
-                    onClick={this.selectShape}
-                    style={{backgroundColor: "white", position: "absolute"}}>
-                    test select shape
-                </div>
             </div>
         );
     }
