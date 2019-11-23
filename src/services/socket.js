@@ -14,6 +14,13 @@ class SocketClient {
         this.componentName = "Socket Client";
         this.backend_url = `${config.socket_url}`;
         this.socketClient = null;
+        this.connected = false;
+        this.reconnectionParams = {
+            reconnect: true,
+            reconnectionDelay: 1000,
+            maxAttempts: 50,
+            currentAttemps: 0,
+        };
 
         // METHODS
         this.init = this.init.bind(this);
@@ -43,28 +50,47 @@ class SocketClient {
     }
 
     init() {
-        this.logger.log(`Connecting to WebSocketServer [${this.backend_url}]...`);
-        this.logger.log("Config at this point :");
-        this.logger.log(config);
+        this.logger.log(`Try to connect to WebSocketServer [${this.backend_url}]...`);
+        this.reconnectionParams.currentAttemps += 1;
         const socket = new WebSocket(this.backend_url);
         this.socketClient = socket;
         this.socketClient.onopen = this.onConnect;
         this.socketClient.onmessage = this.onMessage;
         this.socketClient.onclose = this.onDisconnect;
-        this.logger.log(this.socketClient);
     }
     stop() {
+        this.tryToReconnect = false;
         this.socketClient.close();
         this.socketClient = null;
     }
 
     onConnect() {
         this.logger.log(`Connection successful to [${this.backend_url}]`);
+        this.connected = true;
+        this.reconnectionParams.currentAttemps = 0;
     }
-    onDisconnect() {
-        this.handlers.drawerDisconnectedHandlers.forEach((drawerDisconnectedHandler) => {
-            drawerDisconnectedHandler();
-        });
+    onDisconnect(e) {
+        if (this.reconnectionParams.currentAttemps < 2) {
+            this.handlers.drawerDisconnectedHandlers.forEach((drawerDisconnectedHandler) => {
+                drawerDisconnectedHandler();
+            });
+        }
+        switch (e.code) {
+            case 1000: // CLOSE_NORMAL
+                break;
+            default:
+                // CLOSE_ABNORMAL
+                const {
+                    reconnect,
+                    maxAttempts,
+                    currentAttemps,
+                    reconnectionDelay,
+                } = this.reconnectionParams;
+                if (reconnect && currentAttemps < maxAttempts) {
+                    setTimeout(this.init, reconnectionDelay);
+                }
+                break;
+        }
         this.logger.log(`Disconnected from server [${this.backend_url}]`);
     }
     onMessage(socketMessage) {
