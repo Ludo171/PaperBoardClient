@@ -29,8 +29,8 @@ const generateCanvasObjectCircle = function(
         lineColor: creationOptions.lineColor || "red",
         fillColor: creationOptions.linearColor || null,
 
-        isLocked: false,
-        lockedBy: "",
+        isLocked: creationOptions.isLocked || false,
+        lockedBy: creationOptions.lockedBy || "",
         previousState: {
             X: creationOptions.X || (refX + refW) / 2,
             Y: creationOptions.Y || (refY + refH) / 2,
@@ -104,6 +104,22 @@ const generateCanvasObjectCircle = function(
             this.ctx.restore();
         },
 
+        applyModifications: function(payload) {
+            const keys = Object.keys(this.previousState);
+            console.log(`ApplyModifications pour ${this.name}`);
+            console.log(payload);
+            console.log(keys);
+            for (let i = 0; i < keys.length; i++) {
+                if (payload.hasOwnProperty(keys[i])) {
+                    const newValue = isNaN(this.previousState[keys[i]])
+                        ? payload[keys[i]]
+                        : Number(payload[keys[i]]);
+                    this[keys[i]] = newValue;
+                    this.previousState[keys[i]] = newValue;
+                }
+            }
+        },
+
         onMouseDown: function(x, y) {
             const movingSquareRadius = this.radius * this.radius;
             const resizingSquareRadius =
@@ -128,7 +144,7 @@ const generateCanvasObjectCircle = function(
             }
         },
 
-        onMouseHover: function(x, y) {
+        onMouseHover: function(x, y, myPseudo) {
             const movingSquareRadius = this.radius * this.radius;
             const resizingSquareRadius =
                 (this.radius + this.lineWidth + 10) * (this.radius + this.lineWidth + 10);
@@ -137,11 +153,11 @@ const generateCanvasObjectCircle = function(
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), grab";
             }
-            if (squareDistance < movingSquareRadius) {
+            if (this.lockeBy === myPseudo && squareDistance < movingSquareRadius) {
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), move";
                 return true;
-            } else if (squareDistance < resizingSquareRadius) {
+            } else if (this.lockedBy === myPseudo && squareDistance < resizingSquareRadius) {
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), grab";
                 return true;
@@ -160,12 +176,10 @@ const generateCanvasObjectCircle = function(
                     (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y)
                 );
                 this.radius += newDist - oldDist;
-                console.log("Resize radius !");
                 this.oldDragX = x;
                 this.oldDragY = y;
                 return true;
             } else if (this.isLocked && this.editionState === "Moving") {
-                console.log("Move it !");
                 this.X += x - this.oldDragX;
                 this.Y += y - this.oldDragY;
                 this.oldDragX = x;
@@ -184,19 +198,19 @@ const generateCanvasObjectCircle = function(
             for (let i = 0; i < keys.length; i++) {
                 if (this.previousState[keys[i]] !== this[keys[i]]) {
                     result.modifications[keys[i]] = this[keys[i]].toString();
-                    this.previousState[keys[i]] = this[keys[i]].toString();
+                    this.previousState[keys[i]] = this[keys[i]];
                 }
             }
 
-            const movingSquareRadius = this.radius * this.radius;
+            const resizingSquareRadius =
+                (this.radius + this.lineWidth + 10) * (this.radius + this.lineWidth + 10);
             const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
-            if (squareDistance < movingSquareRadius) {
+            if (squareDistance < resizingSquareRadius) {
                 result.shouldUnlock = false;
             }
             return result;
         },
     };
-    console.log(Circle);
     return Circle;
 };
 

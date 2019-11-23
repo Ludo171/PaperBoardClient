@@ -124,7 +124,6 @@ class SocketClient {
                 this.logger.log(
                     `Trigger object locked handlers (${this.handlers.objLockedHandlers.length}).`
                 );
-                this.logger.log(data);
                 this.handlers.objLockedHandlers.forEach((objLockedHandler) =>
                     objLockedHandler(data.payload)
                 );
@@ -133,7 +132,6 @@ class SocketClient {
                 this.logger.log(
                     `Trigger object unlocked handlers (${this.handlers.objUnlockedHandlers.length}).`
                 );
-                this.logger.log(data);
                 this.handlers.objUnlockedHandlers.forEach((objUnlockedHandler) =>
                     objUnlockedHandler(data.payload)
                 );
@@ -150,7 +148,9 @@ class SocketClient {
                 this.logger.log(
                     `Trigger object edited (${this.handlers.objEditedHandlers.length}).`
                 );
-                this.handlers.objEditedHandlers.forEach((objEditedHandler) => objEditedHandler());
+                this.handlers.objEditedHandlers.forEach((objEditedHandler) =>
+                    objEditedHandler(data.payload)
+                );
                 break;
             case constants.SOCKET_MSG.OBJECT_DELETED:
                 this.logger.log(
