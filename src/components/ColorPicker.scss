@@ -1,0 +1,32 @@
+.input {
+    border-color: #9c9c9c;
+}
+
+.empty-div {
+    height: 50px;
+}
+
+.dropdown-content {
+    max-height: 13em;
+    overflow: auto;
+}
+
+.dropdown-item {
+    :hover {
+        background-color: #d4d4d4;
+    }
+}
+
+.dropdown-item-text {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 3%;
+    padding-right: 3%;
+}
+
+.list-item{
+    :hover {
+        background-color: #d4d4d4;
+    }
+}
