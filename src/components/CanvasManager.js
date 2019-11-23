@@ -300,7 +300,7 @@ class CanvasManager extends Component {
             }
             if (collisionIndex === null) {
                 const elementToChange = document.getElementsByTagName("body")[0];
-                elementToChange.style.cursor = "url('cursor url with protocol'), pointer";
+                elementToChange.style.cursor = "url('cursor url with protocol'), default";
             }
         } else if (e.which === 1) {
             const rect = this.canvas.getBoundingClientRect();

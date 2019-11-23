@@ -151,9 +151,9 @@ const generateCanvasObjectCircle = function(
             const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
             if (!this.isLocked && squareDistance < resizingSquareRadius) {
                 const elementToChange = document.getElementsByTagName("body")[0];
-                elementToChange.style.cursor = "url('cursor url with protocol'), grab";
-            }
-            if (this.lockeBy === myPseudo && squareDistance < movingSquareRadius) {
+                elementToChange.style.cursor = "url('cursor url with protocol'), pointer";
+                return true;
+            } else if (this.lockedBy === myPseudo && squareDistance < movingSquareRadius) {
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), move";
                 return true;
