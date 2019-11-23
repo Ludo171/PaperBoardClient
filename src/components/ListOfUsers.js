@@ -20,9 +20,9 @@ class ListOfUsers extends Component {
                             key={id}
                             style={{
                                 backgroundColor: color(user),
-                                width: 24,
-                                height: 24,
-                                borderRadius: 12,
+                                width: 30,
+                                height: 30,
+                                borderRadius: "50%",
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",

@@ -22,25 +22,23 @@ class HeaderMenu extends Component {
                     style={{
                         display: "flex",
                         flexDirection: "row",
-                        alignItems: "space-between",
+                        alignItems: "center",
                         justifyContent: "space-between",
-                        height: "50px",
                         backgroundColor: "#f9a322",
                     }}>
                     {/* PAPERBOARD TITLE */}
-                    <div
+                    <p
+                        className="title is-1"
                         style={{
                             display: "flex",
                             alignItems: "center",
                             color: "black",
-                            marginLeft: 15,
-                            // marginTop: "0.5em",
-                            // marginBottom: "0.5em",
-                            fontWeight: "bold",
-                            fontSize: "2em",
+                            marginLeft: "15px",
+                            marginTop: "5px",
+                            marginBottom: "5px",
                         }}>
-                        {paperboard && `Paperboard : ${paperboard.title.toString().toUpperCase()}`}
-                    </div>
+                        {paperboard && `-- ${paperboard.title.toString().toUpperCase()} --`}
+                    </p>
                     {/* LIST OF CONNECTED USERS */}
                     <ListOfUsers users={drawers} />
                     {/* BOARD ACTION BUTTONS */}
