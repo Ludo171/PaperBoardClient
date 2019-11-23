@@ -21,6 +21,7 @@ class CanvasManager extends Component {
 
     componentDidMount() {
         this.setState({ctx: this.canvas.getContext("2d")}, () => {
+            console.log(this.props.drawings);
             this.objPile = this.generateObjectPile(this.props.drawings);
         });
         this.canvas.addEventListener("mousedown", (e) => this.handleMouseDown(e));
@@ -76,13 +77,22 @@ class CanvasManager extends Component {
                 const drawing = drawings[key];
                 switch (drawing.type) {
                     case "circle":
-                        return generateCanvasObjectCircle(ctx, 0, 0, width, height, drawing.id, {
-                            X: drawing.position.x,
-                            Y: drawing.position.y,
-                            radius: drawing.radius,
-                            lineWidth: drawing.lineWidth,
-                            lineColor: drawing.lineColor,
-                        });
+                        return generateCanvasObjectCircle(
+                            ctx,
+                            0,
+                            0,
+                            width,
+                            height,
+                            drawing.id,
+                            drawing.owner.pseudo,
+                            {
+                                X: drawing.position.x,
+                                Y: drawing.position.y,
+                                radius: drawing.radius,
+                                lineWidth: drawing.lineWidth,
+                                lineColor: drawing.lineColor,
+                            }
+                        );
                         break;
                 }
             });
@@ -220,6 +230,7 @@ class CanvasManager extends Component {
             // Try to lock the selected object
             if (collisionIndex !== null && !this.objPile[collisionIndex].isLocked) {
                 const object = this.objPile[collisionIndex];
+                console.log(this.props);
                 socketClientInstance.sendMessage({
                     type: constants.SOCKET_MSG.LOCK_OBJECT,
                     from: this.props.pseudo,
@@ -297,7 +308,7 @@ class CanvasManager extends Component {
                     console.log(`Should send modifications for ${this.objPile[i].name}`);
                     const payload = report.modifications;
                     payload.pseudo = this.props.pseudo;
-                    payload.board = this.props.board;
+                    payload.board = this.props.board.title;
                     payload.drawingId = this.objPile[i].id;
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.EDIT_OBJECT,

@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
 import {createPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
-import {colors} from "../utils/colors";
 import "./CreateBoardPage.scss";
 import Background from "../components/Background";
 import Switch from "@material-ui/core/Switch";
@@ -11,26 +10,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import * as backgroundImage from "../assets/Wood-4.jpg";
-
-const getColorList = (handleColor) => {
-    const list = [];
-    // eslint-disable-next-line guard-for-in
-    for (const color in colors) {
-        list.push(
-            <div
-                className="dropdown-item"
-                key={colors[color]}
-                onClick={() => handleColor(color, colors[color])}>
-                <div className="dropdown-item-text">
-                    <p style={{color: colors[color]}}>&#9632;</p>
-                    <p>{color}</p>
-                </div>
-                <hr className="dropdown-divider"></hr>
-            </div>
-        );
-    }
-    return list;
-};
+import ColorPicker from "../components/ColorPicker";
 
 class CreateBoardPage extends Component {
     state = {
@@ -196,33 +176,11 @@ class CreateBoardPage extends Component {
                         </div>
                         <div className="empty-div">
                             {isBackgroundColor ? (
-                                <div className="dropdown">
-                                    <div className="dropdown is-hoverable">
-                                        <div className="dropdown-trigger">
-                                            <button
-                                                className="button"
-                                                aria-haspopup="true"
-                                                aria-controls="dropdown-menu4">
-                                                <p
-                                                    style={{
-                                                        color: hexColorCode,
-                                                        marginRight: "5%",
-                                                    }}>
-                                                    &#9632;
-                                                </p>
-                                                <span>{color ? color : "Background color"}</span>
-                                            </button>
-                                        </div>
-                                        <div
-                                            className="dropdown-menu"
-                                            id="dropdown-menu4"
-                                            role="menu">
-                                            <div className="dropdown-content">
-                                                {getColorList(this.handleColor)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ColorPicker
+                                    color={color}
+                                    hexColorCode={hexColorCode}
+                                    handleColor={this.handleColor}
+                                />
                             ) : null}
                             {isBackgroundImage ? <div>todo</div> : null}
                         </div>

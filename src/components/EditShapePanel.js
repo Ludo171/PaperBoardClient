@@ -6,13 +6,31 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import {ColorLens, Delete} from "@material-ui/icons";
 import {Icon, Divider, ListSubheader} from "@material-ui/core";
+import ColorPicker from "./ColorPicker";
 
 class EditShapePanel extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isColorPickerToggled: false,
+        };
+    }
+
     onClickEditObject = (editionType) => {
         alert("edit " + editionType);
-        // this.canvas.editShape();
+        switch (editionType) {
+            case "Color":
+                console.log("Color");
+                this.setState((prevState) => ({
+                    isColorPickerToggled: !prevState.isColorPickerToggled,
+                }));
+                break;
+            default:
+                alert(editionType + " not handled");
+        }
     };
     render() {
+        const {isColorPickerToggled} = this.state;
         return (
             <div style={{maxWidth: 360, backgroundColor: "white"}}>
                 <List
@@ -51,6 +69,12 @@ class EditShapePanel extends Component {
                         </ListItem>
                     ))}
                 </List>
+                {isColorPickerToggled && (
+                    <>
+                        <Divider />
+                        <ColorPicker color={"lol"} hexColorCode={"lol"} handleColor={() => {}} />
+                    </>
+                )}
                 <Divider />
                 <List>
                     <ListItem

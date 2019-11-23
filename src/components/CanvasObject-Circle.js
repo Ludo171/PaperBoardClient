@@ -183,8 +183,8 @@ const generateCanvasObjectCircle = function(
             const keys = Object.keys(this.previousState);
             for (let i = 0; i < keys.length; i++) {
                 if (this.previousState[keys[i]] !== this[keys[i]]) {
-                    result.modifications[keys[i]] = this[keys[i]];
-                    this.previousState[keys[i]] = this[keys[i]];
+                    result.modifications[keys[i]] = this[keys[i]].toString();
+                    this.previousState[keys[i]] = this[keys[i]].toString();
                 }
             }
 
@@ -196,6 +196,7 @@ const generateCanvasObjectCircle = function(
             return result;
         },
     };
+    console.log(Circle);
     return Circle;
 };
 
