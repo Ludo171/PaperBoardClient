@@ -64,6 +64,9 @@ class LoungePage extends Component {
             this.handleJoinBoardServerResponse,
             this
         );
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
     }
 
     getAllPaperBoards = () => {
@@ -77,7 +80,7 @@ class LoungePage extends Component {
     };
 
     loopGetAllPaperBoards = () => {
-        setTimeout(() => {
+        this.timeout = setTimeout(() => {
             this.getAllPaperBoards();
             this.loopGetAllPaperBoards();
         }, 30000);

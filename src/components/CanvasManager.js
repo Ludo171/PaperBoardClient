@@ -4,7 +4,6 @@ import ReactResizeDetector from "react-resize-detector";
 import generateCanvasObjectCircle from "./CanvasObject-Circle";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
-const color = require("string-to-color");
 
 class CanvasManager extends Component {
     constructor(props) {
@@ -139,6 +138,12 @@ class CanvasManager extends Component {
             this.objPile[i].isLocked = true;
             this.objPile[i].lockedBy = lockedBy;
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+            const {
+                pseudo,
+                board: {title},
+                setSelectedDrawing,
+            } = this.props;
+            setSelectedDrawing({pseudo, board: title, drawingId: objectId});
         }
     };
     onObjectUnlocked = (payload) => {
@@ -156,6 +161,8 @@ class CanvasManager extends Component {
             this.objPile[i].isLocked = false;
             this.objPile[i].lockedBy = "";
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+            const {setSelectedDrawing} = this.props;
+            setSelectedDrawing(null);
         }
     };
 
@@ -290,6 +297,10 @@ class CanvasManager extends Component {
     }
 
     handleMouseUp(e) {
+        const {
+            pseudo,
+            board: {title},
+        } = this.props;
         // Handle left click down
         if (e.which === 1) {
             const rect = this.canvas.getBoundingClientRect();
@@ -307,8 +318,8 @@ class CanvasManager extends Component {
                 if (Object.keys(report.modifications).length > 0) {
                     console.log(`Should send modifications for ${this.objPile[i].name}`);
                     const payload = report.modifications;
-                    payload.pseudo = this.props.pseudo;
-                    payload.board = this.props.board.title;
+                    payload.pseudo = pseudo;
+                    payload.board = title;
                     payload.drawingId = this.objPile[i].id;
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.EDIT_OBJECT,
@@ -370,5 +381,6 @@ CanvasManager.propTypes = {
     board: PropTypes.any,
     pseudo: PropTypes.any,
     drawings: PropTypes.any,
+    setSelectedDrawing: PropTypes.any,
 };
 export default CanvasManager;

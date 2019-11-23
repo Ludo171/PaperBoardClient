@@ -23,6 +23,7 @@ class PaperBoardPage extends Component {
             paperboard,
             pseudo,
             drawers,
+            selectedDrawing: null,
         };
     }
 
@@ -78,8 +79,12 @@ class PaperBoardPage extends Component {
         });
     };
 
+    setSelectedDrawing = (selected) => {
+        this.setState({selectedDrawing: selected});
+    };
+
     render() {
-        const {paperboard, drawers, pseudo} = this.state;
+        const {paperboard, drawers, pseudo, selectedDrawing} = this.state;
         const resolutionHeight = 720;
         const resolutionWidth = 1080;
         return (
@@ -117,10 +122,11 @@ class PaperBoardPage extends Component {
                         board={paperboard}
                         pseudo={pseudo}
                         drawings={paperboard.drawings}
+                        setSelectedDrawing={this.setSelectedDrawing}
                     />
 
                     {/* SHAPE OPTIONS PANEL */}
-                    <EditShapePanel />
+                    <EditShapePanel selectedDrawing={selectedDrawing} />
                 </div>
                 {/* CHAT */}
                 <div

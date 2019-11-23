@@ -7,6 +7,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import {ColorLens, Delete} from "@material-ui/icons";
 import {Icon, Divider, ListSubheader} from "@material-ui/core";
 import ColorPicker from "./ColorPicker";
+import socketClientInstance from "../services/socket";
+import constants from "../config/constants";
 
 class EditShapePanel extends Component {
     constructor(props) {
@@ -17,10 +19,8 @@ class EditShapePanel extends Component {
     }
 
     onClickEditObject = (editionType) => {
-        alert("edit " + editionType);
         switch (editionType) {
             case "Color":
-                console.log("Color");
                 this.setState((prevState) => ({
                     isColorPickerToggled: !prevState.isColorPickerToggled,
                 }));
@@ -29,8 +29,24 @@ class EditShapePanel extends Component {
                 alert(editionType + " not handled");
         }
     };
+
+    handleColor = (_, hexColorCode) => {
+        const {selectedDrawing} = this.props;
+
+        if (selectedDrawing) {
+            selectedDrawing.lineColor = hexColorCode;
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.EDIT_OBJECT,
+                from: selectedDrawing.pseudo,
+                to: "server",
+                payload: selectedDrawing,
+            });
+        }
+    };
+
     render() {
         const {isColorPickerToggled} = this.state;
+        const {selectedDrawing} = this.props;
         return (
             <div style={{maxWidth: 360, backgroundColor: "white"}}>
                 <List
@@ -63,7 +79,8 @@ class EditShapePanel extends Component {
                         <ListItem
                             button
                             key={item.title}
-                            onClick={() => this.onClickEditObject(item.title)}>
+                            onClick={() => this.onClickEditObject(item.title)}
+                            disabled={!selectedDrawing}>
                             <ListItemIcon>{item.component}</ListItemIcon>
                             <ListItemText primary={item.title} />
                         </ListItem>
@@ -72,7 +89,7 @@ class EditShapePanel extends Component {
                 {isColorPickerToggled && (
                     <>
                         <Divider />
-                        <ColorPicker color={"lol"} hexColorCode={"lol"} handleColor={() => {}} />
+                        <ColorPicker color={""} hexColorCode={""} handleColor={this.handleColor} />
                     </>
                 )}
                 <Divider />
@@ -80,7 +97,8 @@ class EditShapePanel extends Component {
                     <ListItem
                         button
                         key={"Delete"}
-                        onClick={() => this.onClickEditObject("Delete")}>
+                        onClick={() => this.onClickEditObject("Delete")}
+                        disabled={!selectedDrawing}>
                         <ListItemIcon>
                             <Delete />
                         </ListItemIcon>
@@ -93,5 +111,6 @@ class EditShapePanel extends Component {
 }
 EditShapePanel.propTypes = {
     onClickEditObject: PropTypes.any,
+    selectedDrawing: PropTypes.any,
 };
 export default EditShapePanel;
