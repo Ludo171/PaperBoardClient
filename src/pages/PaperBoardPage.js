@@ -10,6 +10,7 @@ import * as backgroundImage from "../assets/cappuccino2.jpg";
 import ShapePanel from "../components/ShapePanel";
 import HeaderMenu from "../components/HeaderMenu";
 import ChatComponent from "../components/ChatComponent";
+import DeletePopUp from "../components/DeletePopUp";
 
 class PaperBoardPage extends Component {
     constructor(props) {
@@ -24,6 +25,8 @@ class PaperBoardPage extends Component {
             pseudo,
             drawers,
             selectedDrawing: null,
+            isDeletePopUpDisplayed: false,
+            deleteMsg: null,
         };
     }
 
@@ -44,6 +47,16 @@ class PaperBoardPage extends Component {
             (drawers) => {
                 this.setState({drawers});
             },
+            this
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DELETE_OBJECT,
+            this.handleObjectDelete,
+            this
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_DELETED,
+            this.handleObjectDeleted,
             this
         );
     }
@@ -67,6 +80,16 @@ class PaperBoardPage extends Component {
             },
             this
         );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DELETE_OBJECT,
+            this.handleObjectDelete,
+            this
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_DELETED,
+            this.handleObjectDeleted,
+            this
+        );
     }
 
     onQuit = () => {
@@ -83,8 +106,29 @@ class PaperBoardPage extends Component {
         this.setState({selectedDrawing: selected});
     };
 
+    handleObjectDelete = (msg) => {
+        this.setState((prevState) => ({
+            isDeletePopUpDisplayed: !prevState.isDeletePopUpDisplayed,
+            deleteMsg: !prevState.isDeletePopUpDisplayed ? msg : null,
+        }));
+    };
+
+    handleObjectDeleted = (msg) => {
+        const {selectedDrawing} = this.state;
+        if (selectedDrawing && selectedDrawing.drawingId === msg.drawingId) {
+            this.setState({selectedDrawing: null});
+        }
+    };
+
     render() {
-        const {paperboard, drawers, pseudo, selectedDrawing} = this.state;
+        const {
+            paperboard,
+            drawers,
+            pseudo,
+            selectedDrawing,
+            isDeletePopUpDisplayed,
+            deleteMsg,
+        } = this.state;
         const resolutionHeight = 720;
         const resolutionWidth = 1080;
         return (
@@ -97,6 +141,19 @@ class PaperBoardPage extends Component {
                 {/* TITLE BAR (ON THE TOP) */}
                 <HeaderMenu paperboard={paperboard} drawers={drawers} onQuit={this.onQuit} />
                 {/* PAPERBOARD PAGE */}
+                {isDeletePopUpDisplayed && deleteMsg && (
+                    <div
+                        style={{
+                            display: "flex",
+                            width: "100%",
+                            height: "100%",
+                            position: "absolute",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}>
+                        <DeletePopUp msg={deleteMsg} handleObjectDelete={this.handleObjectDelete} />
+                    </div>
+                )}
                 <div
                     style={{
                         display: "flex",

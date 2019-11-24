@@ -27,7 +27,8 @@ const generateCanvasObjectCircle = function(
         radius: creationOptions.radius || 50,
         lineWidth: creationOptions.lineWidth || 10,
         lineColor: creationOptions.lineColor || "red",
-        fillColor: creationOptions.linearColor || null,
+        lineStyle: creationOptions.lineStyle || "normal",
+        fillColor: creationOptions.fillColor || "transparent",
 
         isLocked: creationOptions.isLocked || false,
         lockedBy: creationOptions.lockedBy || "",
@@ -37,7 +38,8 @@ const generateCanvasObjectCircle = function(
             radius: creationOptions.radius || 50,
             lineWidth: creationOptions.lineWidth || 10,
             lineColor: creationOptions.lineColor || "red",
-            fillColor: creationOptions.linearColor || null,
+            lineStyle: creationOptions.lineStyle || "normal",
+            fillColor: creationOptions.fillColor || "transparent",
         },
         editionState: null, // null | "Resizing radius" | "Moving" | ...
         oldDragX: null,
@@ -50,9 +52,13 @@ const generateCanvasObjectCircle = function(
             this.ctx.lineWidth = this.lineWidth;
             this.ctx.strokeStyle = this.lineColor;
             this.ctx.arc(this.X, this.Y, this.radius, 0, 2 * Math.PI, true);
+            if (this.lineStyle === "dashed") {
+                this.ctx.setLineDash([8, 8]);
+            }
             this.ctx.stroke();
-            if (this.fillColor !== null) {
-                this.ctx.fillStyle = color(this.lockedBy);
+
+            if (this.fillColor !== "transparent") {
+                this.ctx.fillStyle = this.fillColor;
                 this.ctx.fill();
             }
 

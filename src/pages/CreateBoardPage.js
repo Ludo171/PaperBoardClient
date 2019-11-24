@@ -10,7 +10,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import * as backgroundImage from "../assets/Wood-4.jpg";
-import ColorPicker from "../components/ColorPicker";
+import ColorPicker from "../components/Picker";
+import {colors} from "../utils/colors";
 
 class CreateBoardPage extends Component {
     state = {
@@ -56,7 +57,8 @@ class CreateBoardPage extends Component {
         this.setState({title: event.target.value});
     };
 
-    handleColor = (color, hexColorCode) => {
+    handleColor = (response) => {
+        const {item: color, value: hexColorCode} = response;
         this.setState({color, hexColorCode});
     };
 
@@ -64,6 +66,7 @@ class CreateBoardPage extends Component {
         const {title, color} = this.state;
         createPaperBoard(title, color)
             .then((response) => {
+                console.log(response.data);
                 this.setState({paperboard: response.data}, () => {
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.JOIN_BOARD,
@@ -179,7 +182,10 @@ class CreateBoardPage extends Component {
                                 <ColorPicker
                                     color={color}
                                     hexColorCode={hexColorCode}
-                                    handleColor={this.handleColor}
+                                    handleClick={this.handleColor}
+                                    listField={colors}
+                                    field={"Background color"}
+                                    type={"color"}
                                 />
                             ) : null}
                             {isBackgroundImage ? <div>todo</div> : null}

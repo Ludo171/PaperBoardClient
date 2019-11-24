@@ -1,5 +1,5 @@
 const colors = {
-    aliceblue: "#f0f8ff",
+    transparent: "transparent",
     antiquewhite: "#faebd7",
     aquamarine: "#7fffd4",
     azure: "#f0ffff",

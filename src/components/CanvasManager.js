@@ -47,6 +47,11 @@ class CanvasManager extends Component {
             this.onObjectUnlocked,
             this.componentName
         );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_DELETED,
+            this.onObjectDeleted,
+            this.componentName
+        );
     }
 
     componentWillUnmount() {
@@ -75,6 +80,11 @@ class CanvasManager extends Component {
             this.onObjectUnlocked,
             this.componentName
         );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_DELETED,
+            this.onObjectDeleted,
+            this.componentName
+        );
     }
 
     generateObjectPile = (drawings) => {
@@ -101,6 +111,7 @@ class CanvasManager extends Component {
                                 radius: drawing.radius,
                                 lineWidth: drawing.lineWidth,
                                 lineColor: drawing.lineColor,
+                                fillColor: drawing.fillColor,
                                 isLocked: drawing.locked,
                                 lockedBy: drawing.lockedBy,
                             }
@@ -151,12 +162,14 @@ class CanvasManager extends Component {
             this.objPile[i].isLocked = true;
             this.objPile[i].lockedBy = lockedBy;
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
-            const {
-                pseudo,
-                board: {title},
-                setSelectedDrawing,
-            } = this.props;
-            setSelectedDrawing({pseudo, board: title, drawingId: objectId});
+            if (this.props.pseudo === lockedBy) {
+                const {
+                    pseudo,
+                    board: {title},
+                    setSelectedDrawing,
+                } = this.props;
+                setSelectedDrawing({pseudo, board: title, drawingId: objectId});
+            }
         }
     };
     onObjectUnlocked = (payload) => {
@@ -171,21 +184,26 @@ class CanvasManager extends Component {
             }
         }
         if (found) {
+            if (this.props.pseudo === this.objPile[i].lockedBy) {
+                const {setSelectedDrawing} = this.props;
+                setSelectedDrawing(null);
+            }
             this.objPile[i].isLocked = false;
             this.objPile[i].lockedBy = "";
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
-            const {setSelectedDrawing} = this.props;
-            setSelectedDrawing(null);
         }
     };
     onObjectEdited = (payload) => {
-        console.log("On Object Edited !");
-        console.log(payload);
         for (let i = 0; i < this.objPile.length; i++) {
             if (this.objPile[i].id === payload.drawingId) {
                 this.objPile[i].applyModifications(payload);
             }
         }
+        this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+    };
+
+    onObjectDeleted = (payload) => {
+        this.objPile = this.objPile.filter((obj) => obj.id !== payload.drawingId);
         this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
     };
 

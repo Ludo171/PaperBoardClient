@@ -72,6 +72,7 @@ class LoungePage extends Component {
     getAllPaperBoards = () => {
         getAllPaperBoards()
             .then((response) => {
+                console.log(response.data);
                 this.setState({paperboards: response.data});
             })
             .catch(function(error) {
@@ -93,6 +94,7 @@ class LoungePage extends Component {
     goToPaperBoard = (title) => {
         getPaperBoard(title)
             .then((response) => {
+                console.log(response.data);
                 this.setState({chosenPaperboard: response.data}, () => {
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.JOIN_BOARD,
