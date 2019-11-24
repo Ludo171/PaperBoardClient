@@ -46,7 +46,6 @@ const generateCanvasObjectCircle = function(
         oldDragY: null,
 
         refreshArea: function(x1, y1, x2, y2) {
-            console.log(this);
             this.ctx.save();
 
             this.ctx.beginPath();
