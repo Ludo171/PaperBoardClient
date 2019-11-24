@@ -44,6 +44,7 @@ class SocketClient {
             objCreatedHandlers: [],
             objEditedHandlers: [],
             objDeletedHandlers: [],
+            objAskDeleteHandlers: [],
             drawerConnectedHandlers: [],
             drawerDisconnectedHandlers: [],
         };
@@ -210,7 +211,7 @@ class SocketClient {
                     `Trigger object deleted (${this.handlers.objDeletedHandlers.length}).`
                 );
                 this.handlers.objDeletedHandlers.forEach((objDeletedHandler) =>
-                    objDeletedHandler()
+                    objDeletedHandler(data.payload)
                 );
                 break;
             case constants.SOCKET_MSG.DRAWER_CONNECTED:
@@ -227,6 +228,14 @@ class SocketClient {
                 );
                 this.handlers.drawerDisconnectedHandlers.forEach((drawerDisconnectedHandler) =>
                     drawerDisconnectedHandler(data.from)
+                );
+                break;
+            case constants.SOCKET_MSG.DELETE_OBJECT:
+                this.logger.log(
+                    `Trigger delete object handlers (${this.handlers.objAskDeleteHandlers.length}).`
+                );
+                this.handlers.objAskDeleteHandlers.forEach((objAskDeleteHandler) =>
+                    objAskDeleteHandler(data)
                 );
                 break;
             default:
@@ -306,6 +315,9 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.DRAWER_DISCONNECTED:
                 this.handlers.drawerDisconnectedHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.DELETE_OBJECT:
+                this.handlers.objAskDeleteHandlers.push(handler);
                 break;
             default:
                 this.logger.log(

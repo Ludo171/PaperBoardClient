@@ -10,7 +10,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import * as backgroundImage from "../assets/Wood-4.jpg";
-import ColorPicker from "../components/ColorPicker";
+import ColorPicker from "../components/Picker";
+import {colors} from "../utils/colors";
 
 class CreateBoardPage extends Component {
     state = {
@@ -76,46 +77,40 @@ class CreateBoardPage extends Component {
         this.setState({title: event.target.value});
     };
 
-    handleColor = (color, hexColorCode) => {
+    handleColor = (response) => {
+        const {item: color, value: hexColorCode} = response;
         this.setState({color, hexColorCode});
     };
 
     onCreatePaperBoard = () => {
-        const {title, color} = this.state;
+        const {title} = this.state;
         socketClientInstance.sendMessage({
             type: constants.SOCKET_MSG.CREATE_BOARD,
             from: this.state.pseudo,
             to: "server",
             payload: {
-                title
+                title,
             },
         });
     };
 
     handleAnswerCreateBoard = (data) => {
-        console.log('Handle Answer Create Board !!');
-        console.log(data);
         const {title} = this.state;
-        if(data.created === true){
+        if (data.created === true) {
             socketClientInstance.sendMessage({
-                        type: constants.SOCKET_MSG.GET_BOARD,
-                        from: this.state.pseudo,
-                        to: "server",
-                        payload: {title},
-                    });
-        }
-        else {
+                type: constants.SOCKET_MSG.GET_BOARD,
+                from: this.state.pseudo,
+                to: "server",
+                payload: {title},
+            });
+        } else {
             alert(
-                "A board with the name " +
-                    title +
-                    " already exists. Plesae consider another name"
+                "A board with the name " + title + " already exists. Plesae consider another name"
             );
         }
-    }
+    };
 
     handleAnswerGetBoard = (data) => {
-        console.log('Handle Get board data :');
-        console.log(data);
         this.setState({paperboard: data.paperboard}, () => {
             socketClientInstance.sendMessage({
                 type: constants.SOCKET_MSG.JOIN_BOARD,
@@ -124,8 +119,7 @@ class CreateBoardPage extends Component {
                 payload: {board: data.paperboard.title},
             });
         });
-    }
-
+    };
 
     handleJoinBoardServerResponse = (drawers) => {
         const {pseudo, paperboard} = this.state;
@@ -222,7 +216,10 @@ class CreateBoardPage extends Component {
                                 <ColorPicker
                                     color={color}
                                     hexColorCode={hexColorCode}
-                                    handleColor={this.handleColor}
+                                    handleClick={this.handleColor}
+                                    listField={colors}
+                                    field={"Background color"}
+                                    type={"color"}
                                 />
                             ) : null}
                             {isBackgroundImage ? <div>todo</div> : null}
