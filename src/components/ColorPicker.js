@@ -2,17 +2,21 @@ import React, {Component} from "react";
 import "./ColorPicker.scss";
 import PropTypes from "prop-types";
 
-const getColorList = (handleClick, listField) => {
+const getColorList = (handleClick, listField, type) => {
     const list = [];
     // eslint-disable-next-line guard-for-in
-    for (const color in listField) {
+    for (const key in listField) {
         list.push(
             <div
                 className="dropdown-item"
-                key={listField[color]}
-                onClick={() => handleClick({item: color, value: listField[color]})}>
+                key={listField[key]}
+                onClick={() => handleClick({item: key, value: listField[key]})}>
                 <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-                    <p style={{color: listField[color], fontSize: "3em"}}>&#9632;</p>
+                    {type === "color" ? (
+                        <p style={{color: listField[key], fontSize: "3em"}}>&#9632;</p>
+                    ) : (
+                        <div style={{fontSize: "3em"}}>{listField[key]}</div>
+                    )}
                 </div>
                 <hr className="dropdown-divider"></hr>
             </div>
@@ -23,7 +27,7 @@ const getColorList = (handleClick, listField) => {
 // type : color or number
 class ColorPicker extends Component {
     render() {
-        const {color, hexColorCode, handleClick, listField, field} = this.props;
+        const {color, hexColorCode, handleClick, listField, field, type} = this.props;
         return (
             <div className="dropdown">
                 <div className="dropdown is-hoverable">
@@ -32,19 +36,21 @@ class ColorPicker extends Component {
                             className="button"
                             aria-haspopup="true"
                             aria-controls="dropdown-menu4">
-                            <p
-                                style={{
-                                    color: hexColorCode,
-                                    marginRight: "5%",
-                                }}>
-                                &#9632;
-                            </p>
+                            {type === "color" && (
+                                <p
+                                    style={{
+                                        color: hexColorCode,
+                                        marginRight: "5%",
+                                    }}>
+                                    &#9632;
+                                </p>
+                            )}
                             <span>{color ? color : field}</span>
                         </button>
                     </div>
                     <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                         <div className="dropdown-content">
-                            {getColorList(handleClick, listField)}
+                            {getColorList(handleClick, listField, type)}
                         </div>
                     </div>
                 </div>

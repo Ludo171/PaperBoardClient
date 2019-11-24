@@ -11,6 +11,7 @@ import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import {colors} from "../utils/colors";
 import {lineSize} from "../utils/lineSize";
+import {lineStyles} from "../utils/lineStyle";
 
 class EditShapePanel extends Component {
     constructor(props) {
@@ -18,7 +19,24 @@ class EditShapePanel extends Component {
         this.state = {
             isLineColorPickerToggled: false,
             isLineWidthPickerToggled: false,
+            isLineStylePickerToggled: false,
+            isFillColorPickerToggled: false,
         };
+    }
+
+    // eslint-disable-next-line react/no-deprecated
+    componentWillReceiveProps(nextProps) {
+        if (
+            nextProps.selectedDrawing !== this.props.selectedDrawing &&
+            !nextProps.selectedDrawing
+        ) {
+            this.setState({
+                isLineColorPickerToggled: false,
+                isLineWidthPickerToggled: false,
+                isLineStylePickerToggled: false,
+                isFillColorPickerToggled: false,
+            });
+        }
     }
 
     onClickEditObject = (editionType) => {
@@ -33,6 +51,16 @@ class EditShapePanel extends Component {
                     isLineWidthPickerToggled: !prevState.isLineWidthPickerToggled,
                 }));
                 break;
+            case "LineStyle":
+                this.setState((prevState) => ({
+                    isLineStylePickerToggled: !prevState.isLineStylePickerToggled,
+                }));
+                break;
+            case "FillColor":
+                this.setState((prevState) => ({
+                    isFillColorPickerToggled: !prevState.isFillColorPickerToggled,
+                }));
+                break;
             default:
                 alert(editionType + " not handled");
         }
@@ -41,20 +69,69 @@ class EditShapePanel extends Component {
     handleColor = (resp) => {
         const {selectedDrawing} = this.props;
         const {value} = resp;
-
-        if (selectedDrawing) {
-            selectedDrawing.lineColor = value;
+        const payload = selectedDrawing;
+        if (payload) {
+            payload.lineColor = value;
             socketClientInstance.sendMessage({
                 type: constants.SOCKET_MSG.EDIT_OBJECT,
-                from: selectedDrawing.pseudo,
+                from: payload.pseudo,
                 to: "server",
-                payload: selectedDrawing,
+                payload: payload,
+            });
+        }
+    };
+
+    handleLineWidth = (resp) => {
+        const {selectedDrawing} = this.props;
+        const {item} = resp;
+        const payload = selectedDrawing;
+        if (payload) {
+            payload.lineWidth = item;
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.EDIT_OBJECT,
+                from: payload.pseudo,
+                to: "server",
+                payload: payload,
+            });
+        }
+    };
+
+    handleLineStyle = (resp) => {
+        const {selectedDrawing} = this.props;
+        const {item} = resp;
+        const payload = selectedDrawing;
+        if (payload) {
+            payload.lineStyle = item;
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.EDIT_OBJECT,
+                from: payload.pseudo,
+                to: "server",
+                payload: payload,
+            });
+        }
+    };
+    handleColorFillColor = (resp) => {
+        const {selectedDrawing} = this.props;
+        const {value} = resp;
+        const payload = selectedDrawing;
+        if (payload) {
+            payload.fillColor = value;
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.EDIT_OBJECT,
+                from: payload.pseudo,
+                to: "server",
+                payload: payload,
             });
         }
     };
 
     render() {
-        const {isLineColorPickerToggled, isLineWidthPickerToggled} = this.state;
+        const {
+            isLineColorPickerToggled,
+            isLineWidthPickerToggled,
+            isLineStylePickerToggled,
+            isFillColorPickerToggled,
+        } = this.state;
         const {selectedDrawing} = this.props;
         return (
             <div style={{maxWidth: 360, backgroundColor: "white"}}>
@@ -84,19 +161,45 @@ class EditShapePanel extends Component {
                         </ListItemIcon>
                         <ListItemText primary={"Color"} />
                     </ListItem>
-                    {isLineColorPickerToggled && (
-                        <>
-                            <Divider />
-                            <ColorPicker
-                                color={""}
-                                hexColorCode={""}
-                                handleClick={this.handleColor}
-                                listField={colors}
-                                field={"Line color"}
-                            />
-                        </>
-                    )}
                 </List>
+                {isLineColorPickerToggled && (
+                    <>
+                        <ColorPicker
+                            color={""}
+                            hexColorCode={""}
+                            handleClick={this.handleColor}
+                            listField={colors}
+                            field={"Line color"}
+                            type={"color"}
+                        />
+                    </>
+                )}
+                <List>
+                    <ListItem
+                        button
+                        key={"FillColor"}
+                        onClick={() => this.onClickEditObject("FillColor")}
+                        disabled={!selectedDrawing}>
+                        <ListItemIcon>
+                            <Icon>
+                                <img src={require("../assets/fillColor.png")} alt="" />
+                            </Icon>
+                        </ListItemIcon>
+                        <ListItemText primary={"Fill Color"} />
+                    </ListItem>
+                </List>
+                {isFillColorPickerToggled && (
+                    <>
+                        <ColorPicker
+                            color={""}
+                            hexColorCode={""}
+                            handleClick={this.handleColorFillColor}
+                            listField={colors}
+                            field={"Fill color"}
+                            type={"color"}
+                        />
+                    </>
+                )}
                 <List>
                     <ListItem
                         button
@@ -111,25 +214,39 @@ class EditShapePanel extends Component {
                         <ListItemText primary={"Width"} />
                     </ListItem>
                 </List>
-                {isLineColorPickerToggled && (
+                {isLineWidthPickerToggled && (
                     <>
-                        <Divider />
                         <ColorPicker
                             color={""}
                             hexColorCode={""}
-                            handleClick={this.handleColor}
-                            listField={colors}
-                            field={"Line color"}
+                            handleClick={this.handleLineWidth}
+                            listField={lineSize}
+                            field={"Line width"}
                         />
                     </>
                 )}
-                {isLineWidthPickerToggled && (
+                <List>
+                    <ListItem
+                        button
+                        key={"LineStyle"}
+                        onClick={() => this.onClickEditObject("LineStyle")}
+                        disabled={!selectedDrawing}>
+                        <ListItemIcon>
+                            <Icon>
+                                <img src={require("../assets/lineStyle.png")} alt="" />
+                            </Icon>
+                        </ListItemIcon>
+                        <ListItemText primary={"Line Style"} />
+                    </ListItem>
+                </List>
+                {isLineStylePickerToggled && (
                     <>
-                        <Divider />
                         <ColorPicker
-                            handleClick={() => console.log("handle")}
-                            listField={lineSize}
-                            field={"Line width"}
+                            color={""}
+                            hexColorCode={""}
+                            handleClick={this.handleLineStyle}
+                            listField={lineStyles}
+                            field={"Line style"}
                         />
                     </>
                 )}

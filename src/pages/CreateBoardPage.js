@@ -184,6 +184,7 @@ class CreateBoardPage extends Component {
                                     handleClick={this.handleColor}
                                     listField={colors}
                                     field={"Background color"}
+                                    type={"color"}
                                 />
                             ) : null}
                             {isBackgroundImage ? <div>todo</div> : null}
