@@ -2,6 +2,10 @@
     "name": "paperboard-client",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "npm": "6.10.3",
+        "node": "8.11.2"
+      },
     "homepage": "https://Ludo171.github.io/PaperBoardClient/",
     "dependencies": {
         "@material-ui/core": "^4.5.1",
