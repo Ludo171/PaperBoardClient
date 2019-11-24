@@ -115,7 +115,6 @@ class CanvasManager extends Component {
                                 lockedBy: drawing.lockedBy,
                             }
                         );
-                        break;
                 }
             });
         } else {
