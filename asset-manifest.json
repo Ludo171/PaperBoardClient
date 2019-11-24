@@ -1,22 +1,25 @@
 {
   "files": {
-    "main.css": "/PaperBoardClient/static/css/main.1ed7faa3.chunk.css",
-    "main.js": "/PaperBoardClient/static/js/main.6ef901c5.chunk.js",
-    "main.js.map": "/PaperBoardClient/static/js/main.6ef901c5.chunk.js.map",
+    "main.css": "/PaperBoardClient/static/css/main.bdfd4c72.chunk.css",
+    "main.js": "/PaperBoardClient/static/js/main.d7d17050.chunk.js",
+    "main.js.map": "/PaperBoardClient/static/js/main.d7d17050.chunk.js.map",
     "runtime-main.js": "/PaperBoardClient/static/js/runtime-main.557acf9c.js",
     "runtime-main.js.map": "/PaperBoardClient/static/js/runtime-main.557acf9c.js.map",
-    "static/js/2.473680fa.chunk.js": "/PaperBoardClient/static/js/2.473680fa.chunk.js",
-    "static/js/2.473680fa.chunk.js.map": "/PaperBoardClient/static/js/2.473680fa.chunk.js.map",
+    "static/js/2.080f08c1.chunk.js": "/PaperBoardClient/static/js/2.080f08c1.chunk.js",
+    "static/js/2.080f08c1.chunk.js.map": "/PaperBoardClient/static/js/2.080f08c1.chunk.js.map",
     "index.html": "/PaperBoardClient/index.html",
-    "precache-manifest.f363759b568ff1a111db8a7323d3d4f9.js": "/PaperBoardClient/precache-manifest.f363759b568ff1a111db8a7323d3d4f9.js",
+    "precache-manifest.63201d333d980c4fddaac1c270fe0803.js": "/PaperBoardClient/precache-manifest.63201d333d980c4fddaac1c270fe0803.js",
     "service-worker.js": "/PaperBoardClient/service-worker.js",
-    "static/css/main.1ed7faa3.chunk.css.map": "/PaperBoardClient/static/css/main.1ed7faa3.chunk.css.map",
-    "static/media/background-image.jpg": "/PaperBoardClient/static/media/background-image.1419a925.jpg"
+    "static/css/main.bdfd4c72.chunk.css.map": "/PaperBoardClient/static/css/main.bdfd4c72.chunk.css.map",
+    "static/media/Wood-4.jpg": "/PaperBoardClient/static/media/Wood-4.2688eadb.jpg",
+    "static/media/cappuccino2.jpg": "/PaperBoardClient/static/media/cappuccino2.3aad53f5.jpg",
+    "static/media/welcome.jpg": "/PaperBoardClient/static/media/welcome.c75afa30.jpg",
+    "static/media/wood.jpg": "/PaperBoardClient/static/media/wood.af6ca17a.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.557acf9c.js",
-    "static/js/2.473680fa.chunk.js",
-    "static/css/main.1ed7faa3.chunk.css",
-    "static/js/main.6ef901c5.chunk.js"
+    "static/js/2.080f08c1.chunk.js",
+    "static/css/main.bdfd4c72.chunk.css",
+    "static/js/main.d7d17050.chunk.js"
   ]
 }
