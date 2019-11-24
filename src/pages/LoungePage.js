@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
-import {getAllPaperBoards, getPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
 import "./LoungePage.scss";
 import Background from "../components/Background";
@@ -99,8 +98,6 @@ class LoungePage extends Component {
         });
     };
     handleAnswerGetAllBoards = (data) => {
-        console.log("Handle Get ALl !!");
-        console.log(data);
         this.setState({paperboards: data.paperboards});
     };
 
@@ -125,8 +122,6 @@ class LoungePage extends Component {
     };
 
     handleAnswerGetBoard = (data) => {
-        console.log("Handle Answer Get Board !!");
-        console.log(data);
         this.setState({chosenPaperboard: data.paperboard}, () => {
             socketClientInstance.sendMessage({
                 type: constants.SOCKET_MSG.JOIN_BOARD,

@@ -14,7 +14,6 @@ class DeletePopUp extends Component {
         payload.pseudo = msg.to;
         payload.board = msg.payload.board;
         payload.drawingId = msg.payload.drawingId;
-        console.log(payload);
         if (payload) {
             socketClientInstance.sendMessage({
                 type: constants.SOCKET_MSG.DELETE_OBJECT,
@@ -26,7 +25,6 @@ class DeletePopUp extends Component {
     };
     render() {
         const {msg, handleObjectDelete} = this.props;
-        console.log(msg);
         return (
             <div
                 style={{
