@@ -92,30 +92,35 @@ class CanvasManager extends Component {
         const keys = Object.keys(drawings);
         if (keys.length > 0) {
             return keys.map((key) => {
-                const drawing = drawings[key];
-                switch (drawing.type) {
+                const descr = drawings[key];
+                let drawing = {};
+                switch (descr.type) {
                     case "circle":
-                        return generateCanvasObjectCircle(
+                        drawing = generateCanvasObjectCircle(
                             ctx,
                             0,
                             0,
                             width,
                             height,
-                            drawing.id,
-                            drawing.owner.pseudo,
+                            descr.id,
+                            descr.owner.pseudo,
                             {
-                                X: drawing.position.x,
-                                Y: drawing.position.y,
-                                radius: drawing.radius,
-                                lineWidth: drawing.lineWidth,
-                                lineColor: drawing.lineColor,
-                                fillColor: drawing.fillColor,
-                                lineStyle: drawing.lineStyle,
-                                isLocked: drawing.isLocked,
-                                lockedBy: drawing.lockedBy,
+                                X: descr.position.x,
+                                Y: descr.position.y,
+                                radius: descr.radius,
+                                lineWidth: descr.lineWidth,
+                                lineColor: descr.lineColor,
+                                fillColor: descr.fillColor,
+                                lineStyle: descr.lineStyle,
+                                isLocked: descr.isLocked,
+                                lockedBy: descr.lockedBy,
                             }
                         );
+                        break;
+                    default:
+                        break;
                 }
+                return drawing;
             });
         } else {
             return [];

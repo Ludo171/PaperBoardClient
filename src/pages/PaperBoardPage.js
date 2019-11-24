@@ -28,68 +28,56 @@ class PaperBoardPage extends Component {
             isDeletePopUpDisplayed: false,
             deleteMsg: null,
         };
+        this.componentName = "PaperBoardPage";
+        this._mounted = false;
     }
 
     componentDidMount() {
+        this._mounted = true;
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_LEFT_BOARD,
-            (leaver, drawers) => {
-                this.setState({drawers});
-                const {pseudo} = this.state;
-                if (pseudo === leaver) {
-                    this.props.history.push({pathname: "/lounge", state: {pseudo}});
-                }
-            },
-            this
+            this.handleDrawerLeftBoard,
+            this.componentName
         );
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
-            (drawers) => {
-                this.setState({drawers});
-            },
-            this
+            this.handleDrawerJoinedBoard,
+            this.componentName
         );
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DELETE_OBJECT,
             this.handleObjectDelete,
-            this
+            this.componentName
         );
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.OBJECT_DELETED,
             this.handleObjectDeleted,
-            this
+            this.componentName
         );
     }
 
     componentWillUnmount() {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_LEFT_BOARD,
-            (leaver, drawers) => {
-                this.setState({drawers});
-                const {pseudo} = this.state;
-                if (pseudo === leaver) {
-                    this.props.history.push({pathname: "/lounge", state: {pseudo}});
-                }
-            },
-            this
+            this.handleDrawerLeftBoard,
+            this.componentName
         );
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
-            (drawers) => {
-                this.setState({drawers});
-            },
-            this
+            this.handleDrawerJoinedBoard,
+            this.componentName
         );
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DELETE_OBJECT,
             this.handleObjectDelete,
-            this
+            this.componentName
         );
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.OBJECT_DELETED,
             this.handleObjectDeleted,
-            this
+            this.componentName
         );
+        this._mounted = false;
     }
 
     onQuit = () => {
@@ -104,6 +92,20 @@ class PaperBoardPage extends Component {
 
     setSelectedDrawing = (selected) => {
         this.setState({selectedDrawing: selected});
+    };
+
+    handleDrawerLeftBoard = (leaver, drawers) => {
+        if (this._mounted) {
+            this.setState({drawers});
+            const {pseudo} = this.state;
+            if (pseudo === leaver) {
+                this.props.history.push({pathname: "/lounge", state: {pseudo}});
+            }
+        }
+    };
+
+    handleDrawerJoinedBoard = (drawers) => {
+        this.setState({drawers});
     };
 
     handleObjectDelete = (msg) => {

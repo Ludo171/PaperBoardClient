@@ -120,7 +120,7 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.ANSWER_GET_ALL_BOARDS:
                 this.logger.log(
-                    `Trigger identified handlers (${this.handlers.answerGetAllBoardsHandlers.length}).`
+                    `Trigger getAllBoards handlers (${this.handlers.answerGetAllBoardsHandlers.length}).`
                 );
                 this.handlers.answerGetAllBoardsHandlers.forEach((answerGetAllBoardsHandler) => {
                     answerGetAllBoardsHandler(data.payload);
@@ -128,7 +128,7 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.ANSWER_GET_BOARD:
                 this.logger.log(
-                    `Trigger identified handlers (${this.handlers.answerGetBoardHandlers.length}).`
+                    `Trigger GetBoard handlers (${this.handlers.answerGetBoardHandlers.length}).`
                 );
                 this.handlers.answerGetBoardHandlers.forEach((answerGetBoardHandler) => {
                     answerGetBoardHandler(data.payload);
@@ -136,11 +136,13 @@ class SocketClient {
                 break;
             case constants.SOCKET_MSG.ANSWER_CREATE_BOARD:
                 this.logger.log(
-                    `Trigger identified handlers (${this.handlers.answerCreatePaperBoardHandlers.length}).`
+                    `Trigger CreateBoard handlers (${this.handlers.answerCreatePaperBoardHandlers.length}).`
                 );
-                this.handlers.answerCreatePaperBoardHandlers.forEach((answerCreatePaperBoardHandler) => {
-                    answerCreatePaperBoardHandler(data.payload);
-                });
+                this.handlers.answerCreatePaperBoardHandlers.forEach(
+                    (answerCreatePaperBoardHandler) => {
+                        answerCreatePaperBoardHandler(data.payload);
+                    }
+                );
                 break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
                 this.logger.log(

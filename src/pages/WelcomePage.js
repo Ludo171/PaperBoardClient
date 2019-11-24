@@ -11,11 +11,15 @@ class WelcomePage extends Component {
     constructor(props) {
         super(props);
         this.state = {pseudo: ""};
+        this.componentName = "WelcomePage";
         socketClientInstance.init();
+    }
+
+    componentDidMount() {
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.IDENTIFY_ANSWER,
             this.handleServerLoginAnswer,
-            this
+            this.componentName
         );
     }
 
@@ -23,7 +27,7 @@ class WelcomePage extends Component {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.IDENTIFY_ANSWER,
             this.handleServerLoginAnswer,
-            this
+            this.componentName
         );
     }
 

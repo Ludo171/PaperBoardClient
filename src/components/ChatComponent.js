@@ -12,6 +12,7 @@ const color = require("string-to-color");
 class ChatComponent extends Component {
     constructor(props) {
         super(props);
+        this.componentName = "ChatComponent";
         this.state = {
             isChatDisplayed: false,
             textFieldValue: "",
@@ -23,7 +24,7 @@ class ChatComponent extends Component {
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.CHAT_MESSAGE,
             this.receiveMessage,
-            this
+            this.componentName
         );
     }
 
@@ -31,7 +32,7 @@ class ChatComponent extends Component {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.CHAT_MESSAGE,
             this.receiveMessage,
-            this
+            this.componentName
         );
     }
 

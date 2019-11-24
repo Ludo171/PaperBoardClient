@@ -14,20 +14,19 @@ import {colors} from "../utils/colors";
 import {DropzoneArea} from "material-ui-dropzone";
 
 class CreateBoardPage extends Component {
-    state = {
-        title: "",
-        color: "",
-        hexColorCode: "",
-        isBackgroundColor: false,
-        isBackgroundImage: false,
-        paperboard: null,
-        pseudo: "",
-        files: [],
-    };
-
     constructor(props) {
         super(props);
         this.componentName = "CreateBoardPage";
+        this.state = {
+            title: "",
+            color: "",
+            hexColorCode: "",
+            isBackgroundColor: false,
+            isBackgroundImage: false,
+            paperboard: null,
+            pseudo: "",
+            files: [],
+        };
     }
 
     componentDidMount = () => {

@@ -13,6 +13,8 @@ import PropTypes from "prop-types";
 class App extends Component {
     constructor(props) {
         super(props);
+        this.componentName = "App";
+        this.timeouts = [];
         if (window.performance) {
             if (performance.navigation.type === 1 && this.props.location.pathname !== "/") {
                 alert(
@@ -29,7 +31,7 @@ class App extends Component {
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.DRAWER_DISCONNECTED,
             this.handleDrawerDisconnected,
-            this
+            this.componentName
         );
     }
 
@@ -37,10 +39,11 @@ class App extends Component {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_DISCONNECTED,
             this.handleDrawerDisconnected,
-            this
+            this.componentName
         );
-        if (this.timeout) {
-            clearTimeout(this.timeout);
+        while (this.timeouts.length > 0) {
+            const t = this.timeouts.pop();
+            clearTimeout(t);
         }
     }
 
@@ -50,14 +53,16 @@ class App extends Component {
             3000,
             () => {}
         );
-        this.timeout = setTimeout(() => {
-            if (this.props.location.pathname !== "/") {
-                this.props.history.push({
-                    pathname: "/",
-                });
-            }
-            Toast.hide();
-        }, 3000);
+        this.timeouts.push(
+            setTimeout(() => {
+                if (this.props.location.pathname !== "/") {
+                    this.props.history.push({
+                        pathname: "/",
+                    });
+                }
+                Toast.hide();
+            }, 3000)
+        );
     };
 
     render() {

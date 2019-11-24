@@ -27,22 +27,22 @@ const columns = [
 ];
 
 class LoungePage extends Component {
-    timeouts = [];
-
-    state = {
-        pseudo: "must auth",
-        paperboards: [],
-        chosenPaperboard: null,
-    };
-
-    defaultBoardTitle = "default-paper-board";
-
     constructor(props) {
         super(props);
         this.componentName = "LoungePage";
+
+        this.timeouts = [];
+
+        this.state = {
+            pseudo: "must auth",
+            paperboards: [],
+            chosenPaperboard: null,
+        };
+        this._mounted = false;
     }
 
     componentDidMount() {
+        this._mounted = true;
         if (this.props.location && this.props.location.state) {
             const {
                 location: {
@@ -68,9 +68,13 @@ class LoungePage extends Component {
         );
         this.getAllPaperBoards();
         this.loopGetAllPaperBoards();
+        console.log("Lounge Page component did Mount");
+        console.log(this.state);
     }
 
     componentWillUnmount() {
+        console.log("Lounge Page component will unMount");
+        console.log(this.state);
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             this.handleJoinBoardServerResponse,
@@ -86,7 +90,12 @@ class LoungePage extends Component {
             this.handleJoinBoardServerResponse,
             this.componentName
         );
-        this.timeouts.forEach((timeout) => clearTimeout(timeout));
+
+        while (this.timeouts.length > 0) {
+            const t = this.timeouts.pop();
+            clearTimeout(t);
+        }
+        this._mounted = false;
     }
 
     getAllPaperBoards = () => {
@@ -98,7 +107,9 @@ class LoungePage extends Component {
         });
     };
     handleAnswerGetAllBoards = (data) => {
-        this.setState({paperboards: data.paperboards});
+        if (this._mounted) {
+            this.setState({paperboards: data.paperboards});
+        }
     };
 
     loopGetAllPaperBoards = () => {
