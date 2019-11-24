@@ -66,16 +66,25 @@ class WelcomePage extends Component {
                     alignItems: "center",
                 }}
                 imgSrc={backgroundImage}>
-                <div className="card">
-                    <div className="card-content">
+                <div className="card" style={{width: "fit-content", borderRadius: "10px"}}>
+                    <div
+                        className="card-content"
+                        style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
                         <p className="title is-1" style={{textAlign: "center"}}>
                             Welcome on PaperBoard !
                         </p>
-                        <p className="subtitle" style={{textAlign: "center"}}>
-                            {"Don't think too much, draw it !"}
+                        <p className="subtitle is-4" style={{textAlign: "center"}}>
+                            Don't think too much, draw it !
                         </p>
-                        <div className="card">
-                            <div className="card-content" id="card-input">
+                        <div className="card" style={{width: "fit-content", borderRadius: "10px"}}>
+                            <div
+                                className="card-content"
+                                id="card-input"
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                }}>
                                 <p className="title is-3">Your pseudo ?</p>
                                 <div className="box">
                                     <form onSubmit={this.onLogin}>
@@ -83,7 +92,7 @@ class WelcomePage extends Component {
                                             <p className="control has-icons-left">
                                                 <input
                                                     type="text"
-                                                    className="input is-success"
+                                                    className="input is-success is-medium"
                                                     placeholder="Pseudo"
                                                     value={this.state.value}
                                                     onChange={this.handleChange}></input>

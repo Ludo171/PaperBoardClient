@@ -20,7 +20,6 @@ class CanvasManager extends Component {
 
     componentDidMount() {
         this.setState({ctx: this.canvas.getContext("2d")}, () => {
-            console.log(this.props.drawings);
             this.objPile = this.generateObjectPile(this.props.drawings);
         });
         this.canvas.addEventListener("mousedown", (e) => this.handleMouseDown(e));
@@ -31,6 +30,11 @@ class CanvasManager extends Component {
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.OBJECT_CREATED,
             this.createCircle,
+            this.componentName
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_EDITED,
+            this.onObjectEdited,
             this.componentName
         );
         socketClientInstance.subscribeToEvent(
@@ -57,6 +61,11 @@ class CanvasManager extends Component {
             this.componentName
         );
         socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.OBJECT_EDITED,
+            this.onObjectEdited,
+            this.componentName
+        );
+        socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.OBJECT_LOCKED,
             this.onObjectLocked,
             this.componentName
@@ -69,6 +78,8 @@ class CanvasManager extends Component {
     }
 
     generateObjectPile = (drawings) => {
+        console.log("Generate Obj Pile !!");
+        console.log(drawings);
         const {ctx, width, height} = this.state;
         const keys = Object.keys(drawings);
         if (keys.length > 0) {
@@ -90,6 +101,8 @@ class CanvasManager extends Component {
                                 radius: drawing.radius,
                                 lineWidth: drawing.lineWidth,
                                 lineColor: drawing.lineColor,
+                                isLocked: drawing.locked,
+                                lockedBy: drawing.lockedBy,
                             }
                         );
                         break;
@@ -165,6 +178,16 @@ class CanvasManager extends Component {
             setSelectedDrawing(null);
         }
     };
+    onObjectEdited = (payload) => {
+        console.log("On Object Edited !");
+        console.log(payload);
+        for (let i = 0; i < this.objPile.length; i++) {
+            if (this.objPile[i].id === payload.drawingId) {
+                this.objPile[i].applyModifications(payload);
+            }
+        }
+        this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+    };
 
     // --- CANVAS MANAGEMENT
     _onResize() {
@@ -213,7 +236,10 @@ class CanvasManager extends Component {
             let i = this.objPile.length;
             let collisionIndex = null;
             while (i--) {
-                if (this.objPile[i].onMouseDown && this.objPile[i].onMouseDown(x, y)) {
+                if (
+                    this.objPile[i].onMouseDown &&
+                    this.objPile[i].onMouseDown(x, y, this.props.pseudo)
+                ) {
                     collisionIndex = i;
                     i = 0; // end of collision detection
                 }
@@ -221,7 +247,7 @@ class CanvasManager extends Component {
 
             // Unlock any other object not selected on this click
             for (let i = 0; i < this.objPile.length; i++) {
-                if (i !== collisionIndex && this.objPile[i].isLocked) {
+                if (i !== collisionIndex && this.objPile[i].lockedBy === this.props.pseudo) {
                     // Unlock any object that has been previously locked
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.UNLOCK_OBJECT,
@@ -237,7 +263,6 @@ class CanvasManager extends Component {
             // Try to lock the selected object
             if (collisionIndex !== null && !this.objPile[collisionIndex].isLocked) {
                 const object = this.objPile[collisionIndex];
-                console.log(this.props);
                 socketClientInstance.sendMessage({
                     type: constants.SOCKET_MSG.LOCK_OBJECT,
                     from: this.props.pseudo,
@@ -246,6 +271,10 @@ class CanvasManager extends Component {
                         drawingId: object.id,
                     },
                 });
+            }
+
+            if (collisionIndex === null) {
+                console.log(this.objPile);
             }
         }
     }
@@ -264,14 +293,17 @@ class CanvasManager extends Component {
             let i = this.objPile.length;
             let collisionIndex = null;
             while (i--) {
-                if (this.objPile[i].onMouseHover && this.objPile[i].onMouseHover(x, y)) {
+                if (
+                    this.objPile[i].onMouseHover &&
+                    this.objPile[i].onMouseHover(x, y, this.props.pseudo)
+                ) {
                     collisionIndex = i;
                     i = 0; // end of collision detection
                 }
             }
             if (collisionIndex === null) {
                 const elementToChange = document.getElementsByTagName("body")[0];
-                elementToChange.style.cursor = "url('cursor url with protocol'), pointer";
+                elementToChange.style.cursor = "url('cursor url with protocol'), default";
             }
         } else if (e.which === 1) {
             const rect = this.canvas.getBoundingClientRect();
@@ -285,7 +317,10 @@ class CanvasManager extends Component {
             let i = this.objPile.length;
             let collisionIndex = null;
             while (i--) {
-                if (this.objPile[i].onMouseDrag && this.objPile[i].onMouseDrag(x, y)) {
+                if (
+                    this.objPile[i].onMouseDrag &&
+                    this.objPile[i].onMouseDrag(x, y, this.props.pseudo)
+                ) {
                     collisionIndex = i;
                     i = 0; // end of collision detection
                 }
@@ -301,7 +336,7 @@ class CanvasManager extends Component {
             pseudo,
             board: {title},
         } = this.props;
-        // Handle left click down
+        // Handle left click up
         if (e.which === 1) {
             const rect = this.canvas.getBoundingClientRect();
             const x =
@@ -311,12 +346,9 @@ class CanvasManager extends Component {
                 ((e.clientY - rect.top) * this.state.height) /
                 Number(this.canvas.style.height.replace("px", ""));
 
-            console.log("ON MOUSE UP");
             for (let i = 0; i < this.objPile.length; i++) {
-                const report = this.objPile[i].onMouseUp(x, y);
-                console.log(report);
+                const report = this.objPile[i].onMouseUp(x, y, this.props.pseudo);
                 if (Object.keys(report.modifications).length > 0) {
-                    console.log(`Should send modifications for ${this.objPile[i].name}`);
                     const payload = report.modifications;
                     payload.pseudo = pseudo;
                     payload.board = title;

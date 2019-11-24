@@ -137,18 +137,20 @@ class LoungePage extends Component {
                 <h1
                     style={{
                         fontWeight: "bold",
-                        fontSize: "4em",
-                        marginBottom: 25,
+                        fontSize: "3em",
+                        marginBottom: 5,
                         color: "white",
                         textAlign: "center",
                     }}>
-                    {`${pseudo} choose your place of inspiration`}
+                    {`${pseudo.charAt(0).toUpperCase()}${pseudo.substring(
+                        1
+                    )}, find your place of inspiration !`}
                 </h1>
-                <div className="card">
+                <div className="card" style={{borderRadius: "10px"}}>
                     <div className="card-content">
-                        <div className="title is-1">
-                            <h1>{"Join a Board"}</h1>
-                        </div>
+                        <p className="title is-1" style={{textAlign: "center"}}>
+                            Join a Board
+                        </p>
                         <MaterialTable
                             title={
                                 <div

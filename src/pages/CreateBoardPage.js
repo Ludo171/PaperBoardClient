@@ -131,11 +131,11 @@ class CreateBoardPage extends Component {
                     alignItems: "center",
                 }}
                 imgSrc={backgroundImage}>
-                <div className="card">
+                <div className="card" style={{borderRadius: "10px"}}>
                     <div className="card-content">
-                        <h1 style={{fontWeight: "bold", fontSize: "4em", textAlign: "center"}}>
+                        <p className="title is-1" style={{textAlign: "center"}}>
                             Set up your board and create it !
-                        </h1>
+                        </p>
                         <div className="field">
                             <p className="control has-icons-left">
                                 <input
