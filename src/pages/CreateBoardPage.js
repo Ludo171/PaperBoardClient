@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
-import {createPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
 import "./CreateBoardPage.scss";
 import Background from "../components/Background";
@@ -12,6 +11,7 @@ import constants from "../config/constants";
 import * as backgroundImage from "../assets/Wood-4.jpg";
 import ColorPicker from "../components/Picker";
 import {colors} from "../utils/colors";
+import {DropzoneArea} from "material-ui-dropzone";
 
 class CreateBoardPage extends Component {
     state = {
@@ -20,10 +20,9 @@ class CreateBoardPage extends Component {
         hexColorCode: "",
         isBackgroundColor: false,
         isBackgroundImage: false,
-        isSwitchBgColorDisabled: false,
-        isSwitchBgImageDisabled: false,
         paperboard: null,
         pseudo: "",
+        files: [],
     };
 
     constructor(props) {
@@ -134,29 +133,25 @@ class CreateBoardPage extends Component {
             this.setState({
                 isBackgroundColor: event.target.checked,
                 isBackgroundImage: false,
-                isSwitchBgColorDisabled: false,
-                isSwitchBgImageDisabled: event.target.checked,
             });
         } else {
             this.setState({
                 isBackgroundColor: false,
                 isBackgroundImage: event.target.checked,
-                isSwitchBgColorDisabled: event.target.checked,
-                isSwitchBgImageDisabled: false,
             });
         }
         this.setState({color: "", hexColorCode: ""});
     };
 
+    handleImage = (files) => {
+        this.setState({
+            files: files,
+        });
+        console.log(files);
+    };
+
     render() {
-        const {
-            color,
-            hexColorCode,
-            isBackgroundColor,
-            isSwitchBgImageDisabled,
-            isSwitchBgColorDisabled,
-            isBackgroundImage,
-        } = this.state;
+        const {color, hexColorCode, isBackgroundColor, isBackgroundImage} = this.state;
         return (
             <Background
                 customStyle={{
@@ -194,7 +189,6 @@ class CreateBoardPage extends Component {
                                             value="checkedA"
                                         />
                                     }
-                                    disabled={isSwitchBgColorDisabled}
                                     label="Background Color"
                                 />
                                 <FormControlLabel
@@ -206,7 +200,6 @@ class CreateBoardPage extends Component {
                                             color="primary"
                                         />
                                     }
-                                    disabled={isSwitchBgImageDisabled}
                                     label="Background Image"
                                 />
                             </FormGroup>
@@ -222,7 +215,9 @@ class CreateBoardPage extends Component {
                                     type={"color"}
                                 />
                             ) : null}
-                            {isBackgroundImage ? <div>todo</div> : null}
+                            {isBackgroundImage ? (
+                                <DropzoneArea onChange={this.handleImage} />
+                            ) : null}
                         </div>
                     </div>
                 </div>

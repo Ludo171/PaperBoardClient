@@ -10,6 +10,7 @@
         "bulma": "^0.7.5",
         "light-toast": "^0.2.1",
         "material-table": "^1.52.0",
+        "material-ui-dropzone": "^2.4.7",
         "moment": "^2.24.0",
         "react": "^16.10.2",
         "react-dom": "^16.10.2",
