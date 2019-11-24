@@ -27,6 +27,8 @@ const columns = [
 ];
 
 class LoungePage extends Component {
+    timeouts = [];
+
     state = {
         pseudo: "must auth",
         paperboards: [],
@@ -84,9 +86,7 @@ class LoungePage extends Component {
             this.handleJoinBoardServerResponse,
             this.componentName
         );
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
+        this.timeouts.forEach((timeout) => clearTimeout(timeout));
     }
 
     getAllPaperBoards = () => {
@@ -102,10 +102,12 @@ class LoungePage extends Component {
     };
 
     loopGetAllPaperBoards = () => {
-        this.timeout = setTimeout(() => {
-            this.getAllPaperBoards();
-            this.loopGetAllPaperBoards();
-        }, 30000);
+        this.timeouts.push(
+            setTimeout(() => {
+                this.getAllPaperBoards();
+                this.loopGetAllPaperBoards();
+            }, 30000)
+        );
     };
 
     onCreatePaperBoard = () => {
