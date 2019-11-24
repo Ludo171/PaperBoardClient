@@ -10,8 +10,6 @@ import constants from "./config/constants";
 import "./App.scss";
 import PropTypes from "prop-types";
 
-require("dotenv").config();
-
 class App extends Component {
     constructor(props) {
         super(props);

@@ -38,13 +38,7 @@ class LoungePage extends Component {
 
     constructor(props) {
         super(props);
-        this.getAllPaperBoards();
-        this.loopGetAllPaperBoards();
-        socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
-            this.handleJoinBoardServerResponse,
-            this
-        );
+        this.componentName = "LoungePage";
     }
 
     componentDidMount() {
@@ -56,13 +50,40 @@ class LoungePage extends Component {
             } = this.props;
             this.setState({pseudo});
         }
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.ANSWER_GET_ALL_BOARDS,
+            this.handleAnswerGetAllBoards,
+            this.componentName
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.ANSWER_GET_BOARD,
+            this.handleAnswerGetBoard,
+            this.componentName
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this.componentName
+        );
+        this.getAllPaperBoards();
+        this.loopGetAllPaperBoards();
     }
 
     componentWillUnmount() {
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             this.handleJoinBoardServerResponse,
-            this
+            this.componentName
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.ANSWER_GET_BOARD,
+            this.handleAnswerGetBoard,
+            this.componentName
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this.componentName
         );
         if (this.timeout) {
             clearTimeout(this.timeout);
@@ -70,13 +91,17 @@ class LoungePage extends Component {
     }
 
     getAllPaperBoards = () => {
-        getAllPaperBoards()
-            .then((response) => {
-                this.setState({paperboards: response.data});
-            })
-            .catch(function(error) {
-                alert("getAllPaperBoards" + error);
-            });
+        socketClientInstance.sendMessage({
+            type: constants.SOCKET_MSG.GET_ALL_BOARDS,
+            from: this.state.pseudo,
+            to: "server",
+            payload: {},
+        });
+    };
+    handleAnswerGetAllBoards = (data) => {
+        console.log("Handle Get ALl !!");
+        console.log(data);
+        this.setState({paperboards: data.paperboards});
     };
 
     loopGetAllPaperBoards = () => {
@@ -91,20 +116,25 @@ class LoungePage extends Component {
     };
 
     goToPaperBoard = (title) => {
-        getPaperBoard(title)
-            .then((response) => {
-                this.setState({chosenPaperboard: response.data}, () => {
-                    socketClientInstance.sendMessage({
-                        type: constants.SOCKET_MSG.JOIN_BOARD,
-                        from: this.state.pseudo,
-                        to: "server",
-                        payload: {board: title},
-                    });
-                });
-            })
-            .catch(function(error) {
-                alert(error);
+        socketClientInstance.sendMessage({
+            type: constants.SOCKET_MSG.GET_BOARD,
+            from: this.state.pseudo,
+            to: "server",
+            payload: {title},
+        });
+    };
+
+    handleAnswerGetBoard = (data) => {
+        console.log("Handle Answer Get Board !!");
+        console.log(data);
+        this.setState({chosenPaperboard: data.paperboard}, () => {
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.JOIN_BOARD,
+                from: this.state.pseudo,
+                to: "server",
+                payload: {board: data.paperboard.title},
             });
+        });
     };
 
     handleJoinBoardServerResponse = (drawers) => {
@@ -123,6 +153,7 @@ class LoungePage extends Component {
             paperboard.creationDate = moment(paperboard.creationDate).format(
                 "dddd, MMMM Do YYYY, h:mm:ss a"
             );
+            paperboard.drawers = paperboard.drawers.length;
             return paperboard;
         });
         return (

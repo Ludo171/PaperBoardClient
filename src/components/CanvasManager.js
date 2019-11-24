@@ -101,7 +101,7 @@ class CanvasManager extends Component {
                                 radius: drawing.radius,
                                 lineWidth: drawing.lineWidth,
                                 lineColor: drawing.lineColor,
-                                isLocked: drawing.locked,
+                                isLocked: drawing.isLocked,
                                 lockedBy: drawing.lockedBy,
                             }
                         );

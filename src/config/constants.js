@@ -2,6 +2,9 @@ const constants = {
     SOCKET_MSG: {
         //   CLIENTS ---> SERVER
         IDENTIFY: "Ask Pseudo",
+        GET_BOARD: "Get Board",
+        GET_ALL_BOARDS: "Get All Boards",
+        CREATE_BOARD:"Create Board",
         JOIN_BOARD: "Join Board",
         LEAVE_BOARD: "Leave Board",
         CREATE_OBJECT: "Create Object",
@@ -15,6 +18,9 @@ const constants = {
 
         //   SERVER ---> CLIENTS
         IDENTIFY_ANSWER: "Pseudo Request Answer",
+        ANSWER_GET_BOARD: "Answer Get Board",
+        ANSWER_GET_ALL_BOARDS: "Answer Get All Boards",
+        ANSWER_CREATE_BOARD: "Answer Create Board",
         DRAWER_JOIN_BOARD: "New Drawer Joined Board",
         DRAWER_LEFT_BOARD: "Drawer Left Board",
         DRAWER_DISCONNECTED: "Drawer Disconnected",

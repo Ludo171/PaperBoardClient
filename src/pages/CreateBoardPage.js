@@ -27,12 +27,7 @@ class CreateBoardPage extends Component {
 
     constructor(props) {
         super(props);
-
-        socketClientInstance.subscribeToEvent(
-            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
-            this.handleJoinBoardServerResponse,
-            this
-        );
+        this.componentName = "CreateBoardPage";
     }
 
     componentDidMount = () => {
@@ -40,13 +35,38 @@ class CreateBoardPage extends Component {
             location: {state},
         } = this.props;
         this.setState({pseudo: state ? state.pseudo : ""});
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.ANSWER_CREATE_BOARD,
+            this.handleAnswerCreateBoard,
+            this.componentName
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.ANSWER_GET_BOARD,
+            this.handleAnswerGetBoard,
+            this.componentName
+        );
+        socketClientInstance.subscribeToEvent(
+            constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
+            this.handleJoinBoardServerResponse,
+            this.componentName
+        );
     };
 
     componentWillUnmount() {
         socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.ANSWER_CREATE_BOARD,
+            this.handleAnswerCreateBoard,
+            this.componentName
+        );
+        socketClientInstance.unsubscribeToEvent(
+            constants.SOCKET_MSG.ANSWER_GET_BOARD,
+            this.handleAnswerGetBoard,
+            this.componentName
+        );
+        socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             this.handleJoinBoardServerResponse,
-            this
+            this.componentName
         );
     }
 
@@ -62,27 +82,50 @@ class CreateBoardPage extends Component {
 
     onCreatePaperBoard = () => {
         const {title, color} = this.state;
-        createPaperBoard(title, color)
-            .then((response) => {
-                this.setState({paperboard: response.data}, () => {
-                    socketClientInstance.sendMessage({
-                        type: constants.SOCKET_MSG.JOIN_BOARD,
+        socketClientInstance.sendMessage({
+            type: constants.SOCKET_MSG.CREATE_BOARD,
+            from: this.state.pseudo,
+            to: "server",
+            payload: {
+                title
+            },
+        });
+    };
+
+    handleAnswerCreateBoard = (data) => {
+        console.log('Handle Answer Create Board !!');
+        console.log(data);
+        const {title} = this.state;
+        if(data.created === true){
+            socketClientInstance.sendMessage({
+                        type: constants.SOCKET_MSG.GET_BOARD,
                         from: this.state.pseudo,
                         to: "server",
-                        payload: {board: title},
+                        payload: {title},
                     });
-                });
-            })
-            .catch(function(error) {
-                if (error.response.status === 409) {
-                    alert(
-                        "A board with the name " +
-                            title +
-                            " already exists. Plesae consider another name"
-                    );
-                }
+        }
+        else {
+            alert(
+                "A board with the name " +
+                    title +
+                    " already exists. Plesae consider another name"
+            );
+        }
+    }
+
+    handleAnswerGetBoard = (data) => {
+        console.log('Handle Get board data :');
+        console.log(data);
+        this.setState({paperboard: data.paperboard}, () => {
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.JOIN_BOARD,
+                from: this.state.pseudo,
+                to: "server",
+                payload: {board: data.paperboard.title},
             });
-    };
+        });
+    }
+
 
     handleJoinBoardServerResponse = (drawers) => {
         const {pseudo, paperboard} = this.state;

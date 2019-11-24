@@ -32,6 +32,9 @@ class SocketClient {
 
         this.handlers = {
             identifiedHandlers: [],
+            answerGetAllBoardsHandlers: [],
+            answerGetBoardHandlers: [],
+            answerCreatePaperBoardHandlers: [],
             drawerJoinedBoardHandlers: [],
             drawerLeftBoardHandlers: [],
             chatMessageHandlers: [],
@@ -112,6 +115,30 @@ class SocketClient {
                 );
                 this.handlers.identifiedHandlers.forEach((identifiedHandler) => {
                     identifiedHandler(data);
+                });
+                break;
+            case constants.SOCKET_MSG.ANSWER_GET_ALL_BOARDS:
+                this.logger.log(
+                    `Trigger identified handlers (${this.handlers.answerGetAllBoardsHandlers.length}).`
+                );
+                this.handlers.answerGetAllBoardsHandlers.forEach((answerGetAllBoardsHandler) => {
+                    answerGetAllBoardsHandler(data.payload);
+                });
+                break;
+            case constants.SOCKET_MSG.ANSWER_GET_BOARD:
+                this.logger.log(
+                    `Trigger identified handlers (${this.handlers.answerGetBoardHandlers.length}).`
+                );
+                this.handlers.answerGetBoardHandlers.forEach((answerGetBoardHandler) => {
+                    answerGetBoardHandler(data.payload);
+                });
+                break;
+            case constants.SOCKET_MSG.ANSWER_CREATE_BOARD:
+                this.logger.log(
+                    `Trigger identified handlers (${this.handlers.answerCreatePaperBoardHandlers.length}).`
+                );
+                this.handlers.answerCreatePaperBoardHandlers.forEach((answerCreatePaperBoardHandler) => {
+                    answerCreatePaperBoardHandler(data.payload);
                 });
                 break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
@@ -238,6 +265,15 @@ class SocketClient {
             case constants.SOCKET_MSG.IDENTIFY_ANSWER:
                 this.handlers.identifiedHandlers.push(handler);
                 break;
+            case constants.SOCKET_MSG.ANSWER_GET_ALL_BOARDS:
+                this.handlers.answerGetAllBoardsHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.ANSWER_GET_BOARD:
+                this.handlers.answerGetBoardHandlers.push(handler);
+                break;
+            case constants.SOCKET_MSG.ANSWER_CREATE_BOARD:
+                this.handlers.answerCreatePaperBoardHandlers.push(handler);
+                break;
             case constants.SOCKET_MSG.DRAWER_JOIN_BOARD:
                 this.handlers.drawerJoinedBoardHandlers.push(handler);
                 break;
@@ -282,6 +318,21 @@ class SocketClient {
         switch (eventName) {
             case constants.SOCKET_MSG.IDENTIFY_ANSWER:
                 this.handlers.identifiedHandlers = this.handlers.identifiedHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.ANSWER_GET_BOARD:
+                this.handlers.answerGetBoardHandlers = this.handlers.answerGetBoardHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.ANSWER_GET_ALL_BOARDS:
+                this.handlers.answerGetAllBoardsHandlers = this.handlers.answerGetAllBoardsHandlers.filter(
+                    (fn) => fn !== handler
+                );
+                break;
+            case constants.SOCKET_MSG.ANSWER_CREATE_BOARD:
+                this.handlers.answerCreatePaperBoardHandlers = this.handlers.answerCreatePaperBoardHandlers.filter(
                     (fn) => fn !== handler
                 );
                 break;
