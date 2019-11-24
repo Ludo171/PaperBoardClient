@@ -1,6 +1,6 @@
 const lineStyles = {
-    normal: "---",
-    dashed: "—",
+    dashed: "---",
+    normal: "—",
 };
 
 export {lineStyles};

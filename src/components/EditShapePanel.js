@@ -6,7 +6,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import {ColorLens, Delete} from "@material-ui/icons";
 import {Icon, Divider, ListSubheader} from "@material-ui/core";
-import ColorPicker from "./ColorPicker";
+import ColorPicker from "./Picker";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import {colors} from "../utils/colors";
@@ -118,6 +118,19 @@ class EditShapePanel extends Component {
             payload.fillColor = value;
             socketClientInstance.sendMessage({
                 type: constants.SOCKET_MSG.EDIT_OBJECT,
+                from: payload.pseudo,
+                to: "server",
+                payload: payload,
+            });
+        }
+    };
+
+    handleDeleteObject = () => {
+        const {selectedDrawing} = this.props;
+        const payload = selectedDrawing;
+        if (payload) {
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.DELETE_OBJECT,
                 from: payload.pseudo,
                 to: "server",
                 payload: payload,
@@ -255,7 +268,7 @@ class EditShapePanel extends Component {
                     <ListItem
                         button
                         key={"Delete"}
-                        onClick={() => this.onClickEditObject("Delete")}
+                        onClick={this.handleDeleteObject}
                         disabled={!selectedDrawing}>
                         <ListItemIcon>
                             <Delete />

@@ -10,7 +10,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import * as backgroundImage from "../assets/Wood-4.jpg";
-import ColorPicker from "../components/ColorPicker";
+import ColorPicker from "../components/Picker";
 import {colors} from "../utils/colors";
 
 class CreateBoardPage extends Component {
@@ -66,6 +66,7 @@ class CreateBoardPage extends Component {
         const {title, color} = this.state;
         createPaperBoard(title, color)
             .then((response) => {
+                console.log(response.data);
                 this.setState({paperboard: response.data}, () => {
                     socketClientInstance.sendMessage({
                         type: constants.SOCKET_MSG.JOIN_BOARD,

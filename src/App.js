@@ -15,16 +15,16 @@ require("dotenv").config();
 class App extends Component {
     constructor(props) {
         super(props);
-        // if (window.performance) {
-        //     if (performance.navigation.type === 1 && this.props.location.pathname !== "/") {
-        //         alert(
-        //             "This page is reloaded, you will be disconnected and redirected to the login page"
-        //         );
-        //         this.props.history.push({
-        //             pathname: "/",
-        //         });
-        //     }
-        // }
+        if (window.performance) {
+            if (performance.navigation.type === 1 && this.props.location.pathname !== "/") {
+                alert(
+                    "This page is reloaded, you will be disconnected and redirected to the login page"
+                );
+                this.props.history.push({
+                    pathname: "/",
+                });
+            }
+        }
     }
 
     componentDidMount() {
