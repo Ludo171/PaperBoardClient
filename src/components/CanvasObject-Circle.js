@@ -106,9 +106,6 @@ const generateCanvasObjectCircle = function(
 
         applyModifications: function(payload) {
             const keys = Object.keys(this.previousState);
-            console.log(`ApplyModifications pour ${this.name}`);
-            console.log(payload);
-            console.log(keys);
             for (let i = 0; i < keys.length; i++) {
                 if (payload.hasOwnProperty(keys[i])) {
                     const newValue = isNaN(this.previousState[keys[i]])
@@ -120,24 +117,22 @@ const generateCanvasObjectCircle = function(
             }
         },
 
-        onMouseDown: function(x, y) {
+        onMouseDown: function(x, y, myPseudo) {
             const movingSquareRadius = this.radius * this.radius;
             const resizingSquareRadius =
                 (this.radius + this.lineWidth + 10) * (this.radius + this.lineWidth + 10);
             const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
-            if (squareDistance < movingSquareRadius) {
-                if (this.isLocked) {
-                    this.editionState = "Moving";
-                    this.oldDragX = x;
-                    this.oldDragY = y;
-                }
+            if (!this.isLocked && squareDistance < resizingSquareRadius) {
                 return true;
-            } else if (squareDistance < resizingSquareRadius) {
-                if (this.isLocked) {
-                    this.editionState = "Resizing radius";
-                    this.oldDragX = x;
-                    this.oldDragY = y;
-                }
+            } else if (this.lockedBy === myPseudo && squareDistance < movingSquareRadius) {
+                this.editionState = "Moving";
+                this.oldDragX = x;
+                this.oldDragY = y;
+                return true;
+            } else if (this.lockedBy === myPseudo && squareDistance < resizingSquareRadius) {
+                this.editionState = "Resizing radius";
+                this.oldDragX = x;
+                this.oldDragY = y;
                 return true;
             } else {
                 return false;
@@ -166,8 +161,8 @@ const generateCanvasObjectCircle = function(
             }
         },
 
-        onMouseDrag: function(x, y) {
-            if (this.isLocked && this.editionState === "Resizing radius") {
+        onMouseDrag: function(x, y, myPseudo) {
+            if (this.lockedBy === myPseudo && this.editionState === "Resizing radius") {
                 const oldDist = Math.sqrt(
                     (this.oldDragX - this.X) * (this.oldDragX - this.X) +
                         (this.oldDragY - this.Y) * (this.oldDragY - this.Y)
@@ -179,7 +174,7 @@ const generateCanvasObjectCircle = function(
                 this.oldDragX = x;
                 this.oldDragY = y;
                 return true;
-            } else if (this.isLocked && this.editionState === "Moving") {
+            } else if (this.lockedBy === myPseudo && this.editionState === "Moving") {
                 this.X += x - this.oldDragX;
                 this.Y += y - this.oldDragY;
                 this.oldDragX = x;
@@ -189,11 +184,11 @@ const generateCanvasObjectCircle = function(
             return false;
         },
 
-        onMouseUp: function(x, y) {
+        onMouseUp: function(x, y, myPseudo) {
             this.editionState = null;
             this.oldDragX = null;
             this.oldDragY = null;
-            const result = {modifications: {}, shouldUnlock: true};
+            const result = {modifications: {}, shouldUnlock: false};
             const keys = Object.keys(this.previousState);
             for (let i = 0; i < keys.length; i++) {
                 if (this.previousState[keys[i]] !== this[keys[i]]) {
@@ -205,8 +200,8 @@ const generateCanvasObjectCircle = function(
             const resizingSquareRadius =
                 (this.radius + this.lineWidth + 10) * (this.radius + this.lineWidth + 10);
             const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
-            if (squareDistance < resizingSquareRadius) {
-                result.shouldUnlock = false;
+            if (this.lockedBy === myPseudo && squareDistance > resizingSquareRadius) {
+                result.shouldUnlock = true;
             }
             return result;
         },

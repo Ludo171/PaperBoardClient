@@ -236,7 +236,10 @@ class CanvasManager extends Component {
             let i = this.objPile.length;
             let collisionIndex = null;
             while (i--) {
-                if (this.objPile[i].onMouseDown && this.objPile[i].onMouseDown(x, y)) {
+                if (
+                    this.objPile[i].onMouseDown &&
+                    this.objPile[i].onMouseDown(x, y, this.props.pseudo)
+                ) {
                     collisionIndex = i;
                     i = 0; // end of collision detection
                 }
@@ -314,7 +317,10 @@ class CanvasManager extends Component {
             let i = this.objPile.length;
             let collisionIndex = null;
             while (i--) {
-                if (this.objPile[i].onMouseDrag && this.objPile[i].onMouseDrag(x, y)) {
+                if (
+                    this.objPile[i].onMouseDrag &&
+                    this.objPile[i].onMouseDrag(x, y, this.props.pseudo)
+                ) {
                     collisionIndex = i;
                     i = 0; // end of collision detection
                 }
@@ -341,7 +347,7 @@ class CanvasManager extends Component {
                 Number(this.canvas.style.height.replace("px", ""));
 
             for (let i = 0; i < this.objPile.length; i++) {
-                const report = this.objPile[i].onMouseUp(x, y);
+                const report = this.objPile[i].onMouseUp(x, y, this.props.pseudo);
                 if (Object.keys(report.modifications).length > 0) {
                     const payload = report.modifications;
                     payload.pseudo = pseudo;
