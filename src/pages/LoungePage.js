@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
-import {getAllPaperBoards, getPaperBoard} from "../services/paperboards";
 import PropTypes from "prop-types";
 import "./LoungePage.scss";
 import Background from "../components/Background";
