@@ -129,7 +129,7 @@ class CanvasManager extends Component {
                             0,
                             width,
                             height,
-                            descr.id,
+                            descr.drawingId,
                             descr.owner.pseudo,
                             {
                                 X: descr.position.x,
@@ -198,7 +198,7 @@ class CanvasManager extends Component {
                     board: {title},
                     setSelectedDrawing,
                 } = this.props;
-                // setSelectedDrawing({pseudo, board: title, drawingId: objectId});
+                setSelectedDrawing({pseudo, board: title, drawingId: objectId});
             }
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
         }
@@ -215,10 +215,10 @@ class CanvasManager extends Component {
             }
         }
         if (found) {
-            // if (this.props.pseudo === this.objPile[i].lockedBy) {
-            //     const {setSelectedDrawing} = this.props;
-            //     setSelectedDrawing(null);
-            // }
+            if (this.props.pseudo === this.objPile[i].lockedBy) {
+                const {setSelectedDrawing} = this.props;
+                setSelectedDrawing(null);
+            }
             this.objPile[i].isLocked = false;
             this.objPile[i].lockedBy = "";
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
