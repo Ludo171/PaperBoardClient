@@ -188,18 +188,19 @@ class CanvasManager extends Component {
                 i += 1;
             }
         }
+
         if (found) {
             this.objPile[i].isLocked = true;
             this.objPile[i].lockedBy = lockedBy;
-            this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
             if (this.props.pseudo === lockedBy) {
                 const {
                     pseudo,
                     board: {title},
                     setSelectedDrawing,
                 } = this.props;
-                setSelectedDrawing({pseudo, board: title, drawingId: objectId});
+                // setSelectedDrawing({pseudo, board: title, drawingId: objectId});
             }
+            this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
         }
     };
     onObjectUnlocked = (payload) => {
@@ -214,10 +215,10 @@ class CanvasManager extends Component {
             }
         }
         if (found) {
-            if (this.props.pseudo === this.objPile[i].lockedBy) {
-                const {setSelectedDrawing} = this.props;
-                setSelectedDrawing(null);
-            }
+            // if (this.props.pseudo === this.objPile[i].lockedBy) {
+            //     const {setSelectedDrawing} = this.props;
+            //     setSelectedDrawing(null);
+            // }
             this.objPile[i].isLocked = false;
             this.objPile[i].lockedBy = "";
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);

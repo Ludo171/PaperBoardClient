@@ -13,9 +13,9 @@ const generateCanvasObjectBackgroundColor = function(ctx, refX, refY, refW, refH
         refreshArea: function(x1, y1, x2, y2) {
             this.ctx.save();
             this.ctx.fillStyle = this.color;
-            this.ctx.rect(x1, y1, x2, y2);
-            this.ctx.fill();
+            this.ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
             this.ctx.restore();
+            return;
         },
     };
     return Background;
