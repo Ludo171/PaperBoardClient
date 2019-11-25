@@ -24,7 +24,11 @@ class CanvasManager extends Component {
 
     componentDidMount() {
         this.setState({ctx: this.canvas.getContext("2d")}, () => {
-            this.objPile = this.generateObjectPile(this.props.drawings);
+            console.log(this.props.drawings);
+            this.generateObjectPile(this.props.drawings).then((result) => {
+                this.objPile = result;
+                this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
+            });
         });
         this.canvas.addEventListener("mousedown", (e) => this.handleMouseDown(e));
         this.canvas.addEventListener("mouseup", (e) => this.handleMouseUp(e));
@@ -91,21 +95,19 @@ class CanvasManager extends Component {
         );
     }
 
-    generateObjectPile = (drawings) => {
+    generateObjectPile = async (drawings) => {
         // Load Background
         if (this.props.board.backgroundImage !== "") {
-            generateCanvasObjectBackgroundImage(
+            this.background = await generateCanvasObjectBackgroundImage(
                 this.state.ctx,
                 0,
                 0,
                 this.state.width,
                 this.state.height,
                 this.props.board.backgroundImage
-            ).then((background) => {
-                this.background = background;
-            });
+            );
         } else if (this.props.board.backgroundColor !== "") {
-            this.background = generateCanvasObjectBackgroundColor(
+            this.background = await generateCanvasObjectBackgroundColor(
                 this.state.ctx,
                 0,
                 0,
@@ -123,7 +125,7 @@ class CanvasManager extends Component {
             const descr = drawings[keys[i]];
             if (descr.type === "circle") {
                 newObjPile.push(
-                    generateCanvasObjectCircle(
+                    await generateCanvasObjectCircle(
                         ctx,
                         0,
                         0,
@@ -146,7 +148,7 @@ class CanvasManager extends Component {
                 );
             } else if (descr.type === "image") {
                 newObjPile.push(
-                    generateCanvasObjectImage(
+                    await generateCanvasObjectImage(
                         ctx,
                         0,
                         0,
@@ -158,8 +160,8 @@ class CanvasManager extends Component {
                         {
                             X: descr.position.x,
                             Y: descr.position.y,
-                            W: descr.width,
-                            H: descr.height,
+                            width: descr.width,
+                            height: descr.height,
                             isLocked: descr.isLocked,
                             lockedBy: descr.lockedBy,
                         }
@@ -171,12 +173,14 @@ class CanvasManager extends Component {
     };
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
-    createObject = (data) => {
+    createObject = async (data) => {
         console.log("Should Create Object");
         console.log(data);
+        console.log(this);
+        console.log(this.objPile);
         switch (data.type) {
             case "image":
-                const newImg = generateCanvasObjectImage(
+                const newImg = await generateCanvasObjectImage(
                     this.state.ctx,
                     0,
                     0,
@@ -188,16 +192,15 @@ class CanvasManager extends Component {
                     {
                         X: parseFloat(data.position.x),
                         Y: parseFloat(data.position.y),
-                        W: parseFloat(data.width),
-                        H: parseFloat(data.height),
+                        width: parseFloat(data.width),
+                        height: parseFloat(data.height),
                     }
                 );
                 this.objPile.push(newImg);
-                console.log(this.objPile);
-                // newImg will refresh on its own once the image is loaded
+                newImg.refreshArea(0, 0, this.state.width, this.state.height);
                 break;
             case "circle":
-                const newCircle = generateCanvasObjectCircle(
+                const newCircle = await generateCanvasObjectCircle(
                     this.state.ctx,
                     0,
                     0,
@@ -213,6 +216,7 @@ class CanvasManager extends Component {
                         lineColor: data.lineColor,
                     }
                 );
+                console.log(newCircle);
                 this.objPile.push(newCircle);
                 newCircle.refreshArea(0, 0, this.state.width, this.state.height);
                 break;
