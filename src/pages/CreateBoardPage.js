@@ -12,6 +12,7 @@ import * as backgroundImage from "../assets/Wood-4.jpg";
 import ColorPicker from "../components/Picker";
 import {colors} from "../utils/colors";
 import {DropzoneArea} from "material-ui-dropzone";
+import {getBase64} from "../utils/readAsDataUrl";
 
 class CreateBoardPage extends Component {
     constructor(props) {
@@ -25,7 +26,7 @@ class CreateBoardPage extends Component {
             isBackgroundImage: false,
             paperboard: null,
             pseudo: "",
-            files: [],
+            imageDataUrl: "",
         };
     }
 
@@ -82,14 +83,20 @@ class CreateBoardPage extends Component {
 
     onCreatePaperBoard = () => {
         const {title} = this.state;
-        socketClientInstance.sendMessage({
-            type: constants.SOCKET_MSG.CREATE_BOARD,
-            from: this.state.pseudo,
-            to: "server",
-            payload: {
-                title,
-            },
-        });
+        if (title !== "") {
+            const payload = {title};
+            if (this.state.isBackgroundImage && this.state.imageDataUrl !== "") {
+                payload.backgroundImage = this.state.imageDataUrl;
+            } else if (this.state.isBackgroundColor && this.state.hexColorCode !== "") {
+                payload.backgroundColor = this.state.hexColorCode;
+            }
+            socketClientInstance.sendMessage({
+                type: constants.SOCKET_MSG.CREATE_BOARD,
+                from: this.state.pseudo,
+                to: "server",
+                payload,
+            });
+        }
     };
 
     handleAnswerCreateBoard = (data) => {
@@ -143,10 +150,9 @@ class CreateBoardPage extends Component {
     };
 
     handleImage = (files) => {
-        this.setState({
-            files: files,
+        getBase64(files[0]).then((imageData) => {
+            this.setState({imageDataUrl: imageData});
         });
-        console.log(files);
     };
 
     render() {

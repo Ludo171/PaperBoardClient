@@ -4,6 +4,8 @@ import ReactResizeDetector from "react-resize-detector";
 import generateCanvasObjectCircle from "./CanvasObject-Circle";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
+import generateCanvasObjectBackgroundImage from "./CanvasObject-BackgroundImage";
+import generateCanvasObjectBackgroundColor from "./CanvasObject-BackgroundColor";
 
 class CanvasManager extends Component {
     constructor(props) {
@@ -16,6 +18,7 @@ class CanvasManager extends Component {
             height: this.props.resolutionHeight,
         };
         this.ctx = null;
+        this.background = null;
     }
 
     componentDidMount() {
@@ -88,6 +91,30 @@ class CanvasManager extends Component {
     }
 
     generateObjectPile = (drawings) => {
+        // Load Background
+        if (this.props.board.backgroundImage !== "") {
+            generateCanvasObjectBackgroundImage(
+                this.state.ctx,
+                0,
+                0,
+                this.state.width,
+                this.state.height,
+                this.props.board.backgroundImage
+            ).then((background) => {
+                this.background = background;
+            });
+        } else if (this.props.board.backgroundColor !== "") {
+            this.background = generateCanvasObjectBackgroundColor(
+                this.state.ctx,
+                0,
+                0,
+                this.state.width,
+                this.state.height,
+                this.props.board.backgroundColor
+            );
+        }
+
+        // Build Obj Pile from Board Drawings descriptions
         const {ctx, width, height} = this.state;
         const keys = Object.keys(drawings);
         if (keys.length > 0) {
@@ -236,6 +263,9 @@ class CanvasManager extends Component {
 
     refreshCanvasArea(x1, y1, x2, y2) {
         this.state.ctx.clearRect(x1, y1, x2, y2);
+        if (this.background !== null) {
+            this.background.refreshArea(x1, y1, x2, y2);
+        }
         for (let i = 0; i < this.objPile.length; i++) {
             this.objPile[i].refreshArea(x1, y1, x2, y2);
         }
@@ -293,10 +323,7 @@ class CanvasManager extends Component {
                     },
                 });
             }
-
-            if (collisionIndex === null) {
-                console.log(this.objPile);
-            }
+            console.log(this.objPile);
         }
     }
 

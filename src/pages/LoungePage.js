@@ -68,13 +68,9 @@ class LoungePage extends Component {
         );
         this.getAllPaperBoards();
         this.loopGetAllPaperBoards();
-        console.log("Lounge Page component did Mount");
-        console.log(this.state);
     }
 
     componentWillUnmount() {
-        console.log("Lounge Page component will unMount");
-        console.log(this.state);
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.DRAWER_JOIN_BOARD,
             this.handleJoinBoardServerResponse,
