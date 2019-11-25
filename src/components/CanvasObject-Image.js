@@ -7,24 +7,28 @@ const selectionZones = {
 };
 const editionStates = {
     NULL: "Not Editing",
-    RESIZING: "Resizing Radius",
+    RESIZING_TOP_LEFT: "Resizing Image Corner Top Left",
+    RESIZING_TOP_RIGHT: "Resizing Image Corner Top Left",
+    RESIZING_BOTTOM_LEFT: "Resizing Image Corner Top Left",
+    RESIZING_BOTTOM_RIGHT: "Resizing Image Corner Top Left",
     MOVING: "Moving",
 };
 
-const generateCanvasObjectCircle = function(
+const generateCanvasObjectImage = function(
     ctx,
     refX,
     refY,
     refW,
     refH,
+    srcURI,
     id,
     owner,
     creationOptions = {}
 ) {
-    const Circle = {
-        type: "circle",
+    const ObjectImage = {
+        type: "image",
         id,
-        name: `circle-${id}`,
+        name: `image-${id}`,
         owner,
 
         ctx: ctx,
@@ -33,45 +37,43 @@ const generateCanvasObjectCircle = function(
         refW: refW,
         refH: refH,
 
+        src: null,
+        srcX: 0,
+        srcY: 0,
+        srcW: 0,
+        srcH: 0,
+
         X: creationOptions.X || (refX + refW) / 2,
         Y: creationOptions.Y || (refY + refH) / 2,
-        radius: creationOptions.radius || 50,
-        lineWidth: creationOptions.lineWidth || 10,
-        lineColor: creationOptions.lineColor || "red",
-        lineStyle: creationOptions.lineStyle || "normal",
-        fillColor: creationOptions.fillColor || "transparent",
+        W: creationOptions.W || 300,
+        H: creationOptions.H || 300,
 
         isLocked: creationOptions.isLocked || false,
         lockedBy: creationOptions.lockedBy || "",
         previousState: {
             X: creationOptions.X || (refX + refW) / 2,
             Y: creationOptions.Y || (refY + refH) / 2,
-            radius: creationOptions.radius || 50,
-            lineWidth: creationOptions.lineWidth || 10,
-            lineColor: creationOptions.lineColor || "red",
-            lineStyle: creationOptions.lineStyle || "normal",
-            fillColor: creationOptions.fillColor || "transparent",
+            W: creationOptions.W || 50,
+            H: creationOptions.H || 50,
         },
-        editionState: editionStates.NULL,
+        editionState: null, // null | "Resizing" | "Moving" | ...
         oldDragX: null,
         oldDragY: null,
 
         refreshArea: function(x1, y1, x2, y2) {
             this.ctx.save();
 
-            this.ctx.beginPath();
-            this.ctx.lineWidth = this.lineWidth;
-            this.ctx.strokeStyle = this.lineColor;
-            this.ctx.arc(this.X, this.Y, this.radius, 0, 2 * Math.PI, true);
-            if (this.lineStyle === "dashed") {
-                this.ctx.setLineDash([8, 8]);
-            }
-            this.ctx.stroke();
-
-            if (this.fillColor !== "transparent") {
-                this.ctx.fillStyle = this.fillColor;
-                this.ctx.fill();
-            }
+            this.ctx.drawImage(
+                this.src,
+                0,
+                0,
+                this.srcW,
+                this.srcH,
+                this.X,
+                this.Y,
+                this.W,
+                this.H
+            );
 
             if (this.isLocked) {
                 const margin = 15;
@@ -82,10 +84,10 @@ const generateCanvasObjectCircle = function(
                 this.ctx.lineWidth = 5;
                 this.ctx.setLineDash([8, 8]);
                 this.ctx.rect(
-                    this.X - this.radius - margin,
-                    this.Y - this.radius - margin,
-                    2 * (this.radius + margin),
-                    2 * (this.radius + margin)
+                    this.X - margin,
+                    this.Y - margin,
+                    this.W + 2 * margin,
+                    this.H + 2 * margin
                 );
                 this.ctx.stroke();
 
@@ -94,8 +96,8 @@ const generateCanvasObjectCircle = function(
                 this.ctx.setLineDash([]);
                 this.ctx.beginPath();
                 this.ctx.arc(
-                    this.X - this.radius - margin,
-                    this.Y - this.radius - margin,
+                    this.X - margin,
+                    this.Y - margin,
                     10,
                     0,
                     2 * Math.PI
@@ -107,8 +109,8 @@ const generateCanvasObjectCircle = function(
                 // SouthEast Corner
                 this.ctx.beginPath();
                 this.ctx.arc(
-                    this.X + this.radius + margin,
-                    this.Y + this.radius + margin,
+                    this.X + this.W + margin,
+                    this.Y + this.H + margin,
                     10,
                     0,
                     2 * Math.PI
@@ -214,23 +216,48 @@ const generateCanvasObjectCircle = function(
         },
 
         _computeCorrespondingZone: function(x, y) {
-            const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
-            const movingSquareRadius = this.radius * this.radius;
-            if (squareDistance < movingSquareRadius) {
-                return selectionZones.MOVE_SHAPE;
+            const marginSquareCorners = 10 * 10;
+            const minSquareDistanceToCorner = Math.min(
+                (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y),
+                (x - this.X - this.W) * (x - this.X - this.W) + (y - this.Y) * (y - this.Y),
+                (x - this.X) * (x - this.X) + (y - this.Y - this.H) * (y - this.Y - this.H),
+                (x - this.X - this.W) * (x - this.X - this.W) +
+                    (y - this.Y - this.H) * (y - this.Y - this.H)
+            );
+            if (minSquareDistanceToCorner < marginSquareCorners) {
+                return selectionZones.RESIZE_SHAPE;
             }
 
             const margin = 10;
-            const resizingSquareRadius =
-                (this.radius + this.lineWidth + margin) * (this.radius + this.lineWidth + margin);
-            if (squareDistance < resizingSquareRadius) {
-                return selectionZones.RESIZE_SHAPE;
+            const verticalAlign = this.X - margin < x && x < this.X + this.W + margin;
+            const horizontalAlign = this.Y - margin < y && y < this.Y + this.H + margin;
+            if (verticalAlign && horizontalAlign) {
+                return selectionZones.MOVE_SHAPE;
             }
 
             return selectionZones.OUT;
         },
     };
-    return Circle;
+
+    const img = new Image();
+    img.onload = function() {
+        ObjectImage.src = this;
+        ObjectImage.srcW = this.width;
+        ObjectImage.srcH = this.height;
+        if (this.width > this.height) {
+            ObjectImage.W = ObjectImage.H / (this.height / this.width);
+        } else {
+            ObjectImage.H = ObjectImage.W * (this.height / this.width);
+        }
+        ObjectImage.refreshArea(
+            ObjectImage.X,
+            ObjectImage.Y,
+            ObjectImage.X + ObjectImage.W,
+            ObjectImage.Y + ObjectImage.H
+        );
+    };
+    img.src = srcURI;
+    return ObjectImage;
 };
 
-export default generateCanvasObjectCircle;
+export default generateCanvasObjectImage;

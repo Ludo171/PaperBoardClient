@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import ReactResizeDetector from "react-resize-detector";
 import generateCanvasObjectCircle from "./CanvasObject-Circle";
+import generateCanvasObjectImage from "./CanvasObject-Image";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import generateCanvasObjectBackgroundImage from "./CanvasObject-BackgroundImage";
@@ -32,7 +33,7 @@ class CanvasManager extends Component {
 
         socketClientInstance.subscribeToEvent(
             constants.SOCKET_MSG.OBJECT_CREATED,
-            this.createCircle,
+            this.createObject,
             this.componentName
         );
         socketClientInstance.subscribeToEvent(
@@ -65,7 +66,7 @@ class CanvasManager extends Component {
 
         socketClientInstance.unsubscribeToEvent(
             constants.SOCKET_MSG.OBJECT_CREATED,
-            this.createCircle,
+            this.createObject,
             this.componentName
         );
         socketClientInstance.unsubscribeToEvent(
@@ -155,25 +156,54 @@ class CanvasManager extends Component {
     };
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
-    createCircle = (data) => {
-        const newCircle = generateCanvasObjectCircle(
-            this.state.ctx,
-            0,
-            0,
-            this.state.width,
-            this.state.height,
-            data.id,
-            data.pseudo,
-            {
-                X: parseFloat(data.X),
-                Y: parseFloat(data.Y),
-                radius: parseFloat(data.radius),
-                lineWidth: parseFloat(data.lineWidth),
-                lineColor: data.lineColor,
-            }
-        );
-        this.objPile.push(newCircle);
-        newCircle.refreshArea(0, 0, this.state.width, this.state.height);
+    createObject = (data) => {
+        console.log("Should Create Object");
+        console.log(data);
+        switch (data.type) {
+            case "image":
+                const newImg = generateCanvasObjectImage(
+                    this.state.ctx,
+                    0,
+                    0,
+                    this.state.width,
+                    this.state.height,
+                    data.srcURI,
+                    data.drawingId,
+                    data.pseudo,
+                    {
+                        X: parseFloat(data.position.x),
+                        Y: parseFloat(data.position.y),
+                        W: parseFloat(data.width),
+                        H: parseFloat(data.height),
+                    }
+                );
+                this.objPile.push(newImg);
+                console.log(this.objPile);
+                // newImg will refresh on its own once the image is loaded
+                break;
+            case "circle":
+                const newCircle = generateCanvasObjectCircle(
+                    this.state.ctx,
+                    0,
+                    0,
+                    this.state.width,
+                    this.state.height,
+                    data.drawingId,
+                    data.pseudo,
+                    {
+                        X: parseFloat(data.X),
+                        Y: parseFloat(data.Y),
+                        radius: parseFloat(data.radius),
+                        lineWidth: parseFloat(data.lineWidth),
+                        lineColor: data.lineColor,
+                    }
+                );
+                this.objPile.push(newCircle);
+                newCircle.refreshArea(0, 0, this.state.width, this.state.height);
+                break;
+            default:
+                console.log("Default case for Object Created Handler in Canvas Manager");
+        }
     };
 
     onObjectLocked = (payload) => {

@@ -16,6 +16,7 @@ import {
 import {Icon, ListSubheader} from "@material-ui/core";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
+import {getBase64} from "../utils/readAsDataUrl";
 
 class ShapePanel extends Component {
     onClickCreateObject = (objectType) => {
@@ -30,6 +31,54 @@ class ShapePanel extends Component {
                 positionY: (resolutionHeight / 2).toString(),
             },
         });
+    };
+    onClickCreateObjectImage = () => {
+        const file = document.getElementById("myFile").files[0];
+        if (["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+            getBase64(file).then((imageData) => {
+                const img = new Image();
+                img.onload = () => {
+                    const {pseudo, resolutionHeight, resolutionWidth} = this.props;
+                    const maxSize = 300;
+                    const payload = {shape: "image", description: {srcURI: imageData}};
+                    console.log(
+                        `Creating image with width:${img.width}, height:${img.height}, canvasResoW:${resolutionWidth}, canvasResoH:${resolutionHeight}`
+                    );
+                    if (img.width > img.height) {
+                        payload.description.width = maxSize.toString();
+                        payload.description.height = (
+                            payload.description.width *
+                            (img.height / img.width)
+                        ).toString();
+                    } else {
+                        payload.description.height = maxSize.toString();
+                        payload.description.width = (
+                            payload.description.height /
+                            (img.height / img.width)
+                        ).toString();
+                    }
+                    payload.positionX = (
+                        (resolutionWidth - payload.description.width) /
+                        2
+                    ).toString();
+                    payload.positionY = (
+                        (resolutionHeight - payload.description.height) /
+                        2
+                    ).toString();
+                    socketClientInstance.sendMessage({
+                        type: constants.SOCKET_MSG.CREATE_OBJECT,
+                        from: pseudo,
+                        to: "server",
+                        payload,
+                    });
+                    console.log("Sent Create Object Image");
+                    console.log(payload);
+                };
+                img.src = imageData;
+            });
+        } else {
+            console.log(`Bad file type ! ${file.type}`);
+        }
     };
     render() {
         return (
@@ -50,7 +99,7 @@ class ShapePanel extends Component {
                             </div>
                         </ListSubheader>
                     }>
-                    <ListItem button key={"Text"} onClick={() => this.onClickCreateObject("Text")}>
+                    <ListItem button key={"Text"} onClick={() => this.onClickCreateObject("text")}>
                         <ListItemIcon>
                             <TextFieldIcon />
                         </ListItemIcon>
@@ -79,7 +128,7 @@ class ShapePanel extends Component {
                         <ListItem
                             button
                             key={item.title}
-                            onClick={() => this.onClickCreateObject(item.title)}>
+                            onClick={() => this.onClickCreateObject(item.title.toLowerCase())}>
                             <ListItemIcon>{item.component}</ListItemIcon>
                             <ListItemText primary={item.title} />
                         </ListItem>
@@ -87,12 +136,25 @@ class ShapePanel extends Component {
                 </List>
                 <Divider />
                 <List>
-                    <ListItem button key={"Picture"}>
+                    <ListItem
+                        button
+                        key={"Picture"}
+                        onClick={() => {
+                            const myInput = document.getElementById("myFile");
+                            if (myInput) {
+                                myInput.click();
+                            }
+                        }}>
                         <ListItemIcon>
                             <Photo />
                         </ListItemIcon>
                         <ListItemText primary={"Picture"} />
                     </ListItem>
+                    <input
+                        type="file"
+                        id="myFile"
+                        style={{position: "fixed", bottom: "10000px"}}
+                        onChange={() => this.onClickCreateObjectImage()}></input>
                 </List>
             </div>
         );

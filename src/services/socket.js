@@ -263,7 +263,8 @@ class SocketClient {
                 );
                 message = {};
             }
-            if (this.socketClient) {
+            console.log(this.socketClient);
+            if (this.socketClient && this.socketClient.readyState === WebSocket.OPEN) {
                 this.socketClient.send(message);
             } else {
                 alert("You have been disconnected, don't forgzt to reconnect");
