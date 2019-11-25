@@ -34,8 +34,9 @@ class ShapePanel extends Component {
     };
     onClickCreateObjectImage = () => {
         const file = document.getElementById("myFile").files[0];
-        if (["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+        if (file !== undefined && ["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
             getBase64(file).then((imageData) => {
+                console.log(file);
                 const img = new Image();
                 img.onload = () => {
                     const {pseudo, resolutionHeight, resolutionWidth} = this.props;
@@ -76,8 +77,13 @@ class ShapePanel extends Component {
                 };
                 img.src = imageData;
             });
-        } else {
-            console.log(`Bad file type ! ${file.type}`);
+        } else if (
+            file !== undefined &&
+            ["image/png", "image/jpeg", "image/jpg"].includes(file.type)
+        ) {
+            alert(`Bad file type ! ${file.type}. It should be among [png, jpeg, jpg]`);
+        } else if (file !== undefined && file.size > 100000) {
+            alert("Image size should not exceed 100ko.");
         }
     };
     render() {

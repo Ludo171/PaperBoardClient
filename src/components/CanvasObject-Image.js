@@ -3,14 +3,17 @@ import * as color from "string-to-color";
 const selectionZones = {
     OUT: "Out Of Shape",
     MOVE_SHAPE: "Moving Zone",
-    RESIZE_SHAPE: "Resizing Zone",
+    RESIZE_FROM_TOP_LEFT: "Resizing Zone Top Left",
+    RESIZE_FROM_TOP_RIGHT: "Resizing Zone Top Right",
+    RESIZE_FROM_BOTTOM_LEFT: "Resizing Zone Bottom Left",
+    RESIZE_FROM_BOTTOM_RIGHT: "Resizing Zone Bottom Right",
 };
 const editionStates = {
     NULL: "Not Editing",
-    RESIZING_TOP_LEFT: "Resizing Image Corner Top Left",
-    RESIZING_TOP_RIGHT: "Resizing Image Corner Top Left",
-    RESIZING_BOTTOM_LEFT: "Resizing Image Corner Top Left",
-    RESIZING_BOTTOM_RIGHT: "Resizing Image Corner Top Left",
+    RESIZING_FROM_TOP_LEFT: "Resizing Image Corner From Top Left",
+    RESIZING_FROM_TOP_RIGHT: "Resizing Image Corner From Top Right",
+    RESIZING_FROM_BOTTOM_LEFT: "Resizing Image Corner From Bottom Left",
+    RESIZING_FROM_BOTTOM_RIGHT: "Resizing Image Corner From Bottom Right",
     MOVING: "Moving",
 };
 
@@ -95,13 +98,7 @@ const generateCanvasObjectImage = function(
                 this.ctx.strokeStyle = color(this.lockedBy);
                 this.ctx.setLineDash([]);
                 this.ctx.beginPath();
-                this.ctx.arc(
-                    this.X - margin,
-                    this.Y - margin,
-                    10,
-                    0,
-                    2 * Math.PI
-                );
+                this.ctx.arc(this.X - margin, this.Y - margin, 10, 0, 2 * Math.PI);
                 this.ctx.stroke();
                 this.ctx.fillStyle = color(this.lockedBy);
                 this.ctx.fill();
@@ -145,8 +142,32 @@ const generateCanvasObjectImage = function(
                 this.oldDragX = x;
                 this.oldDragY = y;
                 return true;
-            } else if (this.lockedBy === myPseudo && zone === selectionZones.RESIZE_SHAPE) {
-                this.editionState = editionStates.RESIZING;
+            } else if (this.lockedBy === myPseudo && zone === selectionZones.RESIZE_FROM_TOP_LEFT) {
+                this.editionState = editionStates.RESIZING_FROM_TOP_LEFT;
+                this.oldDragX = x;
+                this.oldDragY = y;
+                return true;
+            } else if (
+                this.lockedBy === myPseudo &&
+                zone === selectionZones.RESIZE_FROM_TOP_RIGHT
+            ) {
+                this.editionState = editionStates.RESIZING_FROM_TOP_RIGHT;
+                this.oldDragX = x;
+                this.oldDragY = y;
+                return true;
+            } else if (
+                this.lockedBy === myPseudo &&
+                zone === selectionZones.RESIZE_FROM_BOTTOM_LEFT
+            ) {
+                this.editionState = editionStates.RESIZING_FROM_BOTTOM_LEFT;
+                this.oldDragX = x;
+                this.oldDragY = y;
+                return true;
+            } else if (
+                this.lockedBy === myPseudo &&
+                zone === selectionZones.RESIZE_FROM_BOTTOM_RIGHT
+            ) {
+                this.editionState = editionStates.RESIZING_FROM_BOTTOM_RIGHT;
                 this.oldDragX = x;
                 this.oldDragY = y;
                 return true;
@@ -164,7 +185,15 @@ const generateCanvasObjectImage = function(
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), move";
                 return true;
-            } else if (this.lockedBy === myPseudo && zone === selectionZones.RESIZE_SHAPE) {
+            } else if (
+                this.lockedBy === myPseudo &&
+                [
+                    selectionZones.RESIZE_FROM_TOP_LEFT,
+                    selectionZones.RESIZE_FROM_TOP_RIGHT,
+                    selectionZones.RESIZE_FROM_BOTTOM_LEFT,
+                    selectionZones.RESIZE_FROM_BOTTOM_RIGHT,
+                ].includes(zone)
+            ) {
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), grab";
                 return true;
@@ -173,15 +202,41 @@ const generateCanvasObjectImage = function(
         },
 
         onMouseDrag: function(x, y, myPseudo) {
-            if (this.lockedBy === myPseudo && this.editionState === editionStates.RESIZING) {
-                const oldDist = Math.sqrt(
-                    (this.oldDragX - this.X) * (this.oldDragX - this.X) +
-                        (this.oldDragY - this.Y) * (this.oldDragY - this.Y)
-                );
-                const newDist = Math.sqrt(
-                    (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y)
-                );
-                this.radius += newDist - oldDist;
+            if (
+                this.lockedBy === myPseudo &&
+                this.editionState === editionStates.RESIZING_FROM_TOP_LEFT
+            ) {
+                this.X = x;
+                this.W = this.W - (x - this.oldDragX);
+                this.H = (this.W * this.srcH) / this.srcW;
+                this.oldDragX = x;
+                this.oldDragY = y;
+                return true;
+            } else if (
+                this.lockedBy === myPseudo &&
+                this.editionState === editionStates.RESIZING_FROM_TOP_RIGHT
+            ) {
+                this.W = this.W + (x - this.oldDragX);
+                this.H = (this.W * this.srcH) / this.srcW;
+                this.oldDragX = x;
+                this.oldDragY = y;
+                return true;
+            } else if (
+                this.lockedBy === myPseudo &&
+                this.editionState === editionStates.RESIZING_FROM_BOTTOM_LEFT
+            ) {
+                this.X = x;
+                this.W = this.W - (x - this.oldDragX);
+                this.H = (this.W * this.srcH) / this.srcW;
+                this.oldDragX = x;
+                this.oldDragY = y;
+                return true;
+            } else if (
+                this.lockedBy === myPseudo &&
+                this.editionState === editionStates.RESIZING_FROM_BOTTOM_RIGHT
+            ) {
+                this.W = this.W + (x - this.oldDragX);
+                this.H = (this.W * this.srcH) / this.srcW;
                 this.oldDragX = x;
                 this.oldDragY = y;
                 return true;
@@ -216,22 +271,38 @@ const generateCanvasObjectImage = function(
         },
 
         _computeCorrespondingZone: function(x, y) {
-            const marginSquareCorners = 10 * 10;
-            const minSquareDistanceToCorner = Math.min(
-                (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y),
-                (x - this.X - this.W) * (x - this.X - this.W) + (y - this.Y) * (y - this.Y),
-                (x - this.X) * (x - this.X) + (y - this.Y - this.H) * (y - this.Y - this.H),
-                (x - this.X - this.W) * (x - this.X - this.W) +
-                    (y - this.Y - this.H) * (y - this.Y - this.H)
-            );
-            if (minSquareDistanceToCorner < marginSquareCorners) {
-                return selectionZones.RESIZE_SHAPE;
+            const margin = 15;
+            const marginSquareCorners = 20 * 20;
+            const cornerDistances = {};
+            cornerDistances[selectionZones.RESIZE_FROM_TOP_LEFT] =
+                (x - this.X + margin) * (x - this.X + margin) +
+                (y - this.Y + margin) * (y - this.Y + margin);
+            cornerDistances[selectionZones.RESIZE_FROM_TOP_RIGHT] =
+                (x - this.X - this.W - margin) * (x - this.X - this.W - margin) +
+                (y - this.Y + margin) * (y - this.Y + margin);
+            cornerDistances[selectionZones.RESIZE_FROM_BOTTOM_LEFT] =
+                (x - this.X + margin) * (x - this.X + margin) +
+                (y - this.Y - this.H - margin) * (y - this.Y - this.H - margin);
+            cornerDistances[selectionZones.RESIZE_FROM_BOTTOM_RIGHT] =
+                (x - this.X - this.W - margin) * (x - this.X - this.W - margin) +
+                (y - this.Y - this.H - margin) * (y - this.Y - this.H - margin);
+
+            const keys = Object.keys(cornerDistances);
+            let key = keys[0];
+            for (let i = 1; i < keys.length; i++) {
+                if (cornerDistances[keys[i]] < cornerDistances[key]) {
+                    key = keys[i];
+                }
+            }
+            if (cornerDistances[key] < marginSquareCorners) {
+                console.log(`ZONE : ${key}`);
+                return key;
             }
 
-            const margin = 10;
             const verticalAlign = this.X - margin < x && x < this.X + this.W + margin;
             const horizontalAlign = this.Y - margin < y && y < this.Y + this.H + margin;
             if (verticalAlign && horizontalAlign) {
+                console.log(`ZONE : ${selectionZones.MOVE_SHAPE}`);
                 return selectionZones.MOVE_SHAPE;
             }
 
