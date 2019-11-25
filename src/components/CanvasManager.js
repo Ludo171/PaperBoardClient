@@ -191,8 +191,8 @@ class CanvasManager extends Component {
                     data.drawingId,
                     data.pseudo,
                     {
-                        X: parseFloat(data.X),
-                        Y: parseFloat(data.Y),
+                        X: parseFloat(data.position.x),
+                        Y: parseFloat(data.position.y),
                         radius: parseFloat(data.radius),
                         lineWidth: parseFloat(data.lineWidth),
                         lineColor: data.lineColor,
