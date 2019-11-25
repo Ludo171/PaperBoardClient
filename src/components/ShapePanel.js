@@ -33,58 +33,51 @@ class ShapePanel extends Component {
         });
     };
     onClickCreateObjectImage = () => {
+        const maxSize = 42000;
+        const typesAllowed = ["image/png", "image/jpeg", "image/jpg"];
         const file = document.getElementById("myFile").files[0];
-        if (file !== undefined && ["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
-            getBase64(file).then((imageData) => {
-                console.log(file);
-                const img = new Image();
-                img.onload = () => {
-                    const {pseudo, resolutionHeight, resolutionWidth} = this.props;
-                    const maxSize = 300;
-                    const payload = {shape: "image", description: {srcURI: imageData}};
-                    console.log(
-                        `Creating image with width:${img.width}, height:${img.height}, canvasResoW:${resolutionWidth}, canvasResoH:${resolutionHeight}`
-                    );
-                    if (img.width > img.height) {
-                        payload.description.width = maxSize.toString();
-                        payload.description.height = (
-                            payload.description.width *
-                            (img.height / img.width)
-                        ).toString();
-                    } else {
-                        payload.description.height = maxSize.toString();
-                        payload.description.width = (
-                            payload.description.height /
-                            (img.height / img.width)
-                        ).toString();
-                    }
-                    payload.positionX = (
-                        (resolutionWidth - payload.description.width) /
-                        2
-                    ).toString();
-                    payload.positionY = (
-                        (resolutionHeight - payload.description.height) /
-                        2
-                    ).toString();
-                    socketClientInstance.sendMessage({
-                        type: constants.SOCKET_MSG.CREATE_OBJECT,
-                        from: pseudo,
-                        to: "server",
-                        payload,
-                    });
-                    console.log("Sent Create Object Image");
-                    console.log(payload);
-                };
-                img.src = imageData;
-            });
-        } else if (
-            file !== undefined &&
-            ["image/png", "image/jpeg", "image/jpg"].includes(file.type)
-        ) {
-            alert(`Bad file type ! ${file.type}. It should be among [png, jpeg, jpg]`);
-        } else if (file !== undefined && file.size > 100000) {
-            alert("Image size should not exceed 100ko.");
+        if (file === undefined) {
+            return;
+        } else if (!typesAllowed.includes(file.type)) {
+            alert(`Bad File Type [${file.type}]. File type should be among [png, jpeg, jpg].`);
+            return;
+        } else if (file.size > maxSize) {
+            alert(`File size should not exceed ${maxSize / 1000}ko.`);
+            return;
         }
+        getBase64(file).then((imageData) => {
+            const img = new Image();
+            img.onload = () => {
+                const {pseudo, resolutionHeight, resolutionWidth} = this.props;
+                const maxSize = 300;
+                const payload = {shape: "image", description: {srcURI: imageData}};
+                if (img.width > img.height) {
+                    payload.description.width = maxSize.toString();
+                    payload.description.height = (
+                        payload.description.width *
+                        (img.height / img.width)
+                    ).toString();
+                } else {
+                    payload.description.height = maxSize.toString();
+                    payload.description.width = (
+                        payload.description.height /
+                        (img.height / img.width)
+                    ).toString();
+                }
+                payload.positionX = ((resolutionWidth - payload.description.width) / 2).toString();
+                payload.positionY = (
+                    (resolutionHeight - payload.description.height) /
+                    2
+                ).toString();
+                socketClientInstance.sendMessage({
+                    type: constants.SOCKET_MSG.CREATE_OBJECT,
+                    from: pseudo,
+                    to: "server",
+                    payload,
+                });
+            };
+            img.src = imageData;
+        });
     };
     render() {
         return (

@@ -117,42 +117,57 @@ class CanvasManager extends Component {
 
         // Build Obj Pile from Board Drawings descriptions
         const {ctx, width, height} = this.state;
+        const newObjPile = [];
         const keys = Object.keys(drawings);
-        if (keys.length > 0) {
-            return keys.map((key) => {
-                const descr = drawings[key];
-                let drawing = {};
-                switch (descr.type) {
-                    case "circle":
-                        drawing = generateCanvasObjectCircle(
-                            ctx,
-                            0,
-                            0,
-                            width,
-                            height,
-                            descr.drawingId,
-                            descr.owner.pseudo,
-                            {
-                                X: descr.position.x,
-                                Y: descr.position.y,
-                                radius: descr.radius,
-                                lineWidth: descr.lineWidth,
-                                lineColor: descr.lineColor,
-                                fillColor: descr.fillColor,
-                                lineStyle: descr.lineStyle,
-                                isLocked: descr.isLocked,
-                                lockedBy: descr.lockedBy,
-                            }
-                        );
-                        break;
-                    default:
-                        break;
-                }
-                return drawing;
-            });
-        } else {
-            return [];
+        for (let i = 0; i < keys.length; i++) {
+            const descr = drawings[keys[i]];
+            if (descr.type === "circle") {
+                newObjPile.push(
+                    generateCanvasObjectCircle(
+                        ctx,
+                        0,
+                        0,
+                        width,
+                        height,
+                        descr.drawingId,
+                        descr.owner.pseudo,
+                        {
+                            X: descr.position.x,
+                            Y: descr.position.y,
+                            radius: descr.radius,
+                            lineWidth: descr.lineWidth,
+                            lineColor: descr.lineColor,
+                            fillColor: descr.fillColor,
+                            lineStyle: descr.lineStyle,
+                            isLocked: descr.isLocked,
+                            lockedBy: descr.lockedBy,
+                        }
+                    )
+                );
+            } else if (descr.type === "image") {
+                newObjPile.push(
+                    generateCanvasObjectImage(
+                        ctx,
+                        0,
+                        0,
+                        width,
+                        height,
+                        descr.srcURI,
+                        descr.drawingId,
+                        descr.owner.pseudo,
+                        {
+                            X: descr.position.x,
+                            Y: descr.position.y,
+                            W: descr.width,
+                            H: descr.height,
+                            isLocked: descr.isLocked,
+                            lockedBy: descr.lockedBy,
+                        }
+                    )
+                );
+            }
         }
+        return newObjPile;
     };
 
     // --- INTERACTIONS WITH OTHER COMPONENTS

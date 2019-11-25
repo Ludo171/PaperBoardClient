@@ -11,8 +11,8 @@ import constants from "../config/constants";
 import * as backgroundImage from "../assets/Wood-4.jpg";
 import ColorPicker from "../components/Picker";
 import {colors} from "../utils/colors";
-import {DropzoneArea} from "material-ui-dropzone";
 import {getBase64} from "../utils/readAsDataUrl";
+import {Button} from "@material-ui/core";
 
 class CreateBoardPage extends Component {
     constructor(props) {
@@ -150,7 +150,19 @@ class CreateBoardPage extends Component {
     };
 
     handleImage = (files) => {
-        getBase64(files[0]).then((imageData) => {
+        const maxSize = 42000;
+        const typesAllowed = ["image/png", "image/jpeg", "image/jpg"];
+        const file = document.getElementById("browseBackgroundImage").files[0];
+        if (file === undefined) {
+            return;
+        } else if (!typesAllowed.includes(file.type)) {
+            alert(`Bad File Type [${file.type}]. File type should be among [png, jpeg, jpg].`);
+            return;
+        } else if (file.size > maxSize) {
+            alert(`File size should not exceed ${maxSize / 1000}ko.`);
+            return;
+        }
+        getBase64(file).then((imageData) => {
             this.setState({imageDataUrl: imageData});
         });
     };
@@ -221,8 +233,25 @@ class CreateBoardPage extends Component {
                                 />
                             ) : null}
                             {isBackgroundImage ? (
-                                <DropzoneArea onChange={this.handleImage} />
+                                // <DropzoneArea onChange={this.handleImage} />
+                                <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        const myInput = document.getElementById(
+                                            "browseBackgroundImage"
+                                        );
+                                        if (myInput) {
+                                            myInput.click();
+                                        }
+                                    }}>
+                                    Browse image
+                                </Button>
                             ) : null}
+                            <input
+                                type="file"
+                                id="browseBackgroundImage"
+                                style={{position: "fixed", bottom: "10000px"}}
+                                onChange={() => this.handleImage()}></input>
                         </div>
                     </div>
                 </div>

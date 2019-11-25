@@ -295,14 +295,12 @@ const generateCanvasObjectImage = function(
                 }
             }
             if (cornerDistances[key] < marginSquareCorners) {
-                console.log(`ZONE : ${key}`);
                 return key;
             }
 
             const verticalAlign = this.X - margin < x && x < this.X + this.W + margin;
             const horizontalAlign = this.Y - margin < y && y < this.Y + this.H + margin;
             if (verticalAlign && horizontalAlign) {
-                console.log(`ZONE : ${selectionZones.MOVE_SHAPE}`);
                 return selectionZones.MOVE_SHAPE;
             }
 
