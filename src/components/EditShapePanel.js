@@ -196,7 +196,8 @@ class EditShapePanel extends Component {
                         disabled={
                             !selectedDrawing ||
                             selectedDrawing.type === "image" ||
-                            selectedDrawing.type === "line"
+                            selectedDrawing.type === "line" ||
+                            selectedDrawing.type === "handwriting"
                         }>
                         <ListItemIcon>
                             <Icon>
