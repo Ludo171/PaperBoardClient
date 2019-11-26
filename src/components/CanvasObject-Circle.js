@@ -21,19 +21,19 @@ const generateCanvasObjectCircle = function(
     owner,
     creationOptions = {}
 ) {
-    return new Promise( (resolve) => {
+    return new Promise((resolve) => {
         const Circle = {
             type: "circle",
             id,
             name: `circle-${id}`,
             owner,
-    
+
             ctx: ctx,
             refX: refX,
             refY: refY,
             refW: refW,
             refH: refH,
-    
+
             X: creationOptions.X || (refX + refW) / 2,
             Y: creationOptions.Y || (refY + refH) / 2,
             radius: creationOptions.radius || 50,
@@ -41,7 +41,7 @@ const generateCanvasObjectCircle = function(
             lineColor: creationOptions.lineColor || "red",
             lineStyle: creationOptions.lineStyle || "normal",
             fillColor: creationOptions.fillColor || "transparent",
-    
+
             isLocked: creationOptions.isLocked || false,
             lockedBy: creationOptions.lockedBy || "",
             previousState: {
@@ -56,10 +56,10 @@ const generateCanvasObjectCircle = function(
             editionState: editionStates.NULL,
             oldDragX: null,
             oldDragY: null,
-    
+
             refreshArea: function(x1, y1, x2, y2) {
                 this.ctx.save();
-    
+
                 this.ctx.beginPath();
                 this.ctx.lineWidth = this.lineWidth;
                 this.ctx.strokeStyle = this.lineColor;
@@ -68,15 +68,15 @@ const generateCanvasObjectCircle = function(
                     this.ctx.setLineDash([8, 8]);
                 }
                 this.ctx.stroke();
-    
+
                 if (this.fillColor !== "transparent") {
                     this.ctx.fillStyle = this.fillColor;
                     this.ctx.fill();
                 }
-    
+
                 if (this.isLocked) {
                     const margin = 15;
-    
+
                     // Dashed selection rectangle
                     this.ctx.beginPath();
                     this.ctx.strokeStyle = color(this.lockedBy);
@@ -89,7 +89,7 @@ const generateCanvasObjectCircle = function(
                         2 * (this.radius + margin)
                     );
                     this.ctx.stroke();
-    
+
                     // NorthWest Corner
                     this.ctx.strokeStyle = color(this.lockedBy);
                     this.ctx.setLineDash([]);
@@ -104,7 +104,7 @@ const generateCanvasObjectCircle = function(
                     this.ctx.stroke();
                     this.ctx.fillStyle = color(this.lockedBy);
                     this.ctx.fill();
-    
+
                     // SouthEast Corner
                     this.ctx.beginPath();
                     this.ctx.arc(
@@ -118,10 +118,10 @@ const generateCanvasObjectCircle = function(
                     this.ctx.fillStyle = color(this.lockedBy);
                     this.ctx.fill();
                 }
-    
+
                 this.ctx.restore();
             },
-    
+
             applyModifications: function(payload) {
                 const keys = Object.keys(this.previousState);
                 for (let i = 0; i < keys.length; i++) {
@@ -134,7 +134,7 @@ const generateCanvasObjectCircle = function(
                     }
                 }
             },
-    
+
             onMouseDown: function(x, y, myPseudo) {
                 const zone = this._computeCorrespondingZone(x, y);
                 if (!this.isLocked && zone !== selectionZones.OUT) {
@@ -152,7 +152,7 @@ const generateCanvasObjectCircle = function(
                 }
                 return false;
             },
-    
+
             onMouseHover: function(x, y, myPseudo) {
                 const zone = this._computeCorrespondingZone(x, y);
                 if (!this.isLocked && zone !== selectionZones.OUT) {
@@ -170,7 +170,7 @@ const generateCanvasObjectCircle = function(
                 }
                 return false;
             },
-    
+
             onMouseDrag: function(x, y, myPseudo) {
                 if (this.lockedBy === myPseudo && this.editionState === editionStates.RESIZING) {
                     const oldDist = Math.sqrt(
@@ -184,7 +184,10 @@ const generateCanvasObjectCircle = function(
                     this.oldDragX = x;
                     this.oldDragY = y;
                     return true;
-                } else if (this.lockedBy === myPseudo && this.editionState === editionStates.MOVING) {
+                } else if (
+                    this.lockedBy === myPseudo &&
+                    this.editionState === editionStates.MOVING
+                ) {
                     this.X += x - this.oldDragX;
                     this.Y += y - this.oldDragY;
                     this.oldDragX = x;
@@ -193,7 +196,7 @@ const generateCanvasObjectCircle = function(
                 }
                 return false;
             },
-    
+
             onMouseUp: function(x, y, myPseudo) {
                 this.editionState = editionStates.NULL;
                 this.oldDragX = null;
@@ -206,28 +209,29 @@ const generateCanvasObjectCircle = function(
                         this.previousState[keys[i]] = this[keys[i]];
                     }
                 }
-    
+
                 const zone = this._computeCorrespondingZone(x, y);
                 if (this.lockedBy === myPseudo && zone === selectionZones.OUT) {
                     result.shouldUnlock = true;
                 }
                 return result;
             },
-    
+
             _computeCorrespondingZone: function(x, y) {
                 const squareDistance = (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y);
                 const movingSquareRadius = this.radius * this.radius;
                 if (squareDistance < movingSquareRadius) {
                     return selectionZones.MOVE_SHAPE;
                 }
-    
+
                 const margin = 10;
                 const resizingSquareRadius =
-                    (this.radius + this.lineWidth + margin) * (this.radius + this.lineWidth + margin);
+                    (this.radius + this.lineWidth + margin) *
+                    (this.radius + this.lineWidth + margin);
                 if (squareDistance < resizingSquareRadius) {
                     return selectionZones.RESIZE_SHAPE;
                 }
-    
+
                 return selectionZones.OUT;
             },
         };
