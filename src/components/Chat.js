@@ -27,7 +27,7 @@ class Chat extends Component {
                         alignItems: "center",
                         paddingRight: "5%",
                         paddingLeft: "5%",
-                        backgroundColor: "rgb(168, 202, 255)",
+                        backgroundColor: "#f9a322",
                         width: "100%",
                         borderTopLeftRadius: 10,
                         borderTopRightRadius: 10,
