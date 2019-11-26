@@ -13,6 +13,7 @@ import ColorPicker from "../components/Picker";
 import {colors} from "../utils/colors";
 import {getBase64} from "../utils/readAsDataUrl";
 import {Button} from "@material-ui/core";
+import config from "../config/config";
 
 class CreateBoardPage extends Component {
     constructor(props) {

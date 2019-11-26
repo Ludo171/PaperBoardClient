@@ -150,7 +150,7 @@ class ShapePanel extends Component {
                         <ListItemIcon>
                             <Photo />
                         </ListItemIcon>
-                        <ListItemText primary={"Picture"} />
+                        <ListItemText primary={"Icon"} />
                     </ListItem>
                     <input
                         type="file"
