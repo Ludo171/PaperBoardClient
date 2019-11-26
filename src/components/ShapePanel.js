@@ -17,6 +17,7 @@ import {Icon, ListSubheader} from "@material-ui/core";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import {getBase64} from "../utils/readAsDataUrl";
+import config from "../config/config";
 
 class ShapePanel extends Component {
     onClickCreateObject = (objectType) => {
@@ -33,7 +34,9 @@ class ShapePanel extends Component {
         });
     };
     onClickCreateObjectImage = () => {
-        const maxSize = 42000;
+        const maxSize = ["dev", "develop", "development"].includes(config.environment)
+            ? 42000
+            : 1300;
         const typesAllowed = ["image/png", "image/jpeg", "image/jpg"];
         const file = document.getElementById("myFile").files[0];
         if (file === undefined) {

@@ -150,7 +150,9 @@ class CreateBoardPage extends Component {
     };
 
     handleImage = (files) => {
-        const maxSize = 42000;
+        const maxSize = ["dev", "develop", "development"].includes(config.environment)
+            ? 42000
+            : 1300;
         const typesAllowed = ["image/png", "image/jpeg", "image/jpg"];
         const file = document.getElementById("browseBackgroundImage").files[0];
         if (file === undefined) {
