@@ -40,15 +40,16 @@ const generateCanvasObjectBackgroundImage = function(ctx, refX, refY, refW, refH
             const canvasProp = Background.refH / Background.refW;
             if (imageProp > canvasProp) {
                 Background.srcW = this.width;
-                Background.srcH = this.height * canvasProp;
+                Background.srcH = this.width * canvasProp;
                 Background.srcX = 0;
                 Background.srcY = (this.height - Background.srcH) / 2;
             } else {
                 Background.srcH = this.height;
-                Background.srcW = this.width / canvasProp;
+                Background.srcW = this.height / canvasProp;
                 Background.srcX = (this.width - Background.srcW) / 2;
                 Background.srcY = 0;
             }
+            console.log("Resolving Background !");
             resolve(Background);
         };
         img.src = srcURI;
