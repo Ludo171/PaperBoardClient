@@ -6,7 +6,6 @@
         "npm": "6.10.3",
         "node": "8.11.2"
     },
-    "homepage": "https://Ludo171.github.io/PaperBoardClient/",
     "dependencies": {
         "@material-ui/core": "^4.5.1",
         "@material-ui/icons": "^4.5.1",
