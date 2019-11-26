@@ -102,7 +102,7 @@ class ShapePanel extends Component {
                             component: <Edit />,
                         },
                         {title: "Line", component: <Maximize />},
-                        {title: "Rectangle", component: <CropLandscape />},
+                        // {title: "Rectangle", component: <CropLandscape />},
                         {title: "Circle", component: <PanoramaFishEye />},
                     ].map((item) => (
                         <ListItem

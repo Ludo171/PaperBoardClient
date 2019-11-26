@@ -250,6 +250,8 @@ class CanvasManager extends Component {
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
     createObject = async (data) => {
+        console.log("ON CREATE");
+        console.log(data);
         if (data.type === "image") {
             const newImg = await generateCanvasObjectImage(
                 this.state.ctx,
@@ -270,6 +272,8 @@ class CanvasManager extends Component {
             this.objPile.push(newImg);
             newImg.refreshArea(0, 0, this.state.width, this.state.height);
         } else if (data.type === "circle") {
+            console.log("1");
+
             const newCircle = await generateCanvasObjectCircle(
                 this.state.ctx,
                 0,
@@ -291,6 +295,8 @@ class CanvasManager extends Component {
             this.objPile.push(newCircle);
             newCircle.refreshArea(0, 0, this.state.width, this.state.height);
         } else if (data.type === "line") {
+            console.log("2");
+
             const newLine = await generateCanvasObjectLine(
                 this.state.ctx,
                 0,
@@ -314,6 +320,8 @@ class CanvasManager extends Component {
             this.objPile.push(newLine);
             newLine.refreshArea(0, 0, this.state.width, this.state.height);
         } else if (data.type === "rectangle") {
+            console.log("3");
+
             const newRectangle = await generateCanvasObjectRectangle(
                 this.state.ctx,
                 0,
@@ -334,8 +342,13 @@ class CanvasManager extends Component {
                 }
             );
             this.objPile.push(newRectangle);
+            console.log(this.objPile[0].lineColor);
+            console.log(this.objPile[1].lineColor);
             newRectangle.refreshArea(0, 0, this.state.width, this.state.height);
+            console.log(this.objPile[0].lineColor);
+            console.log(this.objPile[1].lineColor);
         } else if (data.type === "handwriting") {
+            console.log("4");
             const newHandwriting = await generateCanvasObjectHandwriting(
                 this.state.ctx,
                 0,
@@ -364,6 +377,7 @@ class CanvasManager extends Component {
     onObjectLocked = (payload) => {
         const objectId = payload.drawingId;
         const lockedBy = payload.pseudo;
+        console.log(`ON OBJECT LOCKED ${objectId}`);
         let found = false;
         let i = 0;
         while (i < this.objPile.length && !found) {
@@ -418,8 +432,11 @@ class CanvasManager extends Component {
         }
     };
     onObjectEdited = (payload) => {
+        console.log("OBJECT EDITED");
+        console.log(payload);
         for (let i = 0; i < this.objPile.length; i++) {
             if (this.objPile[i].id === payload.drawingId) {
+                console.log(`MODIFYING ${this.objPile[i].name}`);
                 this.objPile[i].applyModifications(payload);
             }
         }

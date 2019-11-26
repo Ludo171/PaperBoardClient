@@ -60,6 +60,7 @@ const generateCanvasObjectLine = function(
             oldDragY: null,
 
             refreshArea: function(x1, y1, x2, y2) {
+                console.log('LINE REFRESH');
                 this.ctx.save();
 
                 this.ctx.beginPath();
