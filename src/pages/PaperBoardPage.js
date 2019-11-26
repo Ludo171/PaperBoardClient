@@ -90,8 +90,17 @@ class PaperBoardPage extends Component {
         });
     };
 
-    setSelectedDrawing = (selected) => {
-        this.setState({selectedDrawing: selected});
+    setSelectedDrawing = (selected, unlockId) => {
+        this.setState((prevState) => {
+            if (
+                unlockId &&
+                prevState.selectedDrawing &&
+                prevState.selectedDrawing.id === unlockId
+            ) {
+                return {selectedDrawing: null};
+            }
+            return {selectedDrawing: selected};
+        });
     };
 
     handleDrawerLeftBoard = (leaver, drawers) => {

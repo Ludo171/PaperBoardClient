@@ -9,6 +9,7 @@ import generateCanvasObjectBackgroundImage from "./CanvasObject-BackgroundImage"
 import generateCanvasObjectBackgroundColor from "./CanvasObject-BackgroundColor";
 import generateCanvasObjectLine from "./CanvasObject-Line";
 import generateCanvasObjectRectangle from "./CanvasObject-Rectangle";
+import generateCanvasObjectHandwriting from "./CanvasObject-Handwriting";
 
 class CanvasManager extends Component {
     constructor(props) {
@@ -220,6 +221,30 @@ class CanvasManager extends Component {
                         }
                     )
                 );
+            } else if (descr.type === "handwriting") {
+                newObjPile.push(
+                    await generateCanvasObjectHandwriting(
+                        ctx,
+                        0,
+                        0,
+                        width,
+                        height,
+                        descr.drawingId,
+                        descr.owner.pseudo,
+                        {
+                            X: descr.position.x,
+                            Y: descr.position.y,
+                            pathX: descr.pathX,
+                            pathY: descr.pathY,
+                            lineWidth: descr.lineWidth,
+                            lineColor: descr.lineColor,
+                            isLocked: descr.isLocked,
+                            lockedBy: descr.lockedBy,
+                        }
+                    )
+                );
+            } else {
+                console.log("Shape loading unhandled for this type");
             }
         }
         return newObjPile;
@@ -314,14 +339,33 @@ class CanvasManager extends Component {
             );
             this.objPile.push(newRectangle);
             newRectangle.refreshArea(0, 0, this.state.width, this.state.height);
+        } else if (data.type === "handwriting") {
+            const newHandwriting = await generateCanvasObjectHandwriting(
+                this.state.ctx,
+                0,
+                0,
+                this.state.width,
+                this.state.height,
+                data.drawingId,
+                data.pseudo,
+                {
+                    X: parseFloat(data.position.x),
+                    Y: parseFloat(data.position.y),
+                    pathX: data.pathX.map(parseFloat),
+                    pathY: data.pathY.map(parseFloat),
+                    lineWidth: parseFloat(data.lineWidth),
+                    lineColor: data.lineColor,
+                    lineStyle: data.lineStyle,
+                }
+            );
+            this.objPile.push(newHandwriting);
+            newHandwriting.refreshArea(0, 0, this.state.width, this.state.height);
         } else {
             console.log("Default case for Object Created Handler in Canvas Manager");
         }
     };
 
     onObjectLocked = (payload) => {
-        console.log("On Locked");
-        console.log(payload);
         const objectId = payload.drawingId;
         const lockedBy = payload.pseudo;
         let found = false;
@@ -343,19 +387,20 @@ class CanvasManager extends Component {
                     board: {title},
                     setSelectedDrawing,
                 } = this.props;
-                setSelectedDrawing({
-                    pseudo,
-                    board: title,
-                    drawingId: objectId,
-                    type: this.objPile[i].type,
-                });
+                setSelectedDrawing(
+                    {
+                        pseudo,
+                        board: title,
+                        drawingId: objectId,
+                        type: this.objPile[i].type,
+                    },
+                    null
+                );
             }
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
         }
     };
     onObjectUnlocked = (payload) => {
-        console.log("On Unlocked");
-        console.log(payload);
         const objectId = payload.drawingId;
         let found = false;
         let i = 0;
@@ -369,7 +414,7 @@ class CanvasManager extends Component {
         if (found) {
             if (this.props.pseudo === this.objPile[i].lockedBy) {
                 const {setSelectedDrawing} = this.props;
-                setSelectedDrawing(null);
+                setSelectedDrawing(null, this.objPile[i].id);
             }
             this.objPile[i].isLocked = false;
             this.objPile[i].lockedBy = "";
@@ -377,6 +422,8 @@ class CanvasManager extends Component {
         }
     };
     onObjectEdited = (payload) => {
+        console.log("On Object Edited !");
+        console.log(payload);
         for (let i = 0; i < this.objPile.length; i++) {
             if (this.objPile[i].id === payload.drawingId) {
                 this.objPile[i].applyModifications(payload);
