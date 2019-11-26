@@ -13,7 +13,7 @@ import {
     Edit,
     PanoramaFishEye,
 } from "@material-ui/icons";
-import {Icon, ListSubheader} from "@material-ui/core";
+import {ListSubheader} from "@material-ui/core";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import {getBase64} from "../utils/readAsDataUrl";
@@ -100,14 +100,7 @@ class ShapePanel extends Component {
                                 Tools
                             </div>
                         </ListSubheader>
-                    }>
-                    <ListItem button key={"Text"} onClick={() => this.onClickCreateObject("text")}>
-                        <ListItemIcon>
-                            <TextFieldIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={"Text"} />
-                    </ListItem>
-                </List>
+                    }></List>
                 <Divider />
                 <List>
                     {[
@@ -118,14 +111,6 @@ class ShapePanel extends Component {
                         {title: "Line", component: <Maximize />},
                         {title: "Rectangle", component: <CropLandscape />},
                         {title: "Circle", component: <PanoramaFishEye />},
-                        {
-                            title: "Triangle",
-                            component: (
-                                <Icon>
-                                    <img src={require("../assets/triangle.png")} alt="" />
-                                </Icon>
-                            ),
-                        },
                     ].map((item) => (
                         <ListItem
                             button
