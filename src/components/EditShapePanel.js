@@ -193,7 +193,11 @@ class EditShapePanel extends Component {
                         button
                         key={"FillColor"}
                         onClick={() => this.onClickEditObject("FillColor")}
-                        disabled={!selectedDrawing || selectedDrawing.type === "image"}>
+                        disabled={
+                            !selectedDrawing ||
+                            selectedDrawing.type === "image" ||
+                            selectedDrawing.type === "line"
+                        }>
                         <ListItemIcon>
                             <Icon>
                                 <img src={require("../assets/fillColor.png")} alt="" />
