@@ -14,6 +14,60 @@ JustDrawIt-Paperboard is a one-week project to pave the basis for a collaborativ
     - [Canvas Manager](#canvas-manager)
 
 ## User experience
+1. Simply authenticate with your favorite pseudo
+    * 2 users can't have the same pseudo : Find yours !
+    * if you get disconnected the pseudo become free again
+2. Create or join a board
+    * 2 boards can't have the same title
+    * When creating you can choose a background image or a background color for your board
+    
+    ![Paperboard with one user and a circle selected](./doc/loungePage.png)
+    Lounge page with all the boards
+        
+    ![Paperboard with one user and a circle selected](./doc/CommentedPaperboard.png)
+    Paperboard with one user and a circle selected.
+
+3. Choose a drawing
+    * different drawings are available :
+        * Hand Writing
+        * Line
+        * Rectangle
+        * Circle
+        * Import icon
+4. Edit a shape
+    * Select a shape by clicking on it
+    * Use the edition options panel to choose your options
+    * Click on the drawing, different cursors help you to make actions
+    
+    ![Default cursor](./doc/cursor_default.jpg)
+    
+    Default cursor
+    
+    ![Cursor when you can select a drawing](./doc/cursor_pointer.jpg)
+        
+    Cursor when you can select a drawing, click to select it
+    
+    ![Cursor when you can move the drawing](./doc/cursor_grabbing.jpg)
+            
+    Cursor when you can move the selected drawing on the board
+    
+    ![Cursor when you can resize](./doc/cursor_grab.jpg)
+            
+    Cursor when you can resize the selected drawing
+    
+4. Chat and see drawers
+    * See who is connected
+    * Use the chat to communicate with them
+    ![Chat](./doc/chat.png)
+                
+      Chat after clicking on the chat bubble
+5. Take a picture
+    * Click on the photo icon to dowload a snapshot of your paperboard !
+6. Leave the board
+    * Click on leave board
+7. Be the member of a new one
+    * Join a new Paperboard
+
 
 ## Setup and Run !
 First of all you can check out our online demo hosted on a Heroku instance : https://paperboard-just-draw-it.herokuapp.com. 
