@@ -3,7 +3,7 @@ Date: 2019 Nov.
 
 Authors : ludovic Descateaux (@mad171) & brieuc loussouarn (@bloussou)
 
-JustDrawIt-Paperboard is a one-week project to pave the basis for a collaborative drawing application. It enable users to create a new Paperboard or join a new Paperboard and sketch it online with many other users.
+JustDrawIt-Paperboard is a project to pave the basis for a collaborative drawing application. It enable users to create a new Paperboard or join a new Paperboard and sketch it online with many other users.
 
 - [Just Draw It ! - Client App](#just-draw-it----client-app)
   - [User experience](#user-experience)
