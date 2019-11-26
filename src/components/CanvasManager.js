@@ -22,6 +22,7 @@ class CanvasManager extends Component {
         };
         this.ctx = null;
         this.background = null;
+        this.mouseIsDown = false;
     }
 
     componentDidMount() {
@@ -425,6 +426,8 @@ class CanvasManager extends Component {
 
     // --- GESTURES MANAGEMENT
     handleMouseDown(e) {
+        console.log("DOWN");
+        this.mouseIsDown = true;
         // Handle left click down
         if (e.which === 1) {
             const rect = this.canvas.getBoundingClientRect();
@@ -481,7 +484,7 @@ class CanvasManager extends Component {
 
     handleMouseMove(e) {
         // Handle Move over canvas
-        if (e.which === 0) {
+        if (!this.mouseIsDown) {
             const rect = this.canvas.getBoundingClientRect();
             const x =
                 ((e.clientX - rect.left) * this.state.width) /
@@ -505,7 +508,7 @@ class CanvasManager extends Component {
                 const elementToChange = document.getElementsByTagName("body")[0];
                 elementToChange.style.cursor = "url('cursor url with protocol'), default";
             }
-        } else if (e.which === 1) {
+        } else if (this.mouseIsDown) {
             const rect = this.canvas.getBoundingClientRect();
             const x =
                 ((e.clientX - rect.left) * this.state.width) /
@@ -532,6 +535,8 @@ class CanvasManager extends Component {
     }
 
     handleMouseUp(e) {
+        console.log("UP");
+        this.mouseIsDown = false;
         const {
             pseudo,
             board: {title},
