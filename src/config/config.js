@@ -1,4 +1,5 @@
 const config = {
+    environment: process.env.REACT_APP_ENVIRONMENT,
     hostname: "http://mydomain.com",
 
     http_port: 1245,

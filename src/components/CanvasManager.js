@@ -98,6 +98,8 @@ class CanvasManager extends Component {
     }
 
     generateObjectPile = async (drawings) => {
+        console.log("Generate paperboard");
+        console.log(drawings);
         // Load Background
         if (this.props.board.backgroundImage !== "") {
             this.background = await generateCanvasObjectBackgroundImage(
@@ -347,6 +349,8 @@ class CanvasManager extends Component {
     };
 
     onObjectLocked = (payload) => {
+        console.log("On Locked");
+        console.log(payload);
         const objectId = payload.drawingId;
         const lockedBy = payload.pseudo;
         let found = false;
@@ -379,6 +383,8 @@ class CanvasManager extends Component {
         }
     };
     onObjectUnlocked = (payload) => {
+        console.log("On Unlocked");
+        console.log(payload);
         const objectId = payload.drawingId;
         let found = false;
         let i = 0;

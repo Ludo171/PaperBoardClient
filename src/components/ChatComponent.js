@@ -17,6 +17,7 @@ class ChatComponent extends Component {
             isChatDisplayed: false,
             textFieldValue: "",
             messages: [],
+            messagedReceived: false,
         };
     }
 
@@ -66,6 +67,7 @@ class ChatComponent extends Component {
         );
         this.setState({
             messages,
+            messagedReceived: true,
         });
     };
 
@@ -87,11 +89,12 @@ class ChatComponent extends Component {
     onChat = () => {
         this.setState((prevState) => ({
             isChatDisplayed: !prevState.isChatDisplayed,
+            messagedReceived: false,
         }));
     };
 
     render() {
-        const {isChatDisplayed, messages, textFieldValue} = this.state;
+        const {isChatDisplayed, messages, textFieldValue, messagedReceived} = this.state;
         return (
             <>
                 {/* CHAT MESSAGE PANEL */}
@@ -132,6 +135,19 @@ class ChatComponent extends Component {
                             boxShadow: "6px 6px 6px #9E9E9E",
                             shadowOpacity: 0.5,
                         }}>
+                        {!isChatDisplayed && messagedReceived && (
+                            <div
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    borderRadius: 12,
+                                    backgroundColor: "red",
+                                    position: "absolute",
+                                    right: 0,
+                                    top: 0,
+                                }}
+                            />
+                        )}
                         <MessageIcon
                             style={{
                                 width: isChatDisplayed ? 20 : 60,

@@ -13,10 +13,11 @@ import {
     Edit,
     PanoramaFishEye,
 } from "@material-ui/icons";
-import {Icon, ListSubheader} from "@material-ui/core";
+import {ListSubheader} from "@material-ui/core";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import {getBase64} from "../utils/readAsDataUrl";
+import config from "../config/config";
 
 class ShapePanel extends Component {
     onClickCreateObject = (objectType) => {
@@ -33,7 +34,9 @@ class ShapePanel extends Component {
         });
     };
     onClickCreateObjectImage = () => {
-        const maxSize = 42000;
+        const maxSize = ["dev", "develop", "development"].includes(config.environment)
+            ? 42000
+            : 1300;
         const typesAllowed = ["image/png", "image/jpeg", "image/jpg"];
         const file = document.getElementById("myFile").files[0];
         if (file === undefined) {
@@ -97,14 +100,7 @@ class ShapePanel extends Component {
                                 Tools
                             </div>
                         </ListSubheader>
-                    }>
-                    <ListItem button key={"Text"} onClick={() => this.onClickCreateObject("text")}>
-                        <ListItemIcon>
-                            <TextFieldIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={"Text"} />
-                    </ListItem>
-                </List>
+                    }></List>
                 <Divider />
                 <List>
                     {[
@@ -115,14 +111,6 @@ class ShapePanel extends Component {
                         {title: "Line", component: <Maximize />},
                         {title: "Rectangle", component: <CropLandscape />},
                         {title: "Circle", component: <PanoramaFishEye />},
-                        {
-                            title: "Triangle",
-                            component: (
-                                <Icon>
-                                    <img src={require("../assets/triangle.png")} alt="" />
-                                </Icon>
-                            ),
-                        },
                     ].map((item) => (
                         <ListItem
                             button
@@ -147,7 +135,7 @@ class ShapePanel extends Component {
                         <ListItemIcon>
                             <Photo />
                         </ListItemIcon>
-                        <ListItemText primary={"Picture"} />
+                        <ListItemText primary={"Icon"} />
                     </ListItem>
                     <input
                         type="file"
