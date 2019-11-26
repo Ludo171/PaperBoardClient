@@ -3,7 +3,7 @@ import {withRouter} from "react-router-dom";
 import "./WelcomePage.scss";
 import PropTypes from "prop-types";
 import Background from "./Background";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 import * as backgroundImage from "../assets/welcome.jpg";
 

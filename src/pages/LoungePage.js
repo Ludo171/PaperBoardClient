@@ -8,7 +8,7 @@ import * as moment from "moment";
 import * as backgroundImage from "../assets/wood.jpg";
 import {Refresh} from "@material-ui/icons";
 import {IconButton} from "@material-ui/core";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 
 const columns = [

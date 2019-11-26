@@ -7,7 +7,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import {Photo, Maximize, CropLandscape, Edit, PanoramaFishEye} from "@material-ui/icons";
 import {ListSubheader} from "@material-ui/core";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 import {getBase64} from "../utils/readAsDataUrl";
 import config from "../config/config";

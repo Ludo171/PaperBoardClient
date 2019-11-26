@@ -5,7 +5,7 @@ import LoungePage from "./pages/LoungePage";
 import CreateBoardPage from "./pages/CreateBoardPage";
 import PaperBoardPage from "./pages/PaperBoardPage";
 import Toast from "light-toast";
-import socketClientInstance from "./services/socket";
+import socketClientInstance from "./socket/socket";
 import constants from "./config/constants";
 import "./App.scss";
 import PropTypes from "prop-types";

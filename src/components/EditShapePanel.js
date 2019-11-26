@@ -7,7 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import {ColorLens, Delete} from "@material-ui/icons";
 import {Icon, Divider, ListSubheader} from "@material-ui/core";
 import ColorPicker from "./Picker";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 import {colors} from "../utils/colors";
 import {lineSize} from "../utils/lineSize";

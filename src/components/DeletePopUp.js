@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {Button} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CancelIcon from "@material-ui/icons/Cancel";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 
 class DeletePopUp extends Component {

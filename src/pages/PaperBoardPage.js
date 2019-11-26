@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {withRouter} from "react-router-dom";
 import Background from "./Background";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 import CanvasManager from "../components/CanvasManager";
 import EditShapePanel from "../components/EditShapePanel";

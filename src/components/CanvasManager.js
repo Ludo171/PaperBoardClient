@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import ReactResizeDetector from "react-resize-detector";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 import generateCanvasObjectBackgroundImage from "./canvas-objects/CanvasObject-BackgroundImage";
 import generateCanvasObjectBackgroundColor from "./canvas-objects/CanvasObject-BackgroundColor";

@@ -4,7 +4,7 @@ import {Message as MessageIcon} from "@material-ui/icons";
 import Chat from "./Chat";
 import TextField from "@material-ui/core/TextField";
 import Message from "./Message";
-import socketClientInstance from "../../services/socket";
+import socketClientInstance from "../../socket/socket";
 import constants from "../../config/constants";
 
 const color = require("string-to-color");

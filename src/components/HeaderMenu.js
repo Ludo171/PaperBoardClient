@@ -3,10 +3,15 @@ import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import {ExitToApp, PhotoCamera} from "@material-ui/icons";
 import ListOfUsers from "../components/ListOfUsers";
+import * as moment from "moment";
 class HeaderMenu extends Component {
     onSave = () => {
-        alert("TODO SAVE");
-        // TODO
+        const myDownloadLink = document.getElementById("saveCanvas");
+        const dataURL = document.getElementById("canvascanvas").toDataURL("image/png");
+        myDownloadLink.href = dataURL;
+        if (myDownloadLink) {
+            myDownloadLink.click();
+        }
     };
 
     onImport = () => {
@@ -46,6 +51,16 @@ class HeaderMenu extends Component {
                         <Button onClick={this.onSave}>
                             <PhotoCamera />
                         </Button>
+                        <a
+                            href="#"
+                            className="button"
+                            id="saveCanvas"
+                            download={`PaperboardSave_${moment(new Date()).format(
+                                "dd-MM-YY-hh-ss"
+                            )}`}
+                            style={{position: "fixed", top: "10000px"}}>
+                            Download
+                        </a>
                         <Button onClick={onQuit}>
                             <ExitToApp />
                         </Button>

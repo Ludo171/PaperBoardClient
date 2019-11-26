@@ -6,7 +6,7 @@ import Background from "./Background";
 import Switch from "@material-ui/core/Switch";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import socketClientInstance from "../services/socket";
+import socketClientInstance from "../socket/socket";
 import constants from "../config/constants";
 import * as backgroundImage from "../assets/Wood-4.jpg";
 import ColorPicker from "../components/Picker";
