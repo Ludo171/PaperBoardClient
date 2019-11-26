@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
 import PropTypes from "prop-types";
 import "./CreateBoardPage.scss";
-import Background from "../components/Background";
+import Background from "./Background";
 import Switch from "@material-ui/core/Switch";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";

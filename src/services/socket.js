@@ -263,7 +263,6 @@ class SocketClient {
                 );
                 message = {};
             }
-            console.log(this.socketClient);
             if (this.socketClient && this.socketClient.readyState === WebSocket.OPEN) {
                 this.socketClient.send(message);
             } else {

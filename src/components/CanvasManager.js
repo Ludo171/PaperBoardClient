@@ -1,15 +1,15 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import ReactResizeDetector from "react-resize-detector";
-import generateCanvasObjectCircle from "./CanvasObject-Circle";
-import generateCanvasObjectImage from "./CanvasObject-Image";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
-import generateCanvasObjectBackgroundImage from "./CanvasObject-BackgroundImage";
-import generateCanvasObjectBackgroundColor from "./CanvasObject-BackgroundColor";
-import generateCanvasObjectLine from "./CanvasObject-Line";
-import generateCanvasObjectRectangle from "./CanvasObject-Rectangle";
-import generateCanvasObjectHandwriting from "./CanvasObject-Handwriting";
+import generateCanvasObjectBackgroundImage from "./canvas-objects/CanvasObject-BackgroundImage";
+import generateCanvasObjectBackgroundColor from "./canvas-objects/CanvasObject-BackgroundColor";
+import generateCanvasObjectCircle from "./canvas-objects/CanvasObject-Circle";
+import generateCanvasObjectImage from "./canvas-objects/CanvasObject-Image";
+import generateCanvasObjectLine from "./canvas-objects/CanvasObject-Line";
+import generateCanvasObjectRectangle from "./canvas-objects/CanvasObject-Rectangle";
+import generateCanvasObjectHandwriting from "./canvas-objects/CanvasObject-Handwriting";
 
 class CanvasManager extends Component {
     constructor(props) {
@@ -99,8 +99,6 @@ class CanvasManager extends Component {
     }
 
     generateObjectPile = async (drawings) => {
-        console.log("Generate paperboard");
-        console.log(drawings);
         // Load Background
         if (this.props.board.backgroundImage !== "") {
             this.background = await generateCanvasObjectBackgroundImage(
@@ -252,8 +250,6 @@ class CanvasManager extends Component {
 
     // --- INTERACTIONS WITH OTHER COMPONENTS
     createObject = async (data) => {
-        console.log("Should Create Object");
-        console.log(data);
         if (data.type === "image") {
             const newImg = await generateCanvasObjectImage(
                 this.state.ctx,
@@ -422,8 +418,6 @@ class CanvasManager extends Component {
         }
     };
     onObjectEdited = (payload) => {
-        console.log("On Object Edited !");
-        console.log(payload);
         for (let i = 0; i < this.objPile.length; i++) {
             if (this.objPile[i].id === payload.drawingId) {
                 this.objPile[i].applyModifications(payload);
@@ -473,7 +467,6 @@ class CanvasManager extends Component {
 
     // --- GESTURES MANAGEMENT
     handleMouseDown(e) {
-        console.log("DOWN");
         this.mouseIsDown = true;
         // Handle left click down
         if (e.which === 1) {
@@ -582,7 +575,6 @@ class CanvasManager extends Component {
     }
 
     handleMouseUp(e) {
-        console.log("UP");
         this.mouseIsDown = false;
         const {
             pseudo,

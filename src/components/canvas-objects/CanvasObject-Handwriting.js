@@ -102,7 +102,6 @@ const generateCanvasObjectHandwriting = function(
                     const minY = this.minPathY === Number.POSITIVE_INFINITY ? 0 : this.minPathY;
                     const maxX = this.maxPathX === Number.NEGATIVE_INFINITY ? 0 : this.maxPathX;
                     const maxY = this.maxPathY === Number.NEGATIVE_INFINITY ? 0 : this.maxPathY;
-                    console.log(`minX:${minX} minY:${minY} maxX:${maxX} maxY:${maxY}`);
                     this.ctx.rect(
                         this.X + minX - margin,
                         this.Y + minY - margin,
@@ -127,8 +126,6 @@ const generateCanvasObjectHandwriting = function(
             },
 
             applyModifications: function(payload) {
-                console.log("Apply Modif Hand Writing");
-                console.log(payload);
                 const keys = Object.keys(this.previousState);
                 for (let i = 0; i < keys.length; i++) {
                     if (payload.hasOwnProperty(keys[i])) {
@@ -162,17 +159,14 @@ const generateCanvasObjectHandwriting = function(
             onMouseHover: function(x, y, myPseudo) {
                 const zone = this._computeCorrespondingZone(x, y);
                 if (!this.isLocked && zone !== selectionZones.OUT) {
-                    console.log("IN SHAPE !!");
                     const elementToChange = document.getElementsByTagName("body")[0];
                     elementToChange.style.cursor = "url('cursor url with protocol'), pointer";
                     return true;
                 } else if (this.lockedBy === myPseudo && zone === selectionZones.MOVE_SHAPE) {
-                    console.log(selectionZones.MOVE_SHAPE);
                     const elementToChange = document.getElementsByTagName("body")[0];
                     elementToChange.style.cursor = "url('cursor url with protocol'), move";
                     return true;
                 } else if (this.lockedBy === myPseudo && zone === selectionZones.WRITE) {
-                    console.log(selectionZones.WRITE);
                     const elementToChange = document.getElementsByTagName("body")[0];
                     elementToChange.style.cursor = "url('cursor url with protocol'), crosshair";
                     return true;
@@ -283,7 +277,6 @@ const generateCanvasObjectHandwriting = function(
             ObjectHandwriting.pathY.length > 0
                 ? Math.max(...ObjectHandwriting.pathY)
                 : Number.NEGATIVE_INFINITY;
-        console.log(ObjectHandwriting)
         resolve(ObjectHandwriting);
     });
 };

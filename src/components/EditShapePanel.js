@@ -146,7 +146,6 @@ class EditShapePanel extends Component {
             isFillColorPickerToggled,
         } = this.state;
         const {selectedDrawing} = this.props;
-        console.log(this.props);
         return (
             <div style={{maxWidth: 360, backgroundColor: "white"}}>
                 <List

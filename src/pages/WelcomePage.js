@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
 import "./WelcomePage.scss";
 import PropTypes from "prop-types";
-import Background from "../components/Background";
+import Background from "./Background";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import * as backgroundImage from "../assets/welcome.jpg";

@@ -49,7 +49,6 @@ const generateCanvasObjectBackgroundImage = function(ctx, refX, refY, refW, refH
                 Background.srcX = (this.width - Background.srcW) / 2;
                 Background.srcY = 0;
             }
-            console.log("Resolving Background !");
             resolve(Background);
         };
         img.src = srcURI;

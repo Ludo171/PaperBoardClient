@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {withRouter} from "react-router-dom";
-import Background from "../components/Background";
+import Background from "./Background";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import CanvasManager from "../components/CanvasManager";
@@ -9,7 +9,7 @@ import EditShapePanel from "../components/EditShapePanel";
 import * as backgroundImage from "../assets/cappuccino2.jpg";
 import ShapePanel from "../components/ShapePanel";
 import HeaderMenu from "../components/HeaderMenu";
-import ChatComponent from "../components/ChatComponent";
+import ChatComponent from "../components/chat/ChatComponent";
 import DeletePopUp from "../components/DeletePopUp";
 
 class PaperBoardPage extends Component {

@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {withRouter} from "react-router-dom";
 import PropTypes from "prop-types";
 import "./LoungePage.scss";
-import Background from "../components/Background";
+import Background from "./Background";
 import MaterialTable from "material-table";
 import * as moment from "moment";
 import * as backgroundImage from "../assets/wood.jpg";

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import "./ColorPicker.scss";
 import PropTypes from "prop-types";
+import "./Picker.scss";
 
 const getColorList = (handleClick, listField, type) => {
     const list = [];

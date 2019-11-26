@@ -1,11 +1,11 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {Message as MessageIcon} from "@material-ui/icons";
-import Chat from "../components/Chat";
+import Chat from "./Chat";
 import TextField from "@material-ui/core/TextField";
-import Message from "../components/Message";
-import socketClientInstance from "../services/socket";
-import constants from "../config/constants";
+import Message from "./Message";
+import socketClientInstance from "../../services/socket";
+import constants from "../../config/constants";
 
 const color = require("string-to-color");
 
