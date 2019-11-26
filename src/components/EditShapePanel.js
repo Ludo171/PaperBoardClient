@@ -146,6 +146,7 @@ class EditShapePanel extends Component {
             isFillColorPickerToggled,
         } = this.state;
         const {selectedDrawing} = this.props;
+        console.log(this.props);
         return (
             <div style={{maxWidth: 360, backgroundColor: "white"}}>
                 <List
@@ -168,7 +169,7 @@ class EditShapePanel extends Component {
                         button
                         key={"Color"}
                         onClick={() => this.onClickEditObject("Color")}
-                        disabled={!selectedDrawing}>
+                        disabled={!selectedDrawing || selectedDrawing.type === "image"}>
                         <ListItemIcon>
                             <ColorLens />
                         </ListItemIcon>
@@ -192,7 +193,7 @@ class EditShapePanel extends Component {
                         button
                         key={"FillColor"}
                         onClick={() => this.onClickEditObject("FillColor")}
-                        disabled={!selectedDrawing}>
+                        disabled={!selectedDrawing || selectedDrawing.type === "image"}>
                         <ListItemIcon>
                             <Icon>
                                 <img src={require("../assets/fillColor.png")} alt="" />
@@ -218,7 +219,7 @@ class EditShapePanel extends Component {
                         button
                         key={"Width"}
                         onClick={() => this.onClickEditObject("Width")}
-                        disabled={!selectedDrawing}>
+                        disabled={!selectedDrawing || selectedDrawing.type === "image"}>
                         <ListItemIcon>
                             <Icon>
                                 <img src={require("../assets/width.png")} alt="" />
@@ -243,7 +244,7 @@ class EditShapePanel extends Component {
                         button
                         key={"LineStyle"}
                         onClick={() => this.onClickEditObject("LineStyle")}
-                        disabled={!selectedDrawing}>
+                        disabled={!selectedDrawing || selectedDrawing.type === "image"}>
                         <ListItemIcon>
                             <Icon>
                                 <img src={require("../assets/lineStyle.png")} alt="" />

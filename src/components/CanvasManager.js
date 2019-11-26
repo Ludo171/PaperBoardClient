@@ -247,7 +247,12 @@ class CanvasManager extends Component {
                     board: {title},
                     setSelectedDrawing,
                 } = this.props;
-                setSelectedDrawing({pseudo, board: title, drawingId: objectId});
+                setSelectedDrawing({
+                    pseudo,
+                    board: title,
+                    drawingId: objectId,
+                    type: this.objPile[i].type,
+                });
             }
             this.refreshCanvasArea(0, 0, this.state.width, this.state.height);
         }
