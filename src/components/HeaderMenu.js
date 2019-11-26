@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
-import {ExitToApp, SaveAlt, CloudUpload} from "@material-ui/icons";
+import {ExitToApp, PhotoCamera} from "@material-ui/icons";
 import ListOfUsers from "../components/ListOfUsers";
 class HeaderMenu extends Component {
     onSave = () => {
@@ -43,11 +43,8 @@ class HeaderMenu extends Component {
                     <ListOfUsers users={drawers} />
                     {/* BOARD ACTION BUTTONS */}
                     <div style={{display: "flex"}}>
-                        <Button onClick={this.onImport}>
-                            <CloudUpload />
-                        </Button>
                         <Button onClick={this.onSave}>
-                            <SaveAlt />
+                            <PhotoCamera />
                         </Button>
                         <Button onClick={onQuit}>
                             <ExitToApp />
