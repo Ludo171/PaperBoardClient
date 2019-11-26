@@ -5,14 +5,7 @@ import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import {
-    TextFields as TextFieldIcon,
-    Photo,
-    Maximize,
-    CropLandscape,
-    Edit,
-    PanoramaFishEye,
-} from "@material-ui/icons";
+import {Photo, Maximize, CropLandscape, Edit, PanoramaFishEye} from "@material-ui/icons";
 import {ListSubheader} from "@material-ui/core";
 import socketClientInstance from "../services/socket";
 import constants from "../config/constants";

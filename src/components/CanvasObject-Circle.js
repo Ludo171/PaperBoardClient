@@ -180,7 +180,7 @@ const generateCanvasObjectCircle = function(
                     const newDist = Math.sqrt(
                         (x - this.X) * (x - this.X) + (y - this.Y) * (y - this.Y)
                     );
-                    this.radius += newDist - oldDist;
+                    this.radius = Math.max(0, this.radius + newDist - oldDist);
                     this.oldDragX = x;
                     this.oldDragY = y;
                     return true;

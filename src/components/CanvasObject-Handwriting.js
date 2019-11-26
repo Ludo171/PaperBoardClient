@@ -10,7 +10,7 @@ const editionStates = {
     WRITING: "Writing",
     MOVING: "Moving",
 };
-const NULL_POINT = -99999;
+const NULL_POINT = 0;
 
 const generateCanvasObjectHandwriting = function(
     ctx,
@@ -35,12 +35,6 @@ const generateCanvasObjectHandwriting = function(
             refW: refW,
             refH: refH,
 
-            src: null,
-            srcX: 0,
-            srcY: 0,
-            srcW: 0,
-            srcH: 0,
-
             X: creationOptions.X || (refX + refW) / 2,
             Y: creationOptions.Y || (refY + refH) / 2,
             pathX: creationOptions.pathX || [],
@@ -49,6 +43,8 @@ const generateCanvasObjectHandwriting = function(
             lineColor: creationOptions.lineColor || "red",
             maxPathX: NULL_POINT,
             maxPathY: NULL_POINT,
+            minPathX: NULL_POINT,
+            minPathY: NULL_POINT,
 
             isLocked: creationOptions.isLocked || false,
             lockedBy: creationOptions.lockedBy || "",
@@ -60,23 +56,26 @@ const generateCanvasObjectHandwriting = function(
                 lineWidth: creationOptions.lineWidth || 10,
                 lineColor: creationOptions.lineColor || "red",
             },
+
             editionState: null, // null | "Resizing" | "Moving" | ...
             oldDragX: null,
             oldDragY: null,
+            oldPathXLenght: 0,
+            oldPathYLenght: 0,
 
             refreshArea: function(x1, y1, x2, y2) {
                 this.ctx.save();
 
-                this.ctx.lineJoin = "round";
                 this.ctx.lineWidth = this.lineWidth;
                 this.ctx.strokeStyle = this.lineColor;
                 this.ctx.beginPath();
 
+                this.ctx.lineJoin = "round";
                 let i = 0;
                 while (i < this.pathX.length - 2) {
                     if (this.pathX[i] !== NULL_POINT && this.pathY[i] !== NULL_POINT) {
                         if (this.pathX[i + 1] !== NULL_POINT && this.pathY[i + 1] !== NULL_POINT) {
-                            this.ctx.moveTo(this.X + this.pathX[i], this.Y + this.ctx.pathY[i]);
+                            this.ctx.moveTo(this.X + this.pathX[i], this.Y + this.pathY[i]);
                             this.ctx.lineTo(this.X + this.pathX[i + 1], this.Y + this.pathY[i + 1]);
                             this.ctx.closePath();
                         } else {
@@ -87,7 +86,6 @@ const generateCanvasObjectHandwriting = function(
                     }
                     i += 1;
                 }
-
                 this.ctx.stroke();
 
                 if (this.isLocked || this.pathX.length === 0) {
@@ -96,24 +94,33 @@ const generateCanvasObjectHandwriting = function(
 
                     // Dashed selection rectangle
                     this.ctx.beginPath();
-                    this.ctx.strokeStyle = this.pathX.length === 0 ? "black" : color(this.lockedBy);
-                    this.ctx.lineWidth = this.pathX.length === 0 ? 1 : 5;
+                    this.ctx.lineJoin = "miter";
+                    this.ctx.strokeStyle = this.isLocked ? color(this.lockedBy) : "grey";
+                    this.ctx.lineWidth = this.isLocked ? 15 : 2;
                     this.ctx.setLineDash([8, 8]);
+                    const minX = this.minPathX === Number.POSITIVE_INFINITY ? 0 : this.minPathX;
+                    const minY = this.minPathY === Number.POSITIVE_INFINITY ? 0 : this.minPathY;
+                    const maxX = this.maxPathX === Number.NEGATIVE_INFINITY ? 0 : this.maxPathX;
+                    const maxY = this.maxPathY === Number.NEGATIVE_INFINITY ? 0 : this.maxPathY;
+                    console.log(`minX:${minX} minY:${minY} maxX:${maxX} maxY:${maxY}`);
                     this.ctx.rect(
-                        this.X - margin,
-                        this.Y - margin,
-                        this.maxPathX + margin,
-                        this.maxPathY + margin
+                        this.X + minX - margin,
+                        this.Y + minY - margin,
+                        maxX - minX + 2 * margin,
+                        maxY - minY + 2 * margin
                     );
                     this.ctx.stroke();
-                    this.ctx.arc(
-                        this.X - margin,
-                        this.Y - margin,
-                        moveCircleRadius,
-                        0,
-                        2 * Math.PI
-                    );
-                    this.ctx.stroke();
+
+                    if (this.isLocked) {
+                        this.ctx.arc(
+                            this.X + minX - margin,
+                            this.Y + minY - margin,
+                            moveCircleRadius,
+                            0,
+                            2 * Math.PI
+                        );
+                        this.ctx.stroke();
+                    }
                 }
 
                 this.ctx.restore();
@@ -155,7 +162,7 @@ const generateCanvasObjectHandwriting = function(
             onMouseHover: function(x, y, myPseudo) {
                 const zone = this._computeCorrespondingZone(x, y);
                 if (!this.isLocked && zone !== selectionZones.OUT) {
-                    console.log(selectionZones.OUT);
+                    console.log("IN SHAPE !!");
                     const elementToChange = document.getElementsByTagName("body")[0];
                     elementToChange.style.cursor = "url('cursor url with protocol'), pointer";
                     return true;
@@ -175,8 +182,8 @@ const generateCanvasObjectHandwriting = function(
 
             onMouseDrag: function(x, y, myPseudo) {
                 if (this.lockedBy === myPseudo && this.editionState === editionStates.MOVING) {
-                    this.X = x;
-                    this.Y = y;
+                    this.X += x - this.oldDragX;
+                    this.Y += y - this.oldDragY;
                     this.oldDragX = x;
                     this.oldDragY = y;
                     return true;
@@ -186,6 +193,16 @@ const generateCanvasObjectHandwriting = function(
                 ) {
                     this.pathX.push(x - this.X);
                     this.pathY.push(y - this.Y);
+                    if (x - this.X > this.maxPathX) {
+                        this.maxPathX = x - this.X;
+                    } else if (x - this.X < this.minPathX) {
+                        this.minPathX = x - this.X;
+                    }
+                    if (y - this.Y > this.maxPathY) {
+                        this.maxPathY = y - this.Y;
+                    } else if (y - this.Y < this.minPathY) {
+                        this.minPathY = y - this.Y;
+                    }
                     this.oldDragX = x;
                     this.oldDragY = y;
                     return true;
@@ -205,11 +222,21 @@ const generateCanvasObjectHandwriting = function(
                         this.previousState[keys[i]] = this[keys[i]];
                     }
                 }
-
+                if (
+                    this.oldPathXLenght !== this.pathX.length ||
+                    this.oldPathYLenght !== this.pathY.length
+                ) {
+                    result.modifications.pathX = this.pathX;
+                    result.modifications.pathY = this.pathY;
+                    this.oldPathXLength = this.pathX.length;
+                    this.oldPathYLength = this.pathY.length;
+                }
                 const zone = this._computeCorrespondingZone(x, y);
                 if (this.lockedBy === myPseudo && zone === selectionZones.OUT) {
-                    // push NULL_POINTS
                     result.shouldUnlock = true;
+                } else if (this.lockedBy) {
+                    this.pathX.push(NULL_POINT);
+                    this.pathY.push(NULL_POINT);
                 }
                 return result;
             },
@@ -217,15 +244,21 @@ const generateCanvasObjectHandwriting = function(
             _computeCorrespondingZone: function(x, y) {
                 const margin = 100;
                 const moveCircleRadius = 20;
+
+                const minX = this.minPathX === Number.POSITIVE_INFINITY ? 0 : this.minPathX;
+                const minY = this.minPathY === Number.POSITIVE_INFINITY ? 0 : this.minPathY;
+                const maxX = this.maxPathX === Number.NEGATIVE_INFINITY ? 0 : this.maxPathX;
+                const maxY = this.maxPathY === Number.NEGATIVE_INFINITY ? 0 : this.maxPathY;
+
                 const squareDistanceToTopLeft =
-                    (x - this.X + margin) * (x - this.X + margin) +
-                    (y - this.Y + margin) * (y - this.Y + margin);
+                    (x - this.X - minX + margin) * (x - this.X - minX + margin) +
+                    (y - this.Y - minY + margin) * (y - this.Y - minY + margin);
                 if (squareDistanceToTopLeft < moveCircleRadius * moveCircleRadius) {
                     return selectionZones.MOVE_SHAPE;
                 }
 
-                const verticalAlign = this.X - margin < x && x < this.X + this.maxPathX + margin;
-                const horizontalAlign = this.Y - margin < y && this.Y + this.maxPathY + margin;
+                const verticalAlign = this.X + minX - margin < x && x < this.X + maxX + margin;
+                const horizontalAlign = this.Y + minY - margin < y && y < this.Y + maxY + margin;
                 if (verticalAlign && horizontalAlign) {
                     return selectionZones.WRITE;
                 }
@@ -234,10 +267,23 @@ const generateCanvasObjectHandwriting = function(
             },
         };
 
+        ObjectHandwriting.minPathX =
+            ObjectHandwriting.pathX.length > 0
+                ? Math.min(...ObjectHandwriting.pathX)
+                : Number.POSITIVE_INFINITY;
+        ObjectHandwriting.minPathY =
+            ObjectHandwriting.pathY.length > 0
+                ? Math.min(...ObjectHandwriting.pathY)
+                : Number.POSITIVE_INFINITY;
         ObjectHandwriting.maxPathX =
-            ObjectHandwriting.pathX.length > 0 ? Math.max(...ObjectHandwriting.pathX) : 0;
+            ObjectHandwriting.pathX.length > 0
+                ? Math.max(...ObjectHandwriting.pathX)
+                : Number.NEGATIVE_INFINITY;
         ObjectHandwriting.maxPathY =
-            ObjectHandwriting.pathY.length > 0 ? Math.max(...ObjectHandwriting.pathY) : 0;
+            ObjectHandwriting.pathY.length > 0
+                ? Math.max(...ObjectHandwriting.pathY)
+                : Number.NEGATIVE_INFINITY;
+        console.log(ObjectHandwriting)
         resolve(ObjectHandwriting);
     });
 };

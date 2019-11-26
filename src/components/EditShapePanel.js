@@ -249,7 +249,11 @@ class EditShapePanel extends Component {
                         button
                         key={"LineStyle"}
                         onClick={() => this.onClickEditObject("LineStyle")}
-                        disabled={!selectedDrawing || selectedDrawing.type === "image"}>
+                        disabled={
+                            !selectedDrawing ||
+                            selectedDrawing.type === "image" ||
+                            selectedDrawing.type === "handwriting"
+                        }>
                         <ListItemIcon>
                             <Icon>
                                 <img src={require("../assets/lineStyle.png")} alt="" />
