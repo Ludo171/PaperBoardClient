@@ -7,6 +7,7 @@ import socketClientInstance from "../services/socket";
 import constants from "../config/constants";
 import generateCanvasObjectBackgroundImage from "./CanvasObject-BackgroundImage";
 import generateCanvasObjectBackgroundColor from "./CanvasObject-BackgroundColor";
+import generateCanvasObjectLine from "./CanvasObject-Line";
 
 class CanvasManager extends Component {
     constructor(props) {
@@ -167,6 +168,28 @@ class CanvasManager extends Component {
                         }
                     )
                 );
+            } else if (descr.type === "line") {
+                newObjPile.push(
+                    await generateCanvasObjectLine(
+                        ctx,
+                        0,
+                        0,
+                        width,
+                        height,
+                        descr.drawingId,
+                        descr.owner.pseudo,
+                        {
+                            X: descr.position.x,
+                            Y: descr.position.y,
+                            positionEndPoint: {
+                                x: descr.positionEndPoint.x,
+                                y: descr.positionEndPoint.y,
+                            },
+                            isLocked: descr.isLocked,
+                            lockedBy: descr.lockedBy,
+                        }
+                    )
+                );
             }
         }
         return newObjPile;
@@ -176,8 +199,6 @@ class CanvasManager extends Component {
     createObject = async (data) => {
         console.log("Should Create Object");
         console.log(data);
-        console.log(this);
-        console.log(this.objPile);
         switch (data.type) {
             case "image":
                 const newImg = await generateCanvasObjectImage(
@@ -214,11 +235,35 @@ class CanvasManager extends Component {
                         radius: parseFloat(data.radius),
                         lineWidth: parseFloat(data.lineWidth),
                         lineColor: data.lineColor,
+                        lineStyle: data.lineStyle,
                     }
                 );
-                console.log(newCircle);
                 this.objPile.push(newCircle);
                 newCircle.refreshArea(0, 0, this.state.width, this.state.height);
+                break;
+            case "line":
+                const newLine = await generateCanvasObjectLine(
+                    this.state.ctx,
+                    0,
+                    0,
+                    this.state.width,
+                    this.state.height,
+                    data.drawingId,
+                    data.pseudo,
+                    {
+                        X: parseFloat(data.position.x),
+                        Y: parseFloat(data.position.y),
+                        positionEndPoint: {
+                            x: parseFloat(data.positionEndPoint.x),
+                            y: parseFloat(data.positionEndPoint.y),
+                        },
+                        lineWidth: parseFloat(data.lineWidth),
+                        lineColor: data.lineColor,
+                        lineStyle: data.lineStyle,
+                    }
+                );
+                this.objPile.push(newLine);
+                newLine.refreshArea(0, 0, this.state.width, this.state.height);
                 break;
             default:
                 console.log("Default case for Object Created Handler in Canvas Manager");
