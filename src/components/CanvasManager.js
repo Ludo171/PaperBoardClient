@@ -169,6 +169,7 @@ class CanvasManager extends Component {
                     )
                 );
             } else if (descr.type === "line") {
+                console.log('Should generate Line')
                 newObjPile.push(
                     await generateCanvasObjectLine(
                         ctx,
@@ -185,6 +186,9 @@ class CanvasManager extends Component {
                                 x: descr.positionEndPoint.x,
                                 y: descr.positionEndPoint.y,
                             },
+                            lineWidth: descr.lineWidth,
+                            lineColor: descr.lineColor,
+                            lineStyle: descr.lineStyle,
                             isLocked: descr.isLocked,
                             lockedBy: descr.lockedBy,
                         }
