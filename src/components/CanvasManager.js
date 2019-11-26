@@ -9,6 +9,7 @@ import generateCanvasObjectBackgroundImage from "./CanvasObject-BackgroundImage"
 import generateCanvasObjectBackgroundColor from "./CanvasObject-BackgroundColor";
 import generateCanvasObjectLine from "./CanvasObject-Line";
 import generateCanvasObjectRectangle from "./CanvasObject-Rectangle";
+import generateCanvasObjectHandwriting from "./CanvasObject-Handwriting";
 
 class CanvasManager extends Component {
     constructor(props) {
@@ -217,6 +218,12 @@ class CanvasManager extends Component {
                         }
                     )
                 );
+            } else if (descr.type === "handwriting") {
+                console.log("Should load handwriting");
+                console.log(descr);
+            } else {
+                console.log("Shape loading unhandled for this type");
+                console.log(descr);
             }
         }
         return newObjPile;
@@ -311,6 +318,29 @@ class CanvasManager extends Component {
             );
             this.objPile.push(newRectangle);
             newRectangle.refreshArea(0, 0, this.state.width, this.state.height);
+        } else if (data.type === "handwriting") {
+            const newHandwriting = await generateCanvasObjectHandwriting(
+                this.state.ctx,
+                0,
+                0,
+                this.state.width,
+                this.state.height,
+                data.drawingId,
+                data.pseudo,
+                {
+                    X: parseFloat(data.position.x),
+                    Y: parseFloat(data.position.y),
+                    pathX: data.pathX.map(parseFloat),
+                    pathY: data.pathY.map(parseFloat),
+                    lineWidth: parseFloat(data.lineWidth),
+                    lineColor: data.lineColor,
+                    lineStyle: data.lineStyle,
+                }
+            );
+            console.log("Generated handwriting");
+            console.log(newHandwriting);
+            this.objPile.push(newHandwriting);
+            newHandwriting.refreshArea(0, 0, this.state.width, this.state.height);
         } else {
             console.log("Default case for Object Created Handler in Canvas Manager");
         }

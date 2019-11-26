@@ -109,7 +109,7 @@ class ShapePanel extends Component {
                 <List>
                     {[
                         {
-                            title: "Draw",
+                            title: "HandWriting",
                             component: <Edit />,
                         },
                         {title: "Line", component: <Maximize />},
